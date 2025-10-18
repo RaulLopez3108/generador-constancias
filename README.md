@@ -88,7 +88,6 @@ generador-constancias/
 
 - [Documentación Django](https://docs.djangoproject.com/)
 - [Documentación UV](https://docs.astral.sh/uv/)
-- [ReportLab Documentation](https://www.reportlab.com/docs/reportlab-userguide.pdf)
 
 ## Progreso
 
