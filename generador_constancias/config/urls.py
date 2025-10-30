@@ -17,8 +17,11 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from . import views
+from constancias import views as constancias_views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.home, name='home'),
+    path('participantes/',constancias_views.lista_participantes, name='lista_participantes'),
+    path('participantes/<int:pk>/',constancias_views.detalle_participante,name='detalle_participante'),
 ]
