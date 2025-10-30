@@ -23,3 +23,14 @@ def detalle_participante(request,pk):
     }
 
     return render(request,'constancias/detalle_participante.html',contexto)
+
+
+def lista_eventos(request):
+    eventos = Evento.objects.all().order_by('titulo_evento')
+
+    contexto = {
+        'eventos': eventos
+    }
+
+    return render(request,'constancias/lista_eventos.html',contexto)
+
