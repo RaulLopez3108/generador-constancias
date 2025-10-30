@@ -25,14 +25,18 @@ class TipoEVento(models.TextChoices):
     SEMINARIO = "SEM", "Seminario"
     CONFERENCIA = "CON", "Conferencia"
     DIPLOMADO = "DIP", "Diplomado"
-    CONGRESO = "CONG", "Congreso"
+    CONGRESO = "COG", "Congreso"
 
 
 class Evento(models.Model):
     id_evento = models.AutoField(primary_key=True)
     titulo_evento = models.CharField(max_length=100)
-    tipo_evento = models.CharField(choices=TipoEVento.choices,default=TipoEVento.CONFERENCIA) 
-    modalidad_evento = models.CharField(choices=ModalidadEvento.choices,default=ModalidadEvento.PRESENCIAL)
+    tipo_evento = models.CharField(max_length=3,
+                                   choices=TipoEVento.choices,
+                                   default=TipoEVento.CONFERENCIA) 
+    modalidad_evento = models.CharField(max_length=3,
+                                        choices=ModalidadEvento.choices,
+                                        default=ModalidadEvento.PRESENCIAL)
     fecha_inicio = models.DateField()
     fecha_fin = models.DateField()
     plantilla_id = models.ForeignKey('Plantilla', on_delete=models.CASCADE)
@@ -46,7 +50,7 @@ class Evento(models.Model):
     
 class Plantilla(models.Model):
     id_plantilla = models.AutoField(primary_key=True)
-    nombre_plantilla = models.CharField()
+    nombre_plantilla = models.CharField(max_length=100)
     archivo = models.FileField()
     fecha_creacion = models.DateField()
     activa = models.BooleanField()
