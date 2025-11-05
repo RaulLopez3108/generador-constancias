@@ -2,10 +2,9 @@ from django.db import models
 
 # Create your models here.
 class Participante(models.Model):
-    id_participante = models.AutoField(primary_key=True)
-    evento_id = models.ForeignKey('Evento', on_delete=models.CASCADE)
+    id_participante = models.AutoField(primary_key=True)    
     nombre_participante = models.CharField(max_length=100)
-    email_participante = models.EmailField()
+    email_participante = models.EmailField(unique=True)
 
     def __str__(self):
         return self.nombre_participante
@@ -39,6 +38,7 @@ class Evento(models.Model):
                                         default=ModalidadEvento.PRESENCIAL)
     fecha_inicio = models.DateField()
     fecha_fin = models.DateField()
+    participantes = models.ManyToManyField('Participante', related_name='eventos')
     plantilla_id = models.ForeignKey('Plantilla', on_delete=models.CASCADE)
     activo = models.BooleanField()
 
