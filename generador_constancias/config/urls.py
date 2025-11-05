@@ -24,5 +24,6 @@ urlpatterns = [
     path('', views.home, name='home'),
     path('participantes/',constancias_views.lista_participantes, name='lista_participantes'),
     path('participantes/<int:pk>/',constancias_views.detalle_participante,name='detalle_participante'),
-    path('eventos/',constancias_views.lista_eventos, name='lista_eventos')
+    path('eventos/',constancias_views.lista_eventos, name='lista_eventos'),
+    path('eventos/<int:pk>/',constancias_views.detalle_evento,name='detalle_evento')
 ]
