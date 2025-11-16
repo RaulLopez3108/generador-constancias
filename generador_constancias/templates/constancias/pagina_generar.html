@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Generar Constancia</title>
+</head>
+<body>
+    <h1>Generar Constancia</h1>
+    
+    <form method="post">
+        {% csrf_token %} {{ form.as_p }} 
+        
+        <button type="submit">Generar y Descargar</button>
+    </form>
+
+</body>
+</html>

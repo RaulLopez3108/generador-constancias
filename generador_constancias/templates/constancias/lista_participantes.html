@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Lista de Participantes</title>
+</head>
+<body>
+    <a href="{% url 'home' %}">← Volver a la pagina principal</a>
+    <h1>Lista de Participantes</h1>
+
+    {% if participantes %}
+        <table>
+            <thead>
+                <tr>
+                    
+                    <th>Nombre</th>
+                    <th>Email</th>
+                    
+                </tr>
+            </thead>
+            <tbody>
+                {% for p in participantes %}
+                <tr>
+    
+                    <td>
+                        <a href="{% url 'detalle_participante' p.id_participante %}">
+                            {{ p.nombre_participante }}
+                        </a>
+                    </td> 
+    
+                    <td>{{ p.email_participante }}</td>
+    
+                    
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No hay participantes registrados aún.</p>
+    {% endif %}
+
+</body>
+</html>
