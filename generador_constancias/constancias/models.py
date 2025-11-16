@@ -51,9 +51,14 @@ class Evento(models.Model):
 class Plantilla(models.Model):
     id_plantilla = models.AutoField(primary_key=True)
     nombre_plantilla = models.CharField(max_length=100)
-    archivo = models.FileField()
+    archivo = models.FileField(upload_to='plantillas/')
     fecha_creacion = models.DateField()
     activa = models.BooleanField()
+
+    def __str__(self):
+        return self.nombre_plantilla
+
+
 
 class Constancia(models.Model):
     id_participante = models.ForeignKey('Participante', on_delete=models.CASCADE)
