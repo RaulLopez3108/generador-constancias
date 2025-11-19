@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Lista de Eventos</title>
+</head>
+<body>
+    <a href="{% url 'home' %}">← Volver a la pagina principal</a>
+    <h1>Lista de Eventos</h1>
+    
+    {% if eventos %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Titulo</th>                                      
+                </tr>
+            </thead>
+            <tbody>
+                {% for e in eventos %}
+                <tr>
+                    
+                    <td>
+                        <a href="{% url 'detalle_evento' e.id_evento %}">
+                            {{ e.titulo_evento }}
+                        </a>
+                    </td>
+                </tr>
+{% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No hay eventos registrados aún.</p>
+    {% endif %}
+
+</body> 
+</html>

@@ -1,0 +1,29 @@
+<a href="{% url 'lista_eventos' %}">← Volver a la lista de eventos</a>
+
+<h1>Detalles del Evento: {{ evento.titulo_evento }}</h1>
+
+<p><strong>ID:</strong> {{ evento.id_evento }}</p>
+<p><strong>Tipo:</strong> {{ evento.get_tipo_evento_display }}</p>
+<p><strong>Modalidad:</strong> {{ evento.get_modalidad_evento_display }}</p>
+<p><strong>Fechas:</strong> Del {{ evento.fecha_inicio|date:"d/m/Y" }} al {{ evento.fecha_fin|date:"d/m/Y" }}</p>
+
+<hr>
+
+<h2>Participantes Inscritos ({{ participantes|length }})</h2>
+
+{% if participantes %}
+    <ul>
+    {% for p in participantes %}
+        <li>
+            <a href="{% url 'detalle_participante' p.id_participante %}">
+                {{ p.nombre_participante }}
+            </a>
+            ({{ p.email_participante }})
+        </li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>Aún no hay participantes registrados en este evento.</p>
+{% endif %}
+
+

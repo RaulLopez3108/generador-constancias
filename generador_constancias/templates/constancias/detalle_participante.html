@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Detalle: {{ participante.nombre_participante }}</title>
+</head>
+<body>
+    <a href="{% url 'lista_participantes' %}">← Volver a la lista de participantes</a>
+
+    <h1>Detalles del Participante: {{ participante.nombre_participante }}</h1>
+    
+    <p><strong>ID:</strong> {{ participante.id_participante }}</p>
+    <p><strong>Email:</strong> {{ participante.email_participante }}</p>
+
+    <hr>
+    
+    <h2>Información del Evento Registrado</h2>
+    
+    {% if eventos %}
+    <ul>
+        {% for evento in eventos %}
+        <li>
+            <a href="{% url 'detalle_evento' evento.id_evento %}">
+                {{ evento.titulo_evento }}
+            </a>
+            
+        </li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <p>Este participante no está asociado a ningún evento.</p>
+    {% endif %}
+
+</body>
+</html>
