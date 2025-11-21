@@ -1,4 +1,5 @@
 from django.db import models
+from django.urls import reverse
 
 # Create your models here.
 class Participante(models.Model):
@@ -10,7 +11,7 @@ class Participante(models.Model):
         return self.nombre_participante
     
     def get_absolute_url(self):
-        return reversed('detalle del participante',args=[str(self.id_participante)])
+        return reverse('detalle_participante', args=[str(self.id_participante)])
 
 class ModalidadEvento(models.TextChoices):
     PRESENCIAL = "PRE", "Presencial"
@@ -18,7 +19,7 @@ class ModalidadEvento(models.TextChoices):
     HIBRIDO = "HIB", "Hibrido"
 
 
-class TipoEVento(models.TextChoices):
+class TipoEvento(models.TextChoices):
     CURSO = "CUR", "Curso"
     TALLER = "TAL", "Taller"
     SEMINARIO = "SEM", "Seminario"
@@ -31,8 +32,8 @@ class Evento(models.Model):
     id_evento = models.AutoField(primary_key=True)
     titulo_evento = models.CharField(max_length=100)
     tipo_evento = models.CharField(max_length=3,
-                                   choices=TipoEVento.choices,
-                                   default=TipoEVento.CONFERENCIA) 
+                                   choices=TipoEvento.choices,
+                                   default=TipoEvento.CONFERENCIA) 
     modalidad_evento = models.CharField(max_length=3,
                                         choices=ModalidadEvento.choices,
                                         default=ModalidadEvento.PRESENCIAL)
@@ -46,7 +47,7 @@ class Evento(models.Model):
         return self.titulo_evento
     
     def get_absolute_url(self):
-        return reversed('detalle del evento', args=[str(self.id_evento)])
+        return reverse('detalle_evento', args=[str(self.id_evento)])
     
 class Plantilla(models.Model):
     id_plantilla = models.AutoField(primary_key=True)
@@ -63,7 +64,7 @@ class Plantilla(models.Model):
 class Constancia(models.Model):
     id_participante = models.ForeignKey('Participante', on_delete=models.CASCADE)
     estado = models.BooleanField()
-    archivo = models.FileField()
+    archivo = models.FileField(upload_to='constancias/')
     fecha_creacion = models.DateField()
 
 
