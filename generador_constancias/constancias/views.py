@@ -87,9 +87,9 @@ def generar_constancia(request, participante_pk, evento_pk, plantilla_pk):
         # ¡IMPORTANTE! Mantén la convención de doble llave
         '{{TITULO_EVENTO}}': evento.titulo_evento,
         '{{NOMBRE_PARTICIPANTE}}': participante.nombre_participante,
-        # Puedes añadir fechas, ID, etc. aquí.
-        # Por ejemplo:
-        # '{{FECHA_INICIO}}': evento.fecha_inicio.strftime('%d/%m/%Y'),
+        '{{ROL_PARTICIPANTE}}': participante.rol_participante,        
+        '{{FECHA_INICIO}}': evento.fecha_inicio.strftime('%d/%m/%Y'),
+        '{{FECHA_FIN}}': evento.fecha_fin.strftime('%d/%m/%Y'),
     }
 
     # 3. CARGAR EL DOCUMENTO
