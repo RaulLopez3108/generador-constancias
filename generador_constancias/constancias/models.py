@@ -5,6 +5,7 @@ from django.urls import reverse
 class Participante(models.Model):
     id_participante = models.AutoField(primary_key=True)    
     nombre_participante = models.CharField(max_length=100)
+    rol_participante = models.CharField(max_length=50)
     email_participante = models.EmailField(unique=True)
 
     def __str__(self):
@@ -42,6 +43,7 @@ class Evento(models.Model):
     participantes = models.ManyToManyField('Participante', related_name='eventos')
     plantilla_id = models.ForeignKey('Plantilla', on_delete=models.CASCADE)
     activo = models.BooleanField()
+    descripcion = models.TextField(max_length=150)
 
     def __str__(self):
         return self.titulo_evento
