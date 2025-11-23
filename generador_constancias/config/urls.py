@@ -16,12 +16,19 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from . import views
+from django.conf import settings
+from django.conf.urls.static import static
 from constancias import views as constancias_views
+from usuarios import views as usuarios_views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', views.home, name='home'),
+    path('', usuarios_views.login_view, name='login'),
+    path('login/', usuarios_views.login_view, name='login'),
+    path('logout/', usuarios_views.logout_view, name='logout'),
+    path('dashboard/', usuarios_views.dashboard_view, name='dashboard'),
+    
+    # URLs de constancias (protegidas)
     path('participantes/',constancias_views.lista_participantes, name='lista_participantes'),
     path('participantes/<int:pk>/',constancias_views.detalle_participante,name='detalle_participante'),
     path('eventos/',constancias_views.lista_eventos, name='lista_eventos'),
@@ -30,3 +37,7 @@ urlpatterns = [
     path('generar/<int:participante_pk>/<int:evento_pk>/<int:plantilla_pk>/', 
      constancias_views.generar_constancia, name='generar_constancia'),
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATICFILES_DIRS[0])

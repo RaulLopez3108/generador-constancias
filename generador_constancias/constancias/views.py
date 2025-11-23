@@ -1,6 +1,7 @@
 from django.shortcuts import render,redirect ,get_object_or_404
 from django.http import HttpResponse
 from django.urls import reverse
+from django.contrib.auth.decorators import login_required
 from .forms import GenerarConstanciaForm
 from docx import Document 
 from io import BytesIO 
@@ -11,6 +12,7 @@ from django.db.models import Min
 
 # Create your views here.
 
+@login_required
 def lista_participantes(request):
     
 
@@ -32,6 +34,7 @@ def lista_participantes(request):
 
 # constancias/views.py
 
+@login_required
 def detalle_participante(request, pk):
     # 1. Asigna 'participante' de manera segura
     participante = get_object_or_404(Participante, id_participante=pk)
@@ -46,6 +49,7 @@ def detalle_participante(request, pk):
     
     return render(request, 'constancias/detalle_participante.html', contexto)
 
+@login_required
 def lista_eventos(request):
     eventos = Evento.objects.all().order_by('titulo_evento')
 
@@ -55,6 +59,7 @@ def lista_eventos(request):
 
     return render(request,'constancias/lista_eventos.html',contexto)
 
+@login_required
 def detalle_evento(request,pk):
     
     evento = get_object_or_404(Evento,id_evento=pk)
@@ -70,6 +75,7 @@ def detalle_evento(request,pk):
 
     
 
+@login_required
 def generar_constancia(request, participante_pk, evento_pk, plantilla_pk):
     # 1. OBTENER OBJETOS
     try:
@@ -144,6 +150,7 @@ def generar_constancia(request, participante_pk, evento_pk, plantilla_pk):
    
 
 
+@login_required
 def pagina_generar_constancia(request):
     if request.method == 'POST':
         form = GenerarConstanciaForm(request.POST)

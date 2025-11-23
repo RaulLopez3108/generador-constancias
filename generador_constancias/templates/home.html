@@ -1,36 +1,110 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Generador de Constancias</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            margin-top: 100px;
-            background-color: #f5f5f5;
-        }
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: white;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        h1 {
-            color: #2c3e50;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h1>{{ mensaje }}</h1>
-        <p>Sistema administrativo para la generación de constancias universitarias.</p>
-        <a href="/admin/">Ir al Panel de Administración</a><br> 
-        <a href="/participantes/"> Ir a la lista de participantes</a><br>
-        <a href="/eventos/"> Ir a la lista de eventos</a>
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ mensaje }} - Generador de Constancias{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8 col-md-10">
+        <!-- Hero Section -->
+        <div class="card shadow-lg border-0 mb-5">
+            <div class="card-body text-center p-5">
+                <div class="mb-4">
+                    <i class="bi bi-mortarboard-fill text-primary" style="font-size: 4rem;"></i>
+                </div>
+                <h1 class="display-4 text-primary mb-3">{{ mensaje }}</h1>
+                <p class="lead text-muted mb-4">
+                    Sistema administrativo para la generación de constancias universitarias.
+                    Gestiona eventos, participantes y genera documentos oficiales de forma automatizada.
+                </p>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card h-100 shadow-sm border-0">
+                    <div class="card-body text-center">
+                        <div class="mb-3">
+                            <i class="bi bi-calendar-event text-info" style="font-size: 3rem;"></i>
+                        </div>
+                        <h5 class="card-title">Gestión de Eventos</h5>
+                        <p class="card-text text-muted">
+                            Administra conferencias, talleres y actividades académicas.
+                        </p>
+                        <a href="/eventos/" class="btn btn-info btn-sm">
+                            <i class="bi bi-arrow-right me-1"></i>Ver Eventos
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card h-100 shadow-sm border-0">
+                    <div class="card-body text-center">
+                        <div class="mb-3">
+                            <i class="bi bi-people-fill text-success" style="font-size: 3rem;"></i>
+                        </div>
+                        <h5 class="card-title">Participantes</h5>
+                        <p class="card-text text-muted">
+                            Gestiona estudiantes, ponentes y asistentes a eventos.
+                        </p>
+                        <a href="/participantes/" class="btn btn-success btn-sm">
+                            <i class="bi bi-arrow-right me-1"></i>Ver Participantes
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="card h-100 shadow-sm border-0">
+                    <div class="card-body text-center">
+                        <div class="mb-3">
+                            <i class="bi bi-gear-fill text-warning" style="font-size: 3rem;"></i>
+                        </div>
+                        <h5 class="card-title">Administración</h5>
+                        <p class="card-text text-muted">
+                            Panel de control y configuración del sistema.
+                        </p>
+                        <a href="/admin/" class="btn btn-warning btn-sm">
+                            <i class="bi bi-arrow-right me-1"></i>Panel Admin
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Features Section -->
+        <div class="card shadow-sm border-0 mt-5">
+            <div class="card-body">
+                <h4 class="text-center mb-4">
+                    <i class="bi bi-star-fill text-warning me-2"></i>
+                    Características Principales
+                </h4>
+                <div class="row text-center">
+                    <div class="col-md-3">
+                        <i class="bi bi-file-earmark-pdf text-danger mb-2" style="font-size: 2rem;"></i>
+                        <h6>Generación PDF</h6>
+                        <small class="text-muted">Constancias en formato oficial</small>
+                    </div>
+                    <div class="col-md-3">
+                        <i class="bi bi-upload text-primary mb-2" style="font-size: 2rem;"></i>
+                        <h6>Carga Masiva</h6>
+                        <small class="text-muted">Importación desde CSV</small>
+                    </div>
+                    <div class="col-md-3">
+                        <i class="bi bi-palette text-info mb-2" style="font-size: 2rem;"></i>
+                        <h6>Personalización</h6>
+                        <small class="text-muted">Plantillas adaptables</small>
+                    </div>
+                    <div class="col-md-3">
+                        <i class="bi bi-shield-check text-success mb-2" style="font-size: 2rem;"></i>
+                        <h6>Seguridad</h6>
+                        <small class="text-muted">Autenticación robusta</small>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-</body>
-</html>
+</div>
+{% endblock %}

@@ -1,16 +1,299 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Generar Constancia</title>
-</head>
-<body>
-    <h1>Generar Constancia</h1>
-    
-    <form method="post">
-        {% csrf_token %} {{ form.as_p }} 
-        
-        <button type="submit">Generar y Descargar</button>
-    </form>
+{% extends 'base.html' %}
+{% load static %}
 
-</body>
-</html>
+{% block title %}Generar Constancias - Sistema de Constancias{% endblock %}
+
+{% block extra_css %}
+<style>
+    .form-container {
+        background: #f8f9fa;
+        border-radius: 15px;
+        padding: 2rem;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+    .form-header {
+        background: linear-gradient(135deg, #ffc107 0%, #ff8f00 100%);
+        color: white;
+        padding: 1.5rem;
+        border-radius: 10px;
+        margin-bottom: 2rem;
+        text-align: center;
+    }
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+    .form-label {
+        font-weight: 600;
+        color: #2c3e50;
+        margin-bottom: 0.5rem;
+    }
+    .form-select, .form-control {
+        border: 2px solid #e9ecef;
+        border-radius: 10px;
+        padding: 0.75rem 1rem;
+        transition: all 0.3s ease;
+    }
+    .form-select:focus, .form-control:focus {
+        border-color: #ffc107;
+        box-shadow: 0 0 0 0.25rem rgba(255, 193, 7, 0.25);
+    }
+    .generate-btn {
+        background: linear-gradient(135deg, #ffc107 0%, #ff8f00 100%);
+        border: none;
+        border-radius: 25px;
+        padding: 1rem 2.5rem;
+        font-weight: 600;
+        font-size: 1.1rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(255, 193, 7, 0.3);
+    }
+    .generate-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(255, 193, 7, 0.4);
+    }
+    .step-indicator {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 2rem;
+    }
+    .step {
+        background: #e9ecef;
+        color: #6c757d;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 1rem;
+        font-weight: bold;
+        transition: all 0.3s ease;
+    }
+    .step.active {
+        background: #ffc107;
+        color: white;
+    }
+    .step.completed {
+        background: #28a745;
+        color: white;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="form-header">
+                <h1 class="mb-2">
+                    <i class="fas fa-certificate fa-2x mb-3"></i><br>
+                    Generar Constancias
+                </h1>
+                <p class="mb-0 opacity-75">Seleccione los datos necesarios para crear su constancia personalizada</p>
+            </div>
+
+            <!-- Indicador de pasos -->
+            <div class="step-indicator">
+                <div class="step active">1</div>
+                <div class="step">2</div>
+                <div class="step">3</div>
+            </div>
+
+            <div class="form-container">
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h4 class="text-primary mb-0">
+                                <i class="fas fa-cogs me-2"></i>Configuración de Constancia
+                            </h4>
+                            <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left"></i> Volver
+                            </a>
+                        </div>
+                        <hr>
+                    </div>
+                </div>
+
+                <form method="post" id="generateForm">
+                    {% csrf_token %}
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label">
+                                    <i class="fas fa-user text-success me-2"></i>Seleccionar Participante
+                                </label>
+                                {{ form.participante }}
+                                <small class="form-text text-muted">
+                                    Elija el participante para quien se generará la constancia
+                                </small>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="form-label">
+                                    <i class="fas fa-calendar-alt text-primary me-2"></i>Seleccionar Evento
+                                </label>
+                                {{ form.evento }}
+                                <small class="form-text text-muted">
+                                    Seleccione el evento relacionado con la constancia
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="form-group">
+                                <label class="form-label">
+                                    <i class="fas fa-file-alt text-warning me-2"></i>Seleccionar Plantilla
+                                </label>
+                                {{ form.plantilla }}
+                                <small class="form-text text-muted">
+                                    Elija la plantilla de diseño para la constancia
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Vista previa (placeholder) -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <div class="card border-2 border-dashed">
+                                <div class="card-body text-center py-4">
+                                    <i class="fas fa-eye fa-3x text-muted mb-3"></i>
+                                    <h5 class="text-muted">Vista Previa</h5>
+                                    <p class="text-muted mb-0">
+                                        Seleccione todos los campos para ver una vista previa de la constancia
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-12 text-center">
+                            <button type="submit" class="generate-btn btn btn-warning btn-lg">
+                                <i class="fas fa-download me-2"></i>
+                                Generar y Descargar Constancia
+                            </button>
+                        </div>
+                    </div>
+                </form>
+
+                <!-- Instrucciones -->
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div class="alert alert-info">
+                            <h6 class="alert-heading">
+                                <i class="fas fa-info-circle me-2"></i>Instrucciones
+                            </h6>
+                            <ul class="mb-0">
+                                <li>Complete todos los campos requeridos</li>
+                                <li>La constancia se generará en formato DOCX</li>
+                                <li>Puede personalizar las plantillas desde el panel de administración</li>
+                                <li>Los datos se extraen automáticamente de la información registrada</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Acciones rápidas -->
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0">
+                                <i class="fas fa-bolt text-warning"></i> Acciones Rápidas
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <a href="{% url 'lista_participantes' %}" class="btn btn-outline-success w-100 mb-2">
+                                        <i class="fas fa-users"></i><br>
+                                        Gestionar Participantes
+                                    </a>
+                                </div>
+                                <div class="col-md-4">
+                                    <a href="{% url 'lista_eventos' %}" class="btn btn-outline-primary w-100 mb-2">
+                                        <i class="fas fa-calendar"></i><br>
+                                        Gestionar Eventos
+                                    </a>
+                                </div>
+                                <div class="col-md-4">
+                                    <button class="btn btn-outline-warning w-100 mb-2">
+                                        <i class="fas fa-file-alt"></i><br>
+                                        Gestionar Plantillas
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(document).ready(function() {
+    // Mejorar los selects con clases Bootstrap
+    $('#id_participante, #id_evento, #id_plantilla').addClass('form-select');
+    
+    // Validación del formulario
+    $('#generateForm').on('submit', function(e) {
+        var participante = $('#id_participante').val();
+        var evento = $('#id_evento').val();
+        var plantilla = $('#id_plantilla').val();
+        
+        if (!participante || !evento || !plantilla) {
+            e.preventDefault();
+            alert('Por favor, complete todos los campos antes de generar la constancia.');
+            return false;
+        }
+        
+        // Mostrar indicador de carga
+        $('.generate-btn').html('<i class="fas fa-spinner fa-spin me-2"></i>Generando...');
+        $('.generate-btn').prop('disabled', true);
+    });
+    
+    // Actualizar pasos del indicador
+    $('#id_participante, #id_evento, #id_plantilla').on('change', function() {
+        updateStepIndicator();
+    });
+    
+    function updateStepIndicator() {
+        var participante = $('#id_participante').val();
+        var evento = $('#id_evento').val();
+        var plantilla = $('#id_plantilla').val();
+        
+        // Resetear pasos
+        $('.step').removeClass('active completed');
+        
+        if (participante) {
+            $('.step:eq(0)').addClass('completed');
+            $('.step:eq(1)').addClass('active');
+        } else {
+            $('.step:eq(0)').addClass('active');
+        }
+        
+        if (participante && evento) {
+            $('.step:eq(1)').removeClass('active').addClass('completed');
+            $('.step:eq(2)').addClass('active');
+        }
+        
+        if (participante && evento && plantilla) {
+            $('.step:eq(2)').removeClass('active').addClass('completed');
+        }
+    }
+    
+    // Inicializar el indicador
+    updateStepIndicator();
+});
+</script>
+{% endblock %}

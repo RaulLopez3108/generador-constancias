@@ -1,42 +1,211 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Lista de Participantes</title>
-</head>
-<body>
-    <a href="{% url 'home' %}">← Volver a la pagina principal</a>
-    <h1>Lista de Participantes</h1>
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Lista de Participantes - Sistema de Constancias{% endblock %}
+
+{% block extra_css %}
+<style>
+    .participant-card {
+        border: none;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+    }
+    .participant-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+    }
+    .avatar {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        color: white;
+        font-size: 1.2rem;
+    }
+    .search-box {
+        border-radius: 25px;
+        border: 2px solid #e9ecef;
+        padding-left: 45px;
+    }
+    .search-icon {
+        position: absolute;
+        left: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #6c757d;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h1 class="mb-2">
+                        <i class="fas fa-users text-success"></i>
+                        Lista de Participantes
+                    </h1>
+                    <p class="text-muted">Administre todos los participantes registrados en el sistema</p>
+                </div>
+                <div>
+                    <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary me-2">
+                        <i class="fas fa-arrow-left"></i> Volver al Dashboard
+                    </a>
+                    <button class="btn btn-success">
+                        <i class="fas fa-user-plus"></i> Nuevo Participante
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Barra de búsqueda -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="position-relative">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" class="form-control search-box" placeholder="Buscar participantes..." id="searchInput">
+            </div>
+        </div>
+        <div class="col-md-6 text-end">
+            <div class="btn-group" role="group">
+                <button class="btn btn-outline-info">
+                    <i class="fas fa-download"></i> Exportar
+                </button>
+                <button class="btn btn-outline-warning">
+                    <i class="fas fa-upload"></i> Importar CSV
+                </button>
+            </div>
+        </div>
+    </div>
 
     {% if participantes %}
-        <table>
-            <thead>
-                <tr>
-                    
-                    <th>Nombre</th>
-                    <th>Email</th>
-                    
-                </tr>
-            </thead>
-            <tbody>
-                {% for p in participantes %}
-                <tr>
-    
-                    <td>
-                        <a href="{% url 'detalle_participante' p.id_participante %}">
-                            {{ p.nombre_participante }}
-                        </a>
-                    </td> 
-    
-                    <td>{{ p.email_participante }}</td>
-    
-                    
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0">
+                            <i class="fas fa-list"></i>
+                            Participantes Registrados ({{ participantes|length }})
+                        </h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0" id="participantesTable">
+                                <thead class="table-success">
+                                    <tr>
+                                        <th class="ps-3">
+                                            <i class="fas fa-user me-2"></i>Participante
+                                        </th>
+                                        <th>
+                                            <i class="fas fa-envelope me-2"></i>Email
+                                        </th>
+                                        <th class="text-center">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for p in participantes %}
+                                    <tr class="participant-row">
+                                        <td class="ps-3">
+                                            <div class="d-flex align-items-center">
+                                                <div class="avatar me-3" style="background: linear-gradient(45deg, #28a745, #20c997);">
+                                                    {{ p.nombre_participante|first|upper }}
+                                                </div>
+                                                <div>
+                                                    <h6 class="mb-1">
+                                                        <a href="{% url 'detalle_participante' p.id_participante %}" class="text-decoration-none text-success participant-name">
+                                                            {{ p.nombre_participante }}
+                                                        </a>
+                                                    </h6>
+                                                    <small class="text-muted">ID: {{ p.id_participante }}</small>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="align-middle participant-email">
+                                            <i class="fas fa-envelope text-muted me-2"></i>
+                                            {{ p.email_participante }}
+                                        </td>
+                                        <td class="text-center align-middle">
+                                            <div class="btn-group" role="group">
+                                                <a href="{% url 'detalle_participante' p.id_participante %}" class="btn btn-sm btn-outline-success" title="Ver Detalles">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                                <button class="btn btn-sm btn-outline-warning" title="Editar">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
+                                                <button class="btn btn-sm btn-outline-info" title="Constancias">
+                                                    <i class="fas fa-certificate"></i>
+                                                </button>
+                                                <button class="btn btn-sm btn-outline-danger" title="Eliminar">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     {% else %}
-        <p>No hay participantes registrados aún.</p>
+        <div class="row">
+            <div class="col-12">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body text-center py-5">
+                        <div class="mb-4">
+                            <i class="fas fa-user-slash fa-5x text-muted"></i>
+                        </div>
+                        <h4 class="text-muted mb-3">No hay participantes registrados</h4>
+                        <p class="text-muted mb-4">Comience agregando participantes para generar constancias.</p>
+                        <div class="d-flex justify-content-center gap-2">
+                            <button class="btn btn-success btn-lg">
+                                <i class="fas fa-user-plus"></i> Agregar Participante
+                            </button>
+                            <button class="btn btn-outline-success btn-lg">
+                                <i class="fas fa-upload"></i> Importar desde CSV
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     {% endif %}
+</div>
+{% endblock %}
 
-</body>
-</html>
+{% block extra_js %}
+<script>
+$(document).ready(function() {
+    // Tooltip para botones
+    $('[data-bs-toggle="tooltip"]').tooltip();
+    
+    // Búsqueda en tiempo real
+    $('#searchInput').on('keyup', function() {
+        var value = $(this).val().toLowerCase();
+        $('.participant-row').filter(function() {
+            var name = $(this).find('.participant-name').text().toLowerCase();
+            var email = $(this).find('.participant-email').text().toLowerCase();
+            $(this).toggle(name.indexOf(value) > -1 || email.indexOf(value) > -1);
+        });
+    });
+    
+    // Confirmación para eliminar
+    $('.btn-outline-danger').click(function(e) {
+        e.preventDefault();
+        if (confirm('¿Está seguro de que desea eliminar este participante?')) {
+            // Aquí iría la lógica de eliminación
+            console.log('Eliminar participante');
+        }
+    });
+});
+</script>
+{% endblock %}

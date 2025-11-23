@@ -1,0 +1,255 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Dashboard - Sistema de Constancias{% endblock %}
+
+{% block extra_css %}
+<style>
+    .dashboard-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 2rem 0;
+        margin-bottom: 2rem;
+    }
+    .module-card {
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+        margin-bottom: 1.5rem;
+    }
+    .module-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    }
+    .module-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        color: #667eea;
+    }
+    .quick-stats {
+        background: #f8f9fa;
+        border-radius: 15px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+    }
+    .stat-item {
+        text-align: center;
+    }
+    .stat-number {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: #2c3e50;
+    }
+    .stat-label {
+        color: #6c757d;
+        font-size: 0.9rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-header">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h1 class="mb-2">¡Bienvenido, {{ user.first_name|default:user.username }}!</h1>
+                <p class="mb-0 opacity-75">Sistema de Generación de Constancias Universitarias</p>
+            </div>
+            <div class="col-md-4 text-end">
+                <div class="d-flex align-items-center justify-content-end">
+                    <div class="me-3">
+                        <small>Último acceso</small><br>
+                        <strong>{{ user.last_login|date:"d/m/Y H:i" }}</strong>
+                    </div>
+                    <a href="{% url 'logout' %}" class="btn btn-outline-light">
+                        <i class="fas fa-sign-out-alt"></i> Salir
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <!-- Estadísticas rápidas -->
+    <div class="quick-stats">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="stat-item">
+                    <div class="stat-number">0</div>
+                    <div class="stat-label">Eventos Registrados</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-item">
+                    <div class="stat-number">0</div>
+                    <div class="stat-label">Participantes</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-item">
+                    <div class="stat-number">0</div>
+                    <div class="stat-label">Constancias Generadas</div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-item">
+                    <div class="stat-number">0</div>
+                    <div class="stat-label">Plantillas</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Módulos principales -->
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card module-card h-100">
+                <div class="card-body text-center">
+                    <div class="module-icon">
+                        <i class="fas fa-calendar-alt"></i>
+                    </div>
+                    <h5 class="card-title">Gestión de Eventos</h5>
+                    <p class="card-text">Registre y administre eventos académicos, conferencias, talleres y actividades universitarias.</p>
+                    <div class="mt-auto">
+                        <a href="{% url 'lista_eventos' %}" class="btn btn-primary me-2">
+                            <i class="fas fa-list"></i> Ver Eventos
+                        </a>
+                        <a href="#" class="btn btn-outline-primary">
+                            <i class="fas fa-plus"></i> Nuevo
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card module-card h-100">
+                <div class="card-body text-center">
+                    <div class="module-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h5 class="card-title">Participantes</h5>
+                    <p class="card-text">Administre el registro de participantes, estudiantes, docentes y personal administrativo.</p>
+                    <div class="mt-auto">
+                        <a href="{% url 'lista_participantes' %}" class="btn btn-success me-2">
+                            <i class="fas fa-list"></i> Ver Participantes
+                        </a>
+                        <a href="#" class="btn btn-outline-success">
+                            <i class="fas fa-user-plus"></i> Agregar
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card module-card h-100">
+                <div class="card-body text-center">
+                    <div class="module-icon">
+                        <i class="fas fa-certificate"></i>
+                    </div>
+                    <h5 class="card-title">Generar Constancias</h5>
+                    <p class="card-text">Cree constancias personalizadas utilizando plantillas profesionales y datos de participantes.</p>
+                    <div class="mt-auto">
+                        <a href="{% url 'pagina_generar' %}" class="btn btn-warning me-2">
+                            <i class="fas fa-file-pdf"></i> Generar
+                        </a>
+                        <a href="#" class="btn btn-outline-warning">
+                            <i class="fas fa-upload"></i> CSV
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Acciones rápidas -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-bolt text-warning"></i> Acciones Rápidas
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <a href="#" class="btn btn-outline-primary w-100 mb-2">
+                                <i class="fas fa-plus-circle"></i><br>
+                                Nuevo Evento
+                            </a>
+                        </div>
+                        <div class="col-md-3">
+                            <a href="#" class="btn btn-outline-success w-100 mb-2">
+                                <i class="fas fa-upload"></i><br>
+                                Importar CSV
+                            </a>
+                        </div>
+                        <div class="col-md-3">
+                            <a href="#" class="btn btn-outline-info w-100 mb-2">
+                                <i class="fas fa-file-alt"></i><br>
+                                Nueva Plantilla
+                            </a>
+                        </div>
+                        <div class="col-md-3">
+                            <a href="#" class="btn btn-outline-secondary w-100 mb-2">
+                                <i class="fas fa-cog"></i><br>
+                                Configuración
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Actividad reciente -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-history text-info"></i> Actividad Reciente
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="text-center text-muted py-4">
+                        <i class="fas fa-inbox fa-3x mb-3"></i>
+                        <h5>No hay actividad reciente</h5>
+                        <p>Comience agregando eventos y participantes para ver el historial aquí.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Animación de entrada para las cards
+    const cards = document.querySelectorAll('.module-card');
+    cards.forEach((card, index) => {
+        setTimeout(() => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            card.style.transition = 'all 0.6s ease';
+            setTimeout(() => {
+                card.style.opacity = '1';
+                card.style.transform = 'translateY(0)';
+            }, 100);
+        }, index * 200);
+    });
+
+    // Tooltip para botones
+    const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    const tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+});
+</script>
+{% endblock %}
