@@ -21,3 +21,10 @@ class GenerarConstanciaForm(forms.Form):
         queryset=Plantilla.objects.filter(activa=True).order_by('nombre_plantilla'),
         label="Seleccionar Plantilla"
     )
+
+
+
+class CargaParticipantesForm(forms.Form):
+    archivo_csv = forms.FileField(
+        label='Archivo CSV'
+    )
