@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="{% static 'css/custom.css' %}">
     <style>
         body {
-            background: linear-gradient(135deg, #2d5a4a 0%, #1a4038 100%);
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
             height: 100vh;
             margin: 0;
             padding: 0;
@@ -21,29 +21,33 @@
             justify-content: center;
         }
         
+        /* Patrón de circuitos tecnológicos */
         body::before {
             content: '';
             position: fixed;
-            top: 5%;
-            left: 2%;
-            width: 25%;
-            height: 30%;
-            background: rgba(45, 90, 74, 0.3);
-            border-radius: 50% 40% 60% 30%;
-            transform: rotate(-15deg);
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle at 20% 50%, rgba(56, 189, 248, 0.03) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(34, 197, 94, 0.03) 0%, transparent 50%),
+                radial-gradient(circle at 40% 80%, rgba(168, 85, 247, 0.02) 0%, transparent 50%);
             z-index: 0;
         }
         
+        /* Grid tecnológico de fondo */
         body::after {
             content: '';
             position: fixed;
-            bottom: 5%;
-            right: 2%;
-            width: 28%;
-            height: 35%;
-            background: rgba(26, 64, 56, 0.25);
-            border-radius: 40% 60% 50% 30%;
-            transform: rotate(25deg);
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(56, 189, 248, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(56, 189, 248, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
             z-index: 0;
         }
         
@@ -144,99 +148,108 @@
             z-index: 0;
         }
         
-        /* Animaciones sutiles para las formas */
-        @keyframes float1 {
-            0%, 100% { transform: rotate(-15deg) translateY(0px); }
-            50% { transform: rotate(-15deg) translateY(-10px); }
+        /* Animaciones tecnológicas */
+        @keyframes techPulse1 {
+            0%, 100% { 
+                transform: scale(1) rotate(0deg);
+                box-shadow: 0 0 0 0 rgba(56, 189, 248, 0.3);
+            }
+            50% { 
+                transform: scale(1.05) rotate(5deg);
+                box-shadow: 0 0 0 10px rgba(56, 189, 248, 0);
+            }
         }
         
-        @keyframes float2 {
-            0%, 100% { transform: rotate(25deg) translateY(0px); }
-            50% { transform: rotate(25deg) translateY(-8px); }
+        @keyframes techFloat {
+            0%, 100% { transform: translateY(0px) rotate(45deg); }
+            50% { transform: translateY(-8px) rotate(50deg); }
         }
         
-        @keyframes float3 {
-            0%, 100% { transform: rotate(45deg) translateY(0px); }
-            50% { transform: rotate(45deg) translateY(-6px); }
+        @keyframes techRotate {
+            0% { transform: rotate(30deg); }
+            100% { transform: rotate(390deg); }
         }
         
-        @keyframes float4 {
-            0%, 100% { transform: rotate(-30deg) translateY(0px); }
-            50% { transform: rotate(-30deg) translateY(-7px); }
+        @keyframes techGlow {
+            0%, 100% { 
+                border-color: rgba(249, 115, 22, 0.2);
+                box-shadow: 0 0 5px rgba(249, 115, 22, 0.1);
+            }
+            50% { 
+                border-color: rgba(249, 115, 22, 0.4);
+                box-shadow: 0 0 15px rgba(249, 115, 22, 0.2);
+            }
         }
         
-        @keyframes float5 {
-            0%, 100% { transform: rotate(60deg) translateY(0px); }
-            50% { transform: rotate(60deg) translateY(-5px); }
+        @keyframes techScan {
+            0% { transform: translateX(-20px); opacity: 0; }
+            50% { opacity: 1; }
+            100% { transform: translateX(20px); opacity: 0; }
         }
         
-        @keyframes float6 {
-            0%, 100% { transform: rotate(-45deg) translateY(0px); }
-            50% { transform: rotate(-45deg) translateY(-4px); }
+        @keyframes techCircuit {
+            0%, 100% { 
+                background: rgba(14, 165, 233, 0.05);
+                border-color: rgba(14, 165, 233, 0.2);
+            }
+            50% { 
+                background: rgba(14, 165, 233, 0.1);
+                border-color: rgba(14, 165, 233, 0.4);
+            }
         }
         
-        @keyframes float7 {
-            0%, 100% { transform: rotate(120deg) translateY(0px); }
-            50% { transform: rotate(120deg) translateY(-3px); }
+        /* Aplicar animaciones a elementos tech */
+        .tech-element-1 {
+            animation: techPulse1 4s ease-in-out infinite;
         }
         
-        @keyframes float8 {
-            0%, 100% { transform: rotate(-75deg) translateY(0px); }
-            50% { transform: rotate(-75deg) translateY(-6px); }
+        .tech-element-2 {
+            animation: techFloat 6s ease-in-out infinite;
         }
         
-        /* Aplicar animaciones a las formas */
-        body::before {
-            animation: float1 6s ease-in-out infinite;
+        .tech-element-3 {
+            animation: techRotate 20s linear infinite;
         }
         
-        body::after {
-            animation: float2 7s ease-in-out infinite;
+        .tech-element-4 {
+            animation: techGlow 3s ease-in-out infinite;
         }
         
-        .green-blob-1 {
-            animation: float3 8s ease-in-out infinite;
+        .tech-element-5 {
+            animation: techCircuit 5s ease-in-out infinite;
         }
         
-        .green-blob-2 {
-            animation: float4 5.5s ease-in-out infinite;
-        }
-        
-        .green-blob-3 {
-            animation: float5 9s ease-in-out infinite;
-        }
-        
-        .green-blob-4 {
-            animation: float6 6.5s ease-in-out infinite;
-        }
-        
-        .green-blob-5 {
-            animation: float7 7.5s ease-in-out infinite;
-        }
-        
-        .green-blob-6 {
-            animation: float8 8.5s ease-in-out infinite;
-        }
-        
-        .green-blob-7 {
-            animation: float5 10s ease-in-out infinite;
-        }
-        
-        .green-blob-8 {
-            animation: float2 5s ease-in-out infinite;
+        .tech-element-6::before {
+            animation: techScan 3s ease-in-out infinite;
         }
         
         .login-container {
-            background: white;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(56, 189, 248, 0.2);
             border-radius: 20px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+            box-shadow: 
+                0 8px 32px rgba(0, 0, 0, 0.3),
+                0 0 0 1px rgba(56, 189, 248, 0.1),
+                inset 0 0 0 1px rgba(255, 255, 255, 0.05);
             padding: 2.5rem;
             margin: 0;
-            border: 1px solid rgba(255, 255, 255, 0.9);
             position: relative;
             z-index: 10;
             max-width: 400px;
             width: 90%;
+        }
+        
+        .login-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(56, 189, 248, 0.02) 0%, rgba(168, 85, 247, 0.02) 100%);
+            border-radius: 20px;
+            z-index: -1;
         }
         
         .main-logo {
@@ -246,9 +259,12 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            background: white;
+            background: linear-gradient(135deg, rgba(56, 189, 248, 0.1) 0%, rgba(168, 85, 247, 0.1) 100%);
+            border: 2px solid rgba(56, 189, 248, 0.3);
             border-radius: 50%;
-            box-shadow: 0 4px 15px rgba(45, 90, 74, 0.2);
+            box-shadow: 
+                0 4px 15px rgba(56, 189, 248, 0.2),
+                inset 0 0 0 1px rgba(255, 255, 255, 0.1);
             padding: 10px;
         }
         
@@ -257,6 +273,7 @@
             height: 100%;
             object-fit: contain;
             border-radius: 50%;
+            filter: brightness(1.2) contrast(1.1);
         }
         
         .login-header {
@@ -265,57 +282,66 @@
         }
         
         .login-header h1 {
-            color: #2d5a4a;
+            color: #e2e8f0;
             font-weight: 600;
             margin-bottom: 0.5rem;
             font-size: 2rem;
+            text-shadow: 0 0 10px rgba(56, 189, 248, 0.3);
         }
         
         .login-header p {
-            color: #4a5d55;
+            color: #94a3b8;
             margin: 0;
             font-size: 1.1rem;
+            letter-spacing: 0.5px;
         }
         
         .form-label {
-            color: #2d5a4a;
+            color: #cbd5e1;
             font-weight: 600;
             margin-bottom: 0.5rem;
             display: flex;
             align-items: center;
+            text-transform: uppercase;
+            font-size: 0.875rem;
+            letter-spacing: 0.5px;
         }
         
         .form-label i {
             margin-right: 0.5rem;
-            color: #2d5a4a;
+            color: #56a5f7;
         }
         
         .form-control {
-            border: 1px solid #e2e8f0;
+            border: 1px solid rgba(56, 189, 248, 0.2);
             border-radius: 12px;
             padding: 0.75rem 1rem;
             transition: all 0.3s ease;
-            background-color: #f8fffe;
-            color: #2d5a4a;
+            background-color: rgba(15, 23, 42, 0.5);
+            color: #e2e8f0;
+            backdrop-filter: blur(5px);
         }
         
         .form-control:focus {
-            border-color: #2d5a4a;
-            box-shadow: 0 0 0 0.2rem rgba(45, 90, 74, 0.25);
-            background-color: white;
+            border-color: #56a5f7;
+            box-shadow: 
+                0 0 0 0.2rem rgba(56, 189, 248, 0.25),
+                0 0 15px rgba(56, 189, 248, 0.3);
+            background-color: rgba(15, 23, 42, 0.8);
+            color: #f8fafc;
         }
         
         .form-control::placeholder {
-            color: #9ca3af;
+            color: #64748b;
         }
         
         .btn-login {
-            background: #2d5a4a;
+            background: linear-gradient(135deg, #0ea5e9 0%, #3b82f6 100%);
             border: none;
             padding: 0.75rem 2rem;
             font-weight: 600;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 1px;
             border-radius: 12px;
             transition: all 0.3s ease;
             color: white;
@@ -323,12 +349,17 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            box-shadow: 
+                0 4px 15px rgba(14, 165, 233, 0.4),
+                inset 0 0 0 1px rgba(255, 255, 255, 0.2);
         }
         
         .btn-login:hover {
-            background: #1a4038;
+            background: linear-gradient(135deg, #0284c7 0%, #2563eb 100%);
             transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(45, 90, 74, 0.4);
+            box-shadow: 
+                0 8px 25px rgba(14, 165, 233, 0.5),
+                0 0 20px rgba(56, 189, 248, 0.4);
         }
         
         .btn-login i {
@@ -336,20 +367,21 @@
         }
         
         .error-message {
-            background-color: #fed7d7;
-            color: #9b2c2c;
-            border: 1px solid #feb2b2;
+            background-color: rgba(248, 113, 113, 0.1);
+            color: #fca5a5;
+            border: 1px solid rgba(248, 113, 113, 0.3);
             border-radius: 12px;
             padding: 0.75rem 1rem;
             margin-bottom: 1rem;
             display: flex;
             align-items: center;
             font-size: 0.875rem;
+            backdrop-filter: blur(5px);
         }
         
         .error-message i {
             margin-right: 0.5rem;
-            color: #e53e3e;
+            color: #f87171;
         }
         
         @media (max-width: 768px) {
@@ -362,25 +394,26 @@
                 height: 80px;
             }
             body::before, body::after {
+                opacity: 0.5;
+            }
+            .tech-element-1, .tech-element-2, .tech-element-3, 
+            .tech-element-4, .tech-element-5, .tech-element-6 {
                 display: none;
             }
-            .green-blob-1, .green-blob-2, .green-blob-3, .green-blob-4,
-            .green-blob-5, .green-blob-6, .green-blob-7, .green-blob-8 {
-                display: none;
+            .login-header h1 {
+                font-size: 1.5rem;
             }
         }
     </style>
 </head>
 <body>
-    <!-- Formas decorativas de fondo -->
-    <div class="green-blob-1"></div>
-    <div class="green-blob-2"></div>
-    <div class="green-blob-3"></div>
-    <div class="green-blob-4"></div>
-    <div class="green-blob-5"></div>
-    <div class="green-blob-6"></div>
-    <div class="green-blob-7"></div>
-    <div class="green-blob-8"></div>
+    <!-- Elementos tecnológicos de fondo -->
+    <div class="tech-element-1"></div>
+    <div class="tech-element-2"></div>
+    <div class="tech-element-3"></div>
+    <div class="tech-element-4"></div>
+    <div class="tech-element-5"></div>
+    <div class="tech-element-6"></div>
     
     <div class="login-container">
                     <!-- Logo principal arriba del título -->
@@ -435,8 +468,8 @@
                     </form>
 
                     <div class="text-center mt-4">
-                        <small class="text-muted">
-                            ¿Problemas para acceder? Contacte al administrador
+                        <small style="color: #64748b; font-size: 0.875rem;">
+                            ¿Problemas para acceder? Contacte al administrador del sistema
                         </small>
                     </div>
     </div>
