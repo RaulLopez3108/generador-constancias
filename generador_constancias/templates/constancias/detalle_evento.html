@@ -1,29 +1,249 @@
-<a href="{% url 'lista_eventos' %}">← Volver a la lista de eventos</a>
+{% extends 'base.html' %}
+{% load static %}
 
-<h1>Detalles del Evento: {{ evento.titulo_evento }}</h1>
+{% block title %}{{ evento.titulo_evento }} - Detalles del Evento{% endblock %}
 
-<p><strong>ID:</strong> {{ evento.id_evento }}</p>
-<p><strong>Tipo:</strong> {{ evento.get_tipo_evento_display }}</p>
-<p><strong>Modalidad:</strong> {{ evento.get_modalidad_evento_display }}</p>
-<p><strong>Fechas:</strong> Del {{ evento.fecha_inicio|date:"d/m/Y" }} al {{ evento.fecha_fin|date:"d/m/Y" }}</p>
+{% block extra_css %}
+<style>
+    .event-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-radius: 15px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+    }
+    .info-card {
+        border: none;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        margin-bottom: 1.5rem;
+    }
+    .participant-item {
+        border: 1px solid #e9ecef;
+        border-radius: 8px;
+        padding: 1rem;
+        margin-bottom: 0.5rem;
+        transition: all 0.3s ease;
+    }
+    .participant-item:hover {
+        background-color: #f8f9fa;
+        border-color: #28a745;
+    }
+    .badge-custom {
+        font-size: 0.9rem;
+        padding: 0.5rem 1rem;
+    }
+</style>
+{% endblock %}
 
-<hr>
+{% block content %}
+<div class="container mt-4">
+    <!-- Header del evento -->
+    <div class="event-header">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h1 class="mb-2">
+                    <i class="fas fa-calendar-alt me-3"></i>
+                    {{ evento.titulo_evento }}
+                </h1>
+                <p class="mb-0 opacity-75">Información detallada del evento y participantes</p>
+            </div>
+            <div class="col-md-4 text-end">
+                <a href="{% url 'lista_eventos' %}" class="btn btn-outline-light me-2">
+                    <i class="fas fa-arrow-left"></i> Volver a Eventos
+                </a>
+                <button class="btn btn-warning">
+                    <i class="fas fa-edit"></i> Editar
+                </button>
+            </div>
+        </div>
+    </div>
 
-<h2>Participantes Inscritos ({{ participantes|length }})</h2>
+    <div class="row">
+        <!-- Información del evento -->
+        <div class="col-md-6">
+            <div class="info-card card h-100">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Información del Evento
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-4">
+                            <strong><i class="fas fa-hashtag text-muted me-2"></i>ID:</strong>
+                        </div>
+                        <div class="col-8">
+                            <span class="badge bg-secondary">{{ evento.id_evento }}</span>
+                        </div>
+                    </div>
+                    
+                    {% if evento.get_tipo_evento_display %}
+                    <div class="row mb-3">
+                        <div class="col-4">
+                            <strong><i class="fas fa-tag text-muted me-2"></i>Tipo:</strong>
+                        </div>
+                        <div class="col-8">
+                            <span class="badge bg-info badge-custom">{{ evento.get_tipo_evento_display }}</span>
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    {% if evento.get_modalidad_evento_display %}
+                    <div class="row mb-3">
+                        <div class="col-4">
+                            <strong><i class="fas fa-laptop text-muted me-2"></i>Modalidad:</strong>
+                        </div>
+                        <div class="col-8">
+                            <span class="badge bg-warning badge-custom text-dark">{{ evento.get_modalidad_evento_display }}</span>
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="row mb-3">
+                        <div class="col-4">
+                            <strong><i class="fas fa-calendar text-muted me-2"></i>Fechas:</strong>
+                        </div>
+                        <div class="col-8">
+                            <span class="text-success">
+                                Del {{ evento.fecha_inicio|date:"d/m/Y" }} al {{ evento.fecha_fin|date:"d/m/Y" }}
+                            </span>
+                        </div>
+                    </div>
+                    
+                    {% if evento.descripcion %}
+                    <div class="row">
+                        <div class="col-12">
+                            <strong><i class="fas fa-align-left text-muted me-2"></i>Descripción:</strong>
+                            <p class="mt-2 text-muted">{{ evento.descripcion }}</p>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
 
-{% if participantes %}
-    <ul>
-    {% for p in participantes %}
-        <li>
-            <a href="{% url 'detalle_participante' p.id_participante %}">
-                {{ p.nombre_participante }}
-            </a>
-            ({{ p.email_participante }})
-        </li>
-    {% endfor %}
-    </ul>
-{% else %}
-    <p>Aún no hay participantes registrados en este evento.</p>
-{% endif %}
+        <!-- Estadísticas rápidas -->
+        <div class="col-md-6">
+            <div class="info-card card h-100">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-chart-pie me-2"></i>
+                        Estadísticas
+                    </h5>
+                </div>
+                <div class="card-body text-center">
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="border-end">
+                                <h2 class="text-success mb-1">{{ participantes|length }}</h2>
+                                <p class="text-muted mb-0">Participantes</p>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <h2 class="text-warning mb-1">0</h2>
+                            <p class="text-muted mb-0">Constancias</p>
+                        </div>
+                    </div>
+                    
+                    <hr>
+                    
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-success">
+                            <i class="fas fa-user-plus"></i> Agregar Participante
+                        </button>
+                        <button class="btn btn-warning">
+                            <i class="fas fa-certificate"></i> Generar Constancias
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lista de participantes -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="info-card card">
+                <div class="card-header bg-light">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">
+                            <i class="fas fa-users text-success me-2"></i>
+                            Participantes Inscritos ({{ participantes|length }})
+                        </h5>
+                        <div class="btn-group">
+                            <button class="btn btn-sm btn-outline-success">
+                                <i class="fas fa-user-plus"></i> Agregar
+                            </button>
+                            <button class="btn btn-sm btn-outline-info">
+                                <i class="fas fa-download"></i> Exportar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    {% if participantes %}
+                        <div class="row">
+                            {% for p in participantes %}
+                            <div class="col-md-6 mb-3">
+                                <div class="participant-item">
+                                    <div class="d-flex align-items-center">
+                                        <div class="me-3">
+                                            <div class="rounded-circle bg-success text-white d-flex align-items-center justify-content-center" style="width: 50px; height: 50px; font-size: 1.2rem; font-weight: bold;">
+                                                {{ p.nombre_participante|first|upper }}
+                                            </div>
+                                        </div>
+                                        <div class="flex-grow-1">
+                                            <h6 class="mb-1">
+                                                <a href="{% url 'detalle_participante' p.id_participante %}" class="text-decoration-none text-success">
+                                                    {{ p.nombre_participante }}
+                                                </a>
+                                            </h6>
+                                            <small class="text-muted">
+                                                <i class="fas fa-envelope me-1"></i>
+                                                {{ p.email_participante }}
+                                            </small>
+                                        </div>
+                                        <div>
+                                            <div class="btn-group-vertical btn-group-sm">
+                                                <a href="{% url 'detalle_participante' p.id_participante %}" class="btn btn-outline-primary btn-sm">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                                <button class="btn btn-outline-warning btn-sm">
+                                                    <i class="fas fa-certificate"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i class="fas fa-user-slash fa-3x text-muted mb-3"></i>
+                            <h5 class="text-muted">Aún no hay participantes registrados</h5>
+                            <p class="text-muted mb-4">Agregue participantes para comenzar a gestionar constancias.</p>
+                            <button class="btn btn-success">
+                                <i class="fas fa-user-plus"></i> Agregar Primer Participante
+                            </button>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(document).ready(function() {
+    // Tooltip para botones
+    $('[data-bs-toggle="tooltip"]').tooltip();
+});
+</script>
+{% endblock %}
 
 

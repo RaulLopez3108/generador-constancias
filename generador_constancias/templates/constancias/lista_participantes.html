@@ -38,6 +38,15 @@
         transform: translateY(-50%);
         color: #6c757d;
     }
+    .btn-group .btn {
+        margin: 0 2px;
+        min-width: 90px;
+        font-size: 0.875rem;
+    }
+    .table td {
+        vertical-align: middle;
+        padding: 1rem 0.75rem;
+    }
 </style>
 {% endblock %}
 
@@ -57,7 +66,7 @@
                     <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary me-2">
                         <i class="fas fa-arrow-left"></i> Volver al Dashboard
                     </a>
-                    <button class="btn btn-success">
+                    <button class="btn btn-success" onclick="alert('Funcionalidad en desarrollo: Agregar nuevo participante')">
                         <i class="fas fa-user-plus"></i> Nuevo Participante
                     </button>
                 </div>
@@ -75,10 +84,10 @@
         </div>
         <div class="col-md-6 text-end">
             <div class="btn-group" role="group">
-                <button class="btn btn-outline-info">
+                <button class="btn btn-outline-info" onclick="alert('Funcionalidad en desarrollo: Exportar participantes')">
                     <i class="fas fa-download"></i> Exportar
                 </button>
-                <button class="btn btn-outline-warning">
+                <button class="btn btn-outline-warning" onclick="alert('Funcionalidad en desarrollo: Importar CSV')">
                     <i class="fas fa-upload"></i> Importar CSV
                 </button>
             </div>
@@ -100,13 +109,13 @@
                             <table class="table table-hover mb-0" id="participantesTable">
                                 <thead class="table-success">
                                     <tr>
-                                        <th class="ps-3">
+                                        <th class="ps-3" style="width: 35%;">
                                             <i class="fas fa-user me-2"></i>Participante
                                         </th>
-                                        <th>
+                                        <th style="width: 30%;">
                                             <i class="fas fa-envelope me-2"></i>Email
                                         </th>
-                                        <th class="text-center">Acciones</th>
+                                        <th class="text-center" style="width: 35%;">Acciones</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -132,20 +141,21 @@
                                             {{ p.email_participante }}
                                         </td>
                                         <td class="text-center align-middle">
-                                            <div class="btn-group" role="group">
-                                                <a href="{% url 'detalle_participante' p.id_participante %}" class="btn btn-sm btn-outline-success" title="Ver Detalles">
-                                                    <i class="fas fa-eye"></i>
+                                            <div class="btn-group" role="group" aria-label="Acciones del participante">
+                                                <a href="{% url 'detalle_participante' p.id_participante %}" class="btn btn-outline-success" title="Ver Detalles">
+                                                    <i class="fas fa-eye me-1"></i>Ver
                                                 </a>
-                                                <button class="btn btn-sm btn-outline-warning" title="Editar">
-                                                    <i class="fas fa-edit"></i>
+                                                <button class="btn btn-outline-warning" title="Editar" onclick="alert('Funcionalidad en desarrollo: Editar participante')">
+                                                    <i class="fas fa-edit me-1"></i>Editar
                                                 </button>
-                                                <button class="btn btn-sm btn-outline-info" title="Constancias">
-                                                    <i class="fas fa-certificate"></i>
-                                                </button>
-                                                <button class="btn btn-sm btn-outline-danger" title="Eliminar">
-                                                    <i class="fas fa-trash"></i>
+                                                <button class="btn btn-outline-info" title="Constancias" onclick="alert('Funcionalidad en desarrollo: Constancias del participante')">
+                                                    <i class="fas fa-certificate me-1"></i>Constancias
                                                 </button>
                                             </div>
+                                            <!-- Botón de eliminar separado para mayor visibilidad -->
+                                            <button class="btn btn-outline-danger mt-2" title="Eliminar" onclick="confirmarEliminacionParticipante('{{ p.nombre_participante }}')">
+                                                <i class="fas fa-trash me-1"></i>Eliminar
+                                            </button>
                                         </td>
                                     </tr>
                                     {% endfor %}
@@ -167,10 +177,10 @@
                         <h4 class="text-muted mb-3">No hay participantes registrados</h4>
                         <p class="text-muted mb-4">Comience agregando participantes para generar constancias.</p>
                         <div class="d-flex justify-content-center gap-2">
-                            <button class="btn btn-success btn-lg">
+                            <button class="btn btn-success btn-lg" onclick="alert('Funcionalidad en desarrollo: Agregar participante')">
                                 <i class="fas fa-user-plus"></i> Agregar Participante
                             </button>
-                            <button class="btn btn-outline-success btn-lg">
+                            <button class="btn btn-outline-success btn-lg" onclick="alert('Funcionalidad en desarrollo: Importar CSV')">
                                 <i class="fas fa-upload"></i> Importar desde CSV
                             </button>
                         </div>
@@ -197,15 +207,13 @@ $(document).ready(function() {
             $(this).toggle(name.indexOf(value) > -1 || email.indexOf(value) > -1);
         });
     });
-    
-    // Confirmación para eliminar
-    $('.btn-outline-danger').click(function(e) {
-        e.preventDefault();
-        if (confirm('¿Está seguro de que desea eliminar este participante?')) {
-            // Aquí iría la lógica de eliminación
-            console.log('Eliminar participante');
-        }
-    });
 });
+
+function confirmarEliminacionParticipante(nombreParticipante) {
+    if (confirm('¿Está seguro de que desea eliminar al participante "' + nombreParticipante + '"?')) {
+        alert('Funcionalidad en desarrollo: Eliminar participante');
+        // Aquí iría la lógica de eliminación
+    }
+}
 </script>
 {% endblock %}

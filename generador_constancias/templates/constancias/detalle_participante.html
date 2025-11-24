@@ -1,34 +1,261 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Detalle: {{ participante.nombre_participante }}</title>
-</head>
-<body>
-    <a href="{% url 'lista_participantes' %}">← Volver a la lista de participantes</a>
+{% extends 'base.html' %}
+{% load static %}
 
-    <h1>Detalles del Participante: {{ participante.nombre_participante }}</h1>
-    
-    <p><strong>ID:</strong> {{ participante.id_participante }}</p>
-    <p><strong>Email:</strong> {{ participante.email_participante }}</p>
+{% block title %}{{ participante.nombre_participante }} - Detalles del Participante{% endblock %}
 
-    <hr>
-    
-    <h2>Información del Evento Registrado</h2>
-    
-    {% if eventos %}
-    <ul>
-        {% for evento in eventos %}
-        <li>
-            <a href="{% url 'detalle_evento' evento.id_evento %}">
-                {{ evento.titulo_evento }}
-            </a>
-            
-        </li>
-        {% endfor %}
-    </ul>
-    {% else %}
-    <p>Este participante no está asociado a ningún evento.</p>
-    {% endif %}
+{% block extra_css %}
+<style>
+    .participant-header {
+        background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        color: white;
+        border-radius: 15px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+    }
+    .info-card {
+        border: none;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        margin-bottom: 1.5rem;
+    }
+    .event-item {
+        border: 1px solid #e9ecef;
+        border-radius: 8px;
+        padding: 1rem;
+        margin-bottom: 0.5rem;
+        transition: all 0.3s ease;
+    }
+    .event-item:hover {
+        background-color: #f8f9fa;
+        border-color: #667eea;
+    }
+    .avatar-large {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        color: white;
+        font-size: 2rem;
+        background: linear-gradient(45deg, #28a745, #20c997);
+    }
+</style>
+{% endblock %}
 
-</body>
-</html>
+{% block content %}
+<div class="container mt-4">
+    <!-- Header del participante -->
+    <div class="participant-header">
+        <div class="row align-items-center">
+            <div class="col-md-2 text-center">
+                <div class="avatar-large mx-auto">
+                    {{ participante.nombre_participante|first|upper }}
+                </div>
+            </div>
+            <div class="col-md-7">
+                <h1 class="mb-2">{{ participante.nombre_participante }}</h1>
+                <p class="mb-1 opacity-75">
+                    <i class="fas fa-envelope me-2"></i>
+                    {{ participante.email_participante }}
+                </p>
+                <p class="mb-0 opacity-75">
+                    <i class="fas fa-hashtag me-2"></i>
+                    ID: {{ participante.id_participante }}
+                </p>
+            </div>
+            <div class="col-md-3 text-end">
+                <a href="{% url 'lista_participantes' %}" class="btn btn-outline-light me-2">
+                    <i class="fas fa-arrow-left"></i> Volver
+                </a>
+                <button class="btn btn-warning">
+                    <i class="fas fa-edit"></i> Editar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Información del participante -->
+        <div class="col-md-4">
+            <div class="info-card card h-100">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-user me-2"></i>
+                        Información Personal
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <strong><i class="fas fa-user text-muted me-2"></i>Nombre Completo:</strong>
+                        <p class="mb-0 text-muted">{{ participante.nombre_participante }}</p>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <strong><i class="fas fa-envelope text-muted me-2"></i>Correo Electrónico:</strong>
+                        <p class="mb-0">
+                            <a href="mailto:{{ participante.email_participante }}" class="text-decoration-none">
+                                {{ participante.email_participante }}
+                            </a>
+                        </p>
+                    </div>
+                    
+                    {% if participante.rol_participante %}
+                    <div class="mb-3">
+                        <strong><i class="fas fa-user-tag text-muted me-2"></i>Rol:</strong>
+                        <p class="mb-0">
+                            <span class="badge bg-info">{{ participante.rol_participante }}</span>
+                        </p>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="mb-3">
+                        <strong><i class="fas fa-hashtag text-muted me-2"></i>ID de Participante:</strong>
+                        <p class="mb-0">
+                            <span class="badge bg-secondary">{{ participante.id_participante }}</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Estadísticas y acciones -->
+        <div class="col-md-4">
+            <div class="info-card card h-100">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0">
+                        <i class="fas fa-chart-bar me-2"></i>
+                        Estadísticas
+                    </h5>
+                </div>
+                <div class="card-body text-center">
+                    <div class="row mb-4">
+                        <div class="col-6">
+                            <div class="border-end">
+                                <h2 class="text-primary mb-1">{{ eventos|length }}</h2>
+                                <p class="text-muted mb-0 small">Eventos</p>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <h2 class="text-success mb-1">0</h2>
+                            <p class="text-muted mb-0 small">Constancias</p>
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-primary">
+                            <i class="fas fa-calendar-plus"></i> Inscribir a Evento
+                        </button>
+                        <button class="btn btn-success">
+                            <i class="fas fa-certificate"></i> Generar Constancia
+                        </button>
+                        <button class="btn btn-outline-info">
+                            <i class="fas fa-download"></i> Exportar Datos
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Actividad reciente -->
+        <div class="col-md-4">
+            <div class="info-card card h-100">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-history me-2"></i>
+                        Actividad Reciente
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="text-center text-muted py-3">
+                        <i class="fas fa-clock fa-2x mb-2"></i>
+                        <p class="mb-0 small">No hay actividad reciente para mostrar</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Eventos asociados -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="info-card card">
+                <div class="card-header bg-light">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">
+                            <i class="fas fa-calendar-alt text-primary me-2"></i>
+                            Eventos Registrados ({{ eventos|length }})
+                        </h5>
+                        <button class="btn btn-sm btn-outline-primary">
+                            <i class="fas fa-calendar-plus"></i> Inscribir a Nuevo Evento
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    {% if eventos %}
+                        <div class="row">
+                            {% for evento in eventos %}
+                            <div class="col-md-6 mb-3">
+                                <div class="event-item">
+                                    <div class="d-flex align-items-center">
+                                        <div class="me-3">
+                                            <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+                                                <i class="fas fa-calendar-alt"></i>
+                                            </div>
+                                        </div>
+                                        <div class="flex-grow-1">
+                                            <h6 class="mb-1">
+                                                <a href="{% url 'detalle_evento' evento.id_evento %}" class="text-decoration-none text-primary">
+                                                    {{ evento.titulo_evento }}
+                                                </a>
+                                            </h6>
+                                            <small class="text-muted">
+                                                <i class="fas fa-calendar me-1"></i>
+                                                {% if evento.fecha_inicio %}
+                                                    {{ evento.fecha_inicio|date:"d/m/Y" }} - {{ evento.fecha_fin|date:"d/m/Y" }}
+                                                {% else %}
+                                                    Fechas por confirmar
+                                                {% endif %}
+                                            </small>
+                                        </div>
+                                        <div>
+                                            <div class="btn-group-vertical btn-group-sm">
+                                                <a href="{% url 'detalle_evento' evento.id_evento %}" class="btn btn-outline-primary btn-sm">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                                <button class="btn btn-outline-success btn-sm">
+                                                    <i class="fas fa-certificate"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i class="fas fa-calendar-times fa-3x text-muted mb-3"></i>
+                            <h5 class="text-muted">No está asociado a ningún evento</h5>
+                            <p class="text-muted mb-4">Inscriba a este participante en eventos para comenzar a generar constancias.</p>
+                            <button class="btn btn-primary">
+                                <i class="fas fa-calendar-plus"></i> Inscribir a Primer Evento
+                            </button>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(document).ready(function() {
+    // Tooltip para botones
+    $('[data-bs-toggle="tooltip"]').tooltip();
+});
+</script>
+{% endblock %}
