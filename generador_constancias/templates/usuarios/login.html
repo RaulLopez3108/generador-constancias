@@ -149,6 +149,32 @@
         }
         
         /* Animaciones tecnológicas */
+        @keyframes runTop {
+            0% { left: -100%; }
+            25% { left: 100%; }
+            25.01%, 100% { left: 100%; }
+        }
+        
+        @keyframes runRight {
+            0%, 25% { top: -100%; }
+            25.01% { top: -100%; }
+            50% { top: 100%; }
+            50.01%, 100% { top: 100%; }
+        }
+        
+        @keyframes runBottom {
+            0%, 50% { right: -100%; }
+            50.01% { right: -100%; }
+            75% { right: 100%; }
+            75.01%, 100% { right: 100%; }
+        }
+        
+        @keyframes runLeft {
+            0%, 75% { bottom: -100%; }
+            75.01% { bottom: -100%; }
+            100% { bottom: 100%; }
+        }
+        
         @keyframes techPulse1 {
             0%, 100% { 
                 transform: scale(1) rotate(0deg);
@@ -238,6 +264,7 @@
             z-index: 10;
             max-width: 400px;
             width: 90%;
+            overflow: hidden;
         }
         
         .login-container::before {
@@ -250,6 +277,112 @@
             background: linear-gradient(135deg, rgba(56, 189, 248, 0.02) 0%, rgba(168, 85, 247, 0.02) 100%);
             border-radius: 20px;
             z-index: -1;
+        }
+        
+        /* Elemento que recorre el borde */
+        .border-runner {
+            position: absolute;
+            top: -3px;
+            left: -3px;
+            right: -3px;
+            bottom: -3px;
+            border-radius: 23px;
+            z-index: -2;
+            overflow: hidden;
+        }
+        
+        .border-runner::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, 
+                transparent 0%, 
+                rgba(56, 189, 248, 0.4) 20%, 
+                rgba(56, 189, 248, 1) 50%, 
+                rgba(168, 85, 247, 0.8) 80%, 
+                transparent 100%);
+            animation: runTop 4s linear infinite;
+            box-shadow: 0 0 10px rgba(56, 189, 248, 0.6);
+        }
+        
+        .border-runner::after {
+            content: '';
+            position: absolute;
+            top: -100%;
+            right: 0;
+            width: 3px;
+            height: 100%;
+            background: linear-gradient(180deg, 
+                transparent 0%, 
+                rgba(56, 189, 248, 0.4) 20%, 
+                rgba(56, 189, 248, 1) 50%, 
+                rgba(168, 85, 247, 0.8) 80%, 
+                transparent 100%);
+            animation: runRight 4s linear infinite;
+            animation-delay: 1s;
+            box-shadow: 0 0 10px rgba(56, 189, 248, 0.6);
+        }
+        
+        /* Elementos adicionales para completar el recorrido */
+        .border-runner-bottom {
+            position: absolute;
+            top: -3px;
+            left: -3px;
+            right: -3px;
+            bottom: -3px;
+            border-radius: 23px;
+            z-index: -3;
+            overflow: hidden;
+        }
+        
+        .border-runner-bottom::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            right: -100%;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(270deg, 
+                transparent 0%, 
+                rgba(56, 189, 248, 0.4) 20%, 
+                rgba(56, 189, 248, 1) 50%, 
+                rgba(168, 85, 247, 0.8) 80%, 
+                transparent 100%);
+            animation: runBottom 4s linear infinite;
+            animation-delay: 2s;
+            box-shadow: 0 0 10px rgba(56, 189, 248, 0.6);
+        }
+        
+        .border-runner-left {
+            position: absolute;
+            top: -3px;
+            left: -3px;
+            right: -3px;
+            bottom: -3px;
+            border-radius: 23px;
+            z-index: -4;
+            overflow: hidden;
+        }
+        
+        .border-runner-left::before {
+            content: '';
+            position: absolute;
+            bottom: -100%;
+            left: 0;
+            width: 3px;
+            height: 100%;
+            background: linear-gradient(360deg, 
+                transparent 0%, 
+                rgba(56, 189, 248, 0.4) 20%, 
+                rgba(56, 189, 248, 1) 50%, 
+                rgba(168, 85, 247, 0.8) 80%, 
+                transparent 100%);
+            animation: runLeft 4s linear infinite;
+            animation-delay: 3s;
+            box-shadow: 0 0 10px rgba(56, 189, 248, 0.6);
         }
         
         .main-logo {
@@ -416,6 +549,11 @@
     <div class="tech-element-6"></div>
     
     <div class="login-container">
+        <!-- Elementos para el efecto de recorrido del borde -->
+        <div class="border-runner"></div>
+        <div class="border-runner-bottom"></div>
+        <div class="border-runner-left"></div>
+        
                     <!-- Logo principal arriba del título -->
                     <div class="main-logo">
                         <img src="{% static 'images/logo_trustec.png' %}" alt="Trustec Logo">
