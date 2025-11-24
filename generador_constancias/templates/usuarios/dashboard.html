@@ -1,77 +1,337 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Dashboard - Sistema de Constancias{% endblock %}
+{% block title %}Dashboard - Certif Kit{% endblock %}
 
 {% block extra_css %}
 <style>
-    .dashboard-header {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
+    body {
+        background-color: var(--background-primary);
+        color: var(--text-primary);
+        padding-top: 0;
+    }
+    
+    /* Welcome Banner */
+    .welcome-banner {
+        background: transparent;
         padding: 2rem 0;
-        margin-bottom: 2rem;
+        margin-top: 70px;
+        position: relative;
+        overflow: hidden;
     }
+    
+    .welcome-title {
+        color: var(--text-primary);
+        font-weight: 700;
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+        position: relative;
+        z-index: 1;
+    }
+    
+    .welcome-subtitle {
+        color: var(--text-secondary);
+        font-size: 1.1rem;
+        margin: 0;
+        position: relative;
+        z-index: 1;
+    }
+    
+    .welcome-info {
+        background: #ffffff;
+        border: 1px solid var(--soft-blue);
+        border-radius: var(--border-radius);
+        padding: 0.75rem 1rem;
+        backdrop-filter: blur(10px);
+        position: relative;
+        z-index: 1;
+        display: inline-block;
+        width: auto;
+        min-width: fit-content;
+        box-shadow: var(--shadow-sm);
+    }
+    
+    .welcome-info small {
+        color: var(--text-secondary);
+    }
+    
+    .welcome-info strong {
+        color: var(--soft-blue);
+        font-size: 1.1rem;
+    }
+    
+    /* Ocultar imágenes grandes innecesarias */
+    .large-background-image,
+    .dashboard-large-logo {
+        display: none !important;
+    }
+
+    
     .module-card {
-        border: none;
-        border-radius: 15px;
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-        transition: all 0.3s ease;
+        background-color: #ffffff;
+        border: 1px solid var(--soft-blue);
+        border-radius: var(--border-radius-lg);
+        box-shadow: var(--shadow-md);
+        transition: all var(--transition-normal);
         margin-bottom: 1.5rem;
+        overflow: hidden;
+        position: relative;
     }
+    
+    .module-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, var(--soft-blue) 0%, var(--warm-pink) 100%);
+        z-index: 1;
+    }
+    
     .module-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-xl);
+        border-color: var(--warm-pink);
+        background-color: #f8f9fa;
     }
+    
+    .module-card .card-body {
+        position: relative;
+        z-index: 2;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+    
     .module-icon {
-        font-size: 3rem;
+        font-size: 3.5rem;
         margin-bottom: 1rem;
-        color: #667eea;
+        color: var(--soft-blue);
+        transition: all var(--transition-normal);
+        filter: drop-shadow(0 0 10px rgba(131, 166, 206, 0.3));
     }
+    
+    .module-card .card-title {
+        color: var(--text-primary);
+        font-weight: 600;
+        margin-bottom: 1rem;
+    }
+    
+    .module-card .card-text {
+        color: var(--text-secondary);
+        font-size: 0.95rem;
+        line-height: 1.5;
+    }
+    
     .quick-stats {
-        background: #f8f9fa;
-        border-radius: 15px;
-        padding: 1.5rem;
+        background-color: #ffffff;
+        border: 1px solid var(--soft-blue);
+        border-radius: var(--border-radius-lg);
+        padding: 2rem;
         margin-bottom: 2rem;
+        box-shadow: var(--shadow-md);
     }
+    
     .stat-item {
         text-align: center;
+        padding: 1rem;
+        border-radius: var(--border-radius);
+        background-color: #ffffff;
+        border: 1px solid var(--soft-blue);
+        transition: all var(--transition-normal);
     }
+    
+    .stat-item:hover {
+        background-color: #f8f9fa;
+        border-color: var(--warm-pink);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-blue);
+    }
+    
     .stat-number {
-        font-size: 2.5rem;
-        font-weight: 700;
-        color: #2c3e50;
+        font-size: 3rem;
+        font-weight: 800;
+        color: var(--soft-blue);
     }
+    
     .stat-label {
-        color: #6c757d;
+        color: var(--text-secondary);
         font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-weight: 500;
+    }
+    
+    .btn-tech-primary {
+        background-color: var(--soft-blue);
+        border: 1px solid var(--soft-blue);
+        color: var(--pure-white);
+        padding: 0.75rem 1.5rem;
+        border-radius: var(--border-radius);
+        transition: all var(--transition-fast);
+        font-weight: 600;
+        text-transform: none;
+        letter-spacing: 0;
+    }
+    
+    .btn-tech-primary:hover {
+        background-color: var(--soft-blue-dark);
+        border-color: var(--soft-blue-dark);
+        color: var(--pure-white);
+        transform: translateY(-1px);
+        box-shadow: var(--shadow-blue);
+    }
+    
+    .btn-tech-secondary {
+        background: transparent;
+        border: 2px solid var(--warm-pink);
+        color: var(--warm-pink);
+        padding: 0.75rem 1.5rem;
+        border-radius: var(--border-radius);
+        transition: all var(--transition-fast);
+        font-weight: 600;
+        text-transform: none;
+        letter-spacing: 0;
+    }
+    
+    .btn-tech-secondary:hover {
+        background-color: var(--warm-pink);
+        border-color: var(--warm-pink);
+        color: var(--pure-white);
+        transform: translateY(-1px);
+    }
+    
+    .btn-tech-info {
+        background-color: var(--ocean-slate);
+        border: 1px solid var(--ocean-slate);
+        color: var(--pure-white);
+        padding: 0.75rem 1.5rem;
+        border-radius: var(--border-radius);
+        transition: all var(--transition-fast);
+        font-weight: 600;
+    }
+    
+    .btn-tech-info:hover {
+        background-color: var(--ocean-slate-dark);
+        border-color: var(--ocean-slate-dark);
+        color: var(--pure-white);
+        transform: translateY(-1px);
+        box-shadow: var(--shadow-lg);
+    }
+    
+    .btn-tech-warning {
+        background-color: var(--warm-pink);
+        border: 1px solid var(--warm-pink);
+        color: var(--pure-white);
+        padding: 0.75rem 1.5rem;
+        border-radius: var(--border-radius);
+        transition: all var(--transition-fast);
+        font-weight: 600;
+    }
+    
+    .btn-tech-warning:hover {
+        background-color: var(--warm-pink-dark);
+        border-color: var(--warm-pink-dark);
+        color: var(--pure-white);
+        transform: translateY(-1px);
+        box-shadow: var(--shadow-pink);
+    }
+    
+    .card-tech {
+        background-color: #ffffff;
+        border: 1px solid var(--soft-blue);
+        border-radius: var(--border-radius-lg);
+        box-shadow: var(--shadow-md);
+        overflow: hidden;
+    }
+    
+    .card-tech .card-header {
+        background-color: #f8f9fa;
+        border: none;
+        padding: 1rem 1.5rem;
+        border-bottom: 1px solid var(--soft-blue);
+    }
+    
+    .card-tech .card-header h5 {
+        color: var(--text-primary);
+        margin: 0;
+        font-weight: 600;
+    }
+    
+    .card-tech .card-body {
+        color: var(--text-secondary);
+    }
+    
+    .quick-action-btn {
+        background-color: #ffffff;
+        border: 1px solid var(--soft-blue);
+        color: var(--text-secondary);
+        padding: 1.5rem;
+        border-radius: var(--border-radius);
+        transition: all var(--transition-normal);
+        text-decoration: none;
+        display: block;
+        text-align: center;
+    }
+    
+    .quick-action-btn:hover {
+        background-color: #f8f9fa;
+        color: var(--text-primary);
+        border-color: var(--warm-pink);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-blue);
+        text-decoration: none;
+    }
+    
+    .activity-placeholder {
+        color: var(--text-secondary);
+        padding: 3rem;
+        text-align: center;
+    }
+    
+    .activity-placeholder i {
+        color: var(--ocean-slate);
+        margin-bottom: 1rem;
+    }
+    
+    @media (max-width: 768px) {
+        .welcome-title {
+            font-size: 1.5rem;
+        }
+        
+        .module-icon {
+            font-size: 2.5rem;
+        }
+        
+        .stat-number {
+            font-size: 2rem;
+        }
     }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="dashboard-header">
+{% include 'components/navbar.html' %}
+
+<!-- Welcome Section -->
+<div class="welcome-banner">
     <div class="container">
         <div class="row align-items-center">
             <div class="col-md-8">
-                <h1 class="mb-2">¡Bienvenido, {{ user.first_name|default:user.username }}!</h1>
-                <p class="mb-0 opacity-75">Sistema de Generación de Constancias Universitarias</p>
+                <h2 class="welcome-title">¡Bienvenido, {{ user.first_name|default:user.username }}!</h2>
             </div>
-            <div class="col-md-4 text-end">
-                <div class="d-flex align-items-center justify-content-end">
-                    <div class="me-3">
-                        <small>Último acceso</small><br>
-                        <strong>{{ user.last_login|date:"d/m/Y H:i" }}</strong>
-                    </div>
-                    <a href="{% url 'logout' %}" class="btn btn-outline-light">
-                        <i class="fas fa-sign-out-alt"></i> Salir
-                    </a>
+            <div class="col-md-4 d-flex justify-content-end">
+                <div class="welcome-info">
+                    <small>Último acceso:</small><br>
+                    <strong>{{ user.last_login|date:"d/m/Y H:i" }}</strong>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-<div class="container">
+<div class="container-fluid px-4">
     <!-- Estadísticas rápidas -->
     <div class="quick-stats">
         <div class="row">
@@ -113,10 +373,10 @@
                     <h5 class="card-title">Gestión de Eventos</h5>
                     <p class="card-text">Registre y administre eventos académicos, conferencias, talleres y actividades universitarias.</p>
                     <div class="mt-auto">
-                        <a href="{% url 'lista_eventos' %}" class="btn btn-primary me-2">
+                        <a href="{% url 'lista_eventos' %}" class="btn btn-tech-primary me-2">
                             <i class="fas fa-list"></i> Ver Eventos
                         </a>
-                        <a href="#" class="btn btn-outline-primary" onclick="alert('Funcionalidad en desarrollo: Crear nuevo evento')">
+                        <a href="#" class="btn btn-tech-secondary" onclick="alert('Funcionalidad en desarrollo: Crear nuevo evento')">
                             <i class="fas fa-plus"></i> Nuevo
                         </a>
                     </div>
@@ -133,10 +393,10 @@
                     <h5 class="card-title">Participantes</h5>
                     <p class="card-text">Administre el registro de participantes, estudiantes, docentes y personal administrativo.</p>
                     <div class="mt-auto">
-                        <a href="{% url 'lista_participantes' %}" class="btn btn-success me-2">
+                        <a href="{% url 'lista_participantes' %}" class="btn btn-tech-info me-2">
                             <i class="fas fa-list"></i> Ver Participantes
                         </a>
-                        <a href="#" class="btn btn-outline-success" onclick="alert('Funcionalidad en desarrollo: Agregar participante')">
+                        <a href="#" class="btn btn-tech-secondary" onclick="alert('Funcionalidad en desarrollo: Agregar participante')">
                             <i class="fas fa-user-plus"></i> Agregar
                         </a>
                     </div>
@@ -153,10 +413,10 @@
                     <h5 class="card-title">Generar Constancias</h5>
                     <p class="card-text">Cree constancias personalizadas utilizando plantillas profesionales y datos de participantes.</p>
                     <div class="mt-auto">
-                        <a href="{% url 'pagina_generar' %}" class="btn btn-warning me-2">
+                        <a href="{% url 'pagina_generar' %}" class="btn btn-tech-warning me-2">
                             <i class="fas fa-file-pdf"></i> Generar
                         </a>
-                        <a href="#" class="btn btn-outline-warning" onclick="alert('Funcionalidad en desarrollo: Cargar CSV')">
+                        <a href="#" class="btn btn-tech-secondary" onclick="alert('Funcionalidad en desarrollo: Cargar CSV')">
                             <i class="fas fa-upload"></i> CSV
                         </a>
                     </div>
@@ -168,36 +428,36 @@
     <!-- Acciones rápidas -->
     <div class="row mt-4">
         <div class="col-12">
-            <div class="card">
+            <div class="card-tech card">
                 <div class="card-header">
                     <h5 class="mb-0">
-                        <i class="fas fa-bolt text-warning"></i> Acciones Rápidas
+                        <i class="fas fa-bolt"></i> Acciones Rápidas
                     </h5>
                 </div>
                 <div class="card-body">
                     <div class="row">
-                        <div class="col-md-3">
-                            <a href="#" class="btn btn-outline-primary w-100 mb-2" onclick="alert('Funcionalidad en desarrollo: Crear nuevo evento')">
-                                <i class="fas fa-plus-circle"></i><br>
-                                Nuevo Evento
+                        <div class="col-md-3 mb-3">
+                            <a href="#" class="quick-action-btn" onclick="alert('Funcionalidad en desarrollo: Crear nuevo evento')">
+                                <i class="fas fa-plus-circle fa-2x mb-2"></i><br>
+                                <strong>Nuevo Evento</strong>
                             </a>
                         </div>
-                        <div class="col-md-3">
-                            <a href="#" class="btn btn-outline-success w-100 mb-2" onclick="alert('Funcionalidad en desarrollo: Importar CSV')">
-                                <i class="fas fa-upload"></i><br>
-                                Importar CSV
+                        <div class="col-md-3 mb-3">
+                            <a href="#" class="quick-action-btn" onclick="alert('Funcionalidad en desarrollo: Importar CSV')">
+                                <i class="fas fa-upload fa-2x mb-2"></i><br>
+                                <strong>Importar CSV</strong>
                             </a>
                         </div>
-                        <div class="col-md-3">
-                            <a href="#" class="btn btn-outline-info w-100 mb-2" onclick="alert('Funcionalidad en desarrollo: Crear plantilla')">
-                                <i class="fas fa-file-alt"></i><br>
-                                Nueva Plantilla
+                        <div class="col-md-3 mb-3">
+                            <a href="#" class="quick-action-btn" onclick="alert('Funcionalidad en desarrollo: Crear plantilla')">
+                                <i class="fas fa-file-alt fa-2x mb-2"></i><br>
+                                <strong>Nueva Plantilla</strong>
                             </a>
                         </div>
-                        <div class="col-md-3">
-                            <a href="#" class="btn btn-outline-secondary w-100 mb-2" onclick="alert('Funcionalidad en desarrollo: Configuración del sistema')">
-                                <i class="fas fa-cog"></i><br>
-                                Configuración
+                        <div class="col-md-3 mb-3">
+                            <a href="#" class="quick-action-btn" onclick="alert('Funcionalidad en desarrollo: Configuración del sistema')">
+                                <i class="fas fa-cog fa-2x mb-2"></i><br>
+                                <strong>Configuración</strong>
                             </a>
                         </div>
                     </div>
@@ -209,14 +469,14 @@
     <!-- Actividad reciente -->
     <div class="row mt-4">
         <div class="col-12">
-            <div class="card">
+            <div class="card-tech card">
                 <div class="card-header">
                     <h5 class="mb-0">
-                        <i class="fas fa-history text-info"></i> Actividad Reciente
+                        <i class="fas fa-history"></i> Actividad Reciente
                     </h5>
                 </div>
                 <div class="card-body">
-                    <div class="text-center text-muted py-4">
+                    <div class="activity-placeholder">
                         <i class="fas fa-inbox fa-3x mb-3"></i>
                         <h5>No hay actividad reciente</h5>
                         <p>Comience agregando eventos y participantes para ver el historial aquí.</p>

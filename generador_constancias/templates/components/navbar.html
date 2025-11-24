@@ -1,0 +1,275 @@
+{% load static %}
+
+<!-- Modern Auto-Hide Navbar Component -->
+<nav class="modern-navbar" id="modernNavbar">
+    <div class="container-fluid">
+        <div class="d-flex align-items-center justify-content-between w-100">
+            <div class="navbar-brand d-flex align-items-center">
+                <img src="{% static 'images/logo_trustec.png' %}" alt="Trustec" class="navbar-logo">
+                <span class="brand-text">Certif Kit</span>
+            </div>
+            
+            <div class="navbar-nav d-flex flex-row align-items-center">
+                <a class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}" href="{% url 'dashboard' %}">
+                    <i class="fas fa-home"></i>
+                    <span>Home</span>
+                </a>
+                <a class="nav-link {% if request.resolver_match.url_name == 'lista_eventos' %}active{% endif %}" href="{% url 'lista_eventos' %}">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>Eventos</span>
+                </a>
+                <a class="nav-link {% if request.resolver_match.url_name == 'lista_participantes' %}active{% endif %}" href="{% url 'lista_participantes' %}">
+                    <i class="fas fa-users"></i>
+                    <span>Participantes</span>
+                </a>
+                <a class="nav-link" href="/admin/" target="_blank">
+                    <i class="fas fa-cogs"></i>
+                    <span>Admin</span>
+                </a>
+                <div class="nav-divider"></div>
+                <a class="nav-link logout-link" href="{% url 'logout' %}">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Salir</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<style>
+    /* Navbar Negro Completo sobre fondo blanco */
+    .modern-navbar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        background: var(--background-secondary);  /* Negro completo */
+        backdrop-filter: blur(12px);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);  /* Borde sutil blanco */
+        z-index: 1000;
+        padding: 0.75rem 0;
+        transition: transform 0.3s ease, opacity 0.3s ease;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+    }
+    
+    .modern-navbar.hidden {
+        transform: translateY(-100%);
+        opacity: 0;
+    }
+    
+    .navbar-logo {
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        border: 1px solid rgba(255, 255, 255, 0.2);  /* Borde blanco sutil */
+        padding: 2px;
+        background: rgba(255, 255, 255, 0.1);  /* Fondo ligeramente blanco */
+        transition: all var(--transition-normal);
+    }
+    
+    .navbar-logo:hover {
+        transform: scale(1.05);
+        border-color: var(--soft-blue);  /* Hover azul celeste */
+        box-shadow: 0 0 15px rgba(131, 166, 206, 0.4);
+        background: rgba(131, 166, 206, 0.1);
+    }
+    
+    .brand-text {
+        color: var(--text-on-dark);  /* Blanco sobre negro */
+        font-weight: 700;
+        font-size: 1.5rem;
+        margin-left: 1rem;
+        transition: all var(--transition-fast);
+    }
+    
+    .brand-text:hover {
+        color: var(--soft-blue);  /* Hover azul celeste */
+    }
+    
+    .navbar-brand {
+        margin-left: 2rem;
+        text-decoration: none;
+    }
+    
+    .navbar-nav .nav-link {
+        color: var(--text-secondary);
+        padding: 0.5rem 1rem;
+        margin: 0 0.25rem;
+        border-radius: var(--border-radius);
+        transition: all var(--transition-fast);
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        font-weight: 500;
+        font-size: 0.875rem;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .navbar-nav .nav-link {
+        color: rgba(255, 255, 255, 0.8);  /* Blanco semi-transparente */
+        padding: 0.5rem 1rem;
+        margin: 0 0.25rem;
+        border-radius: var(--border-radius);
+        transition: all var(--transition-fast);
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        font-weight: 500;
+        font-size: 0.875rem;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .navbar-nav .nav-link::before {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        width: 0;
+        height: 2px;
+        background: var(--soft-blue);  /* Azul celeste para acentos */
+        transition: all var(--transition-fast);
+        transform: translateX(-50%);
+    }
+    
+    .navbar-nav .nav-link:hover::before {
+        width: 80%;
+    }
+    
+    .navbar-nav .nav-link i {
+        margin-right: 0.5rem;
+        font-size: 1rem;
+        transition: all var(--transition-fast);
+    }
+    
+    .navbar-nav .nav-link:hover {
+        background-color: rgba(255, 255, 255, 0.1);  /* Fondo blanco sutil */
+        color: var(--text-on-dark);  /* Blanco completo */
+        transform: translateY(-1px);
+    }
+    
+    .navbar-nav .nav-link:hover i {
+        transform: scale(1.1);
+        color: var(--soft-blue);
+    }
+    
+    .navbar-nav .nav-link.active {
+        background-color: rgba(255, 255, 255, 0.15);  /* Fondo más visible */
+        color: var(--soft-blue);  /* Azul celeste para activo */
+        border: 1px solid rgba(131, 166, 206, 0.3);
+    }
+    
+    .navbar-nav .nav-link.logout-link:hover {
+        background-color: rgba(220, 53, 69, 0.15);
+        color: #ff6b7a;
+    }
+    
+    .nav-divider {
+        width: 1px;
+        height: 25px;
+        background-color: rgba(255, 255, 255, 0.2);  /* Divisor blanco sutil */
+        margin: 0 1rem;
+    }
+    
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .navbar-brand {
+            margin-left: 1rem;
+        }
+        
+        .brand-text {
+            font-size: 1.3rem;
+        }
+        
+        .navbar-logo {
+            width: 40px;
+            height: 40px;
+        }
+        
+        .navbar-nav {
+            gap: 0.25rem;
+        }
+        
+        .navbar-nav .nav-link {
+            padding: 0.4rem 0.6rem;
+            font-size: 0.9rem;
+        }
+        
+        .navbar-nav .nav-link span {
+            display: none;
+        }
+        
+        .navbar-nav .nav-link i {
+            margin-right: 0;
+            font-size: 1.2rem;
+        }
+    }
+    
+    @media (max-width: 480px) {
+        .navbar-brand {
+            margin-left: 0.5rem;
+        }
+        
+        .brand-text {
+            font-size: 1.1rem;
+        }
+        
+        .navbar-logo {
+            width: 35px;
+            height: 35px;
+        }
+    }
+</style>
+
+<script>
+// Auto-hide navbar functionality
+document.addEventListener('DOMContentLoaded', function() {
+    let lastScrollTop = 0;
+    let navbar = document.getElementById('modernNavbar');
+    let ticking = false;
+    
+    function updateNavbar() {
+        let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        
+        if (scrollTop > lastScrollTop && scrollTop > 100) {
+            // Scrolling down & past threshold
+            navbar.classList.add('hidden');
+        } else {
+            // Scrolling up or at top
+            navbar.classList.remove('hidden');
+        }
+        
+        lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
+        ticking = false;
+    }
+    
+    function requestTick() {
+        if (!ticking) {
+            requestAnimationFrame(updateNavbar);
+            ticking = true;
+        }
+    }
+    
+    window.addEventListener('scroll', requestTick);
+    
+    // Show navbar on mouse hover at top
+    let mouseTimer;
+    document.addEventListener('mousemove', function(e) {
+        if (e.clientY <= 100) {
+            navbar.classList.remove('hidden');
+            clearTimeout(mouseTimer);
+            mouseTimer = setTimeout(() => {
+                if (window.pageYOffset > 100) {
+                    navbar.classList.add('hidden');
+                }
+            }, 3000);
+        }
+    });
+    
+    // Navbar hover effects
+    navbar.addEventListener('mouseenter', function() {
+        this.classList.remove('hidden');
+    });
+});
+</script>

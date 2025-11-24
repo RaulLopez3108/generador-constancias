@@ -5,51 +5,182 @@
 
 {% block extra_css %}
 <style>
-    .event-card {
-        border: none;
-        border-radius: 10px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        transition: all 0.3s ease;
-        margin-bottom: 1rem;
+    body {
+        background-color: var(--background-primary);
+        color: var(--text-primary);
+        padding-top: 80px;
     }
+    
+    .modern-page-header {
+        background: transparent;
+        padding: 2rem 0;
+        margin-bottom: 2rem;
+    }
+    
+    .page-title {
+        color: var(--text-primary);
+        font-weight: 700;
+        font-size: 2.5rem;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+    
+    .page-title i {
+        color: var(--emerald-accent);
+        font-size: 2.2rem;
+    }
+    
+    .page-subtitle {
+        color: var(--text-secondary);
+        font-size: 1.1rem;
+        margin: 0;
+    }
+    
+    .event-card {
+        background-color: var(--background-secondary);
+        border: 1px solid var(--border-color);
+        border-radius: var(--border-radius-lg);
+        box-shadow: var(--shadow-sm);
+        transition: all var(--transition-normal);
+        margin-bottom: 1rem;
+        overflow: hidden;
+    }
+    
     .event-card:hover {
         transform: translateY(-2px);
-        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+        box-shadow: var(--shadow-lg);
+        border-color: var(--emerald-accent);
     }
+    
+    .card-header {
+        background-color: var(--background-elevated);
+        border-bottom: 1px solid var(--border-color);
+        color: var(--text-primary);
+    }
+    
     .event-icon {
         font-size: 2rem;
-        color: #667eea;
+        color: var(--emerald-accent);
+        transition: all var(--transition-fast);
     }
-    .btn-group .btn {
-        margin: 0 2px;
-        min-width: 80px;
-        font-size: 0.875rem;
+    
+    .table {
+        background-color: transparent;
+        color: var(--text-primary);
     }
+    
+    .table thead th {
+        background-color: var(--background-elevated);
+        color: var(--text-primary);
+        border-color: var(--border-color);
+        font-weight: 600;
+    }
+    
+    .table tbody tr {
+        border-color: var(--border-color);
+        transition: background-color var(--transition-fast);
+    }
+    
+    .table tbody tr:hover {
+        background-color: var(--background-elevated);
+    }
+    
     .table td {
         vertical-align: middle;
         padding: 1rem 0.75rem;
+        border-color: var(--border-color);
+    }
+    
+    .btn-tech-primary {
+        background-color: var(--emerald-accent);
+        border-color: var(--emerald-accent);
+        color: var(--pure-white);
+    }
+    
+    .btn-tech-primary:hover {
+        background-color: var(--success-green);
+        border-color: var(--success-green);
+        color: var(--pure-white);
+    }
+    
+    .btn-tech-secondary {
+        background-color: transparent;
+        border-color: var(--border-color);
+        color: var(--text-secondary);
+    }
+    
+    .btn-tech-secondary:hover {
+        background-color: var(--background-elevated);
+        border-color: var(--emerald-accent);
+        color: var(--text-primary);
+    }
+    
+    .empty-state {
+        background-color: var(--background-secondary);
+        border: 1px solid var(--border-color);
+        border-radius: var(--border-radius-lg);
+        padding: 4rem 2rem;
+        text-align: center;
+        box-shadow: var(--shadow-sm);
+    }
+    
+    .empty-state i {
+        color: var(--text-secondary);
+        margin-bottom: 1.5rem;
+    }
+    
+    .empty-state h4 {
+        color: var(--text-primary);
+        margin-bottom: 1rem;
+    }
+    
+    .empty-state p {
+        color: var(--text-secondary);
+        margin-bottom: 2rem;
+    }
+    
+    .action-buttons .btn {
+        margin: 0 0.25rem;
+        font-size: 0.875rem;
+        padding: 0.5rem 1rem;
+    }
+    
+    .event-link {
+        color: var(--emerald-accent);
+        text-decoration: none;
+        font-weight: 600;
+    }
+    
+    .event-link:hover {
+        color: var(--success-green);
+        text-decoration: none;
     }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="container mt-4">
-    <div class="row">
-        <div class="col-12">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <div>
-                    <h1 class="mb-2">
-                        <i class="fas fa-calendar-alt text-primary"></i>
-                        Lista de Eventos
-                    </h1>
-                    <p class="text-muted">Administre todos los eventos registrados en el sistema</p>
-                </div>
-                <div>
-                    <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary me-2">
-                        <i class="fas fa-arrow-left"></i> Volver al Dashboard
+{% include 'components/navbar.html' %}
+
+<div class="container-fluid px-4">
+    <!-- Page Header -->
+    <div class="modern-page-header">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h1 class="page-title">
+                    <i class="fas fa-calendar-alt"></i>
+                    Lista de Eventos
+                </h1>
+                <p class="page-subtitle">Administre todos los eventos registrados en el sistema</p>
+            </div>
+            <div class="col-md-4 text-end">
+                <div class="action-buttons">
+                    <a href="{% url 'dashboard' %}" class="btn btn-tech-secondary">
+                        <i class="fas fa-arrow-left me-2"></i>Dashboard
                     </a>
-                    <button class="btn btn-primary" onclick="alert('Funcionalidad en desarrollo: Crear nuevo evento')">
-                        <i class="fas fa-plus"></i> Nuevo Evento
+                    <button class="btn btn-tech-primary" onclick="alert('Funcionalidad en desarrollo: Crear nuevo evento')">
+                        <i class="fas fa-plus me-2"></i>Nuevo Evento
                     </button>
                 </div>
             </div>
@@ -59,17 +190,17 @@
     {% if eventos %}
         <div class="row">
             <div class="col-12">
-                <div class="card">
-                    <div class="card-header bg-light">
+                <div class="card event-card">
+                    <div class="card-header">
                         <h5 class="mb-0">
-                            <i class="fas fa-list"></i>
+                            <i class="fas fa-list me-2"></i>
                             Eventos Registrados ({{ eventos|length }})
                         </h5>
                     </div>
                     <div class="card-body p-0">
                         <div class="table-responsive">
                             <table class="table table-hover mb-0">
-                                <thead class="table-primary">
+                                <thead>
                                     <tr>
                                         <th class="ps-3" style="width: 60%;">
                                             <i class="fas fa-calendar-check me-2"></i>Título del Evento
@@ -87,7 +218,7 @@
                                                 </div>
                                                 <div>
                                                     <h6 class="mb-1">
-                                                        <a href="{% url 'detalle_evento' e.id_evento %}" class="text-decoration-none text-primary">
+                                                        <a href="{% url 'detalle_evento' e.id_evento %}" class="event-link">
                                                             {{ e.titulo_evento }}
                                                         </a>
                                                     </h6>
@@ -97,13 +228,13 @@
                                         </td>
                                         <td class="text-center">
                                             <div class="btn-group" role="group" aria-label="Acciones del evento">
-                                                <a href="{% url 'detalle_evento' e.id_evento %}" class="btn btn-outline-primary" title="Ver Detalles">
+                                                <a href="{% url 'detalle_evento' e.id_evento %}" class="btn btn-outline-success btn-sm" title="Ver Detalles">
                                                     <i class="fas fa-eye me-1"></i>Ver
                                                 </a>
-                                                <button class="btn btn-outline-warning" title="Editar" onclick="alert('Funcionalidad en desarrollo: Editar evento')">
+                                                <button class="btn btn-outline-warning btn-sm" title="Editar" onclick="alert('Funcionalidad en desarrollo: Editar evento')">
                                                     <i class="fas fa-edit me-1"></i>Editar
                                                 </button>
-                                                <button class="btn btn-outline-danger" title="Eliminar" onclick="confirmarEliminacion('{{ e.titulo_evento }}')">
+                                                <button class="btn btn-outline-danger btn-sm" title="Eliminar" onclick="confirmarEliminacion('{{ e.titulo_evento }}')">
                                                     <i class="fas fa-trash me-1"></i>Eliminar
                                                 </button>
                                             </div>
@@ -120,17 +251,15 @@
     {% else %}
         <div class="row">
             <div class="col-12">
-                <div class="card border-0 shadow-sm">
-                    <div class="card-body text-center py-5">
-                        <div class="mb-4">
-                            <i class="fas fa-calendar-times fa-5x text-muted"></i>
-                        </div>
-                        <h4 class="text-muted mb-3">No hay eventos registrados</h4>
-                        <p class="text-muted mb-4">Comience agregando su primer evento para gestionar constancias.</p>
-                        <button class="btn btn-primary btn-lg" onclick="alert('Funcionalidad en desarrollo: Crear primer evento')">
-                            <i class="fas fa-plus"></i> Crear Primer Evento
-                        </button>
+                <div class="empty-state">
+                    <div class="mb-4">
+                        <i class="fas fa-calendar-times fa-5x"></i>
                     </div>
+                    <h4>No hay eventos registrados</h4>
+                    <p>Comience agregando su primer evento para gestionar constancias.</p>
+                    <button class="btn btn-tech-primary btn-lg" onclick="alert('Funcionalidad en desarrollo: Crear primer evento')">
+                        <i class="fas fa-plus me-2"></i>Crear Primer Evento
+                    </button>
                 </div>
             </div>
         </div>

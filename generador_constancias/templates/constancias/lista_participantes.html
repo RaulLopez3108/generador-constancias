@@ -5,16 +5,60 @@
 
 {% block extra_css %}
 <style>
-    .participant-card {
-        border: none;
-        border-radius: 10px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        transition: all 0.3s ease;
+    body {
+        background-color: var(--background-primary);
+        color: var(--text-primary);
+        padding-top: 80px;
     }
+    
+    .modern-page-header {
+        background: transparent;
+        padding: 2rem 0;
+        margin-bottom: 2rem;
+    }
+    
+    .page-title {
+        color: var(--text-primary);
+        font-weight: 700;
+        font-size: 2.5rem;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+    
+    .page-title i {
+        color: var(--emerald-accent);
+        font-size: 2.2rem;
+    }
+    
+    .page-subtitle {
+        color: var(--text-secondary);
+        font-size: 1.1rem;
+        margin: 0;
+    }
+    
+    .participant-card {
+        background-color: var(--background-secondary);
+        border: 1px solid var(--border-color);
+        border-radius: var(--border-radius-lg);
+        box-shadow: var(--shadow-sm);
+        transition: all var(--transition-normal);
+        overflow: hidden;
+    }
+    
     .participant-card:hover {
         transform: translateY(-2px);
-        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+        box-shadow: var(--shadow-lg);
+        border-color: var(--emerald-accent);
     }
+    
+    .card-header {
+        background-color: var(--background-elevated);
+        border-bottom: 1px solid var(--border-color);
+        color: var(--text-primary);
+    }
+    
     .avatar {
         width: 50px;
         height: 50px;
@@ -23,73 +67,197 @@
         align-items: center;
         justify-content: center;
         font-weight: bold;
-        color: white;
+        color: var(--pure-white);
         font-size: 1.2rem;
+        background: linear-gradient(135deg, var(--emerald-accent) 0%, var(--success-green) 100%);
+        border: 2px solid var(--border-color);
+        transition: all var(--transition-fast);
     }
+    
+    .search-container {
+        background-color: var(--background-secondary);
+        border: 1px solid var(--border-color);
+        border-radius: var(--border-radius-lg);
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        box-shadow: var(--shadow-sm);
+    }
+    
     .search-box {
-        border-radius: 25px;
-        border: 2px solid #e9ecef;
+        background-color: var(--background-elevated);
+        border: 1px solid var(--border-color);
+        border-radius: var(--border-radius);
         padding-left: 45px;
+        color: var(--text-primary);
+        transition: all var(--transition-fast);
     }
+    
+    .search-box:focus {
+        border-color: var(--emerald-accent);
+        box-shadow: var(--shadow-accent);
+        background-color: var(--background-elevated);
+        color: var(--text-primary);
+    }
+    
     .search-icon {
         position: absolute;
         left: 15px;
         top: 50%;
         transform: translateY(-50%);
-        color: #6c757d;
+        color: var(--text-secondary);
     }
-    .btn-group .btn {
-        margin: 0 2px;
-        min-width: 90px;
-        font-size: 0.875rem;
+    
+    .table {
+        background-color: transparent;
+        color: var(--text-primary);
     }
+    
+    .table thead th {
+        background-color: var(--background-elevated);
+        color: var(--text-primary);
+        border-color: var(--border-color);
+        font-weight: 600;
+    }
+    
+    .table tbody tr {
+        border-color: var(--border-color);
+        transition: background-color var(--transition-fast);
+    }
+    
+    .table tbody tr:hover {
+        background-color: var(--background-elevated);
+    }
+    
     .table td {
         vertical-align: middle;
         padding: 1rem 0.75rem;
+        border-color: var(--border-color);
+    }
+    
+    .btn-tech-primary {
+        background-color: var(--emerald-accent);
+        border-color: var(--emerald-accent);
+        color: var(--pure-white);
+    }
+    
+    .btn-tech-primary:hover {
+        background-color: var(--success-green);
+        border-color: var(--success-green);
+        color: var(--pure-white);
+    }
+    
+    .btn-tech-secondary {
+        background-color: transparent;
+        border-color: var(--border-color);
+        color: var(--text-secondary);
+    }
+    
+    .btn-tech-secondary:hover {
+        background-color: var(--background-elevated);
+        border-color: var(--emerald-accent);
+        color: var(--text-primary);
+    }
+    
+    .empty-state {
+        background-color: var(--background-secondary);
+        border: 1px solid var(--border-color);
+        border-radius: var(--border-radius-lg);
+        padding: 4rem 2rem;
+        text-align: center;
+        box-shadow: var(--shadow-sm);
+    }
+    
+    .empty-state i {
+        color: var(--text-secondary);
+        margin-bottom: 1.5rem;
+    }
+    
+    .empty-state h4 {
+        color: var(--text-primary);
+        margin-bottom: 1rem;
+    }
+    
+    .empty-state p {
+        color: var(--text-secondary);
+        margin-bottom: 2rem;
+    }
+    
+    .action-buttons .btn {
+        margin: 0 0.25rem;
+        font-size: 0.875rem;
+        padding: 0.5rem 1rem;
+    }
+    
+    .participant-link {
+        color: var(--emerald-accent);
+        text-decoration: none;
+        font-weight: 600;
+    }
+    
+    .participant-link:hover {
+        color: var(--success-green);
+        text-decoration: none;
+    }
+    
+    .action-group {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        justify-content: center;
+    }
+    
+    .action-group .btn {
+        font-size: 0.8rem;
+        padding: 0.4rem 0.8rem;
     }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="container mt-4">
-    <div class="row">
-        <div class="col-12">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <div>
-                    <h1 class="mb-2">
-                        <i class="fas fa-users text-success"></i>
-                        Lista de Participantes
-                    </h1>
-                    <p class="text-muted">Administre todos los participantes registrados en el sistema</p>
-                </div>
-                <div>
-                    <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary me-2">
-                        <i class="fas fa-arrow-left"></i> Volver al Dashboard
+{% include 'components/navbar.html' %}
+
+<div class="container-fluid px-4">
+    <!-- Page Header -->
+    <div class="modern-page-header">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h1 class="page-title">
+                    <i class="fas fa-users"></i>
+                    Lista de Participantes
+                </h1>
+                <p class="page-subtitle">Administre todos los participantes registrados en el sistema</p>
+            </div>
+            <div class="col-md-4 text-end">
+                <div class="action-buttons">
+                    <a href="{% url 'dashboard' %}" class="btn btn-tech-secondary">
+                        <i class="fas fa-arrow-left me-2"></i>Dashboard
                     </a>
-                    <button class="btn btn-success" onclick="alert('Funcionalidad en desarrollo: Agregar nuevo participante')">
-                        <i class="fas fa-user-plus"></i> Nuevo Participante
+                    <button class="btn btn-tech-primary" onclick="alert('Funcionalidad en desarrollo: Agregar nuevo participante')">
+                        <i class="fas fa-user-plus me-2"></i>Nuevo Participante
                     </button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Barra de búsqueda -->
-    <div class="row mb-4">
-        <div class="col-md-6">
-            <div class="position-relative">
-                <i class="fas fa-search search-icon"></i>
-                <input type="text" class="form-control search-box" placeholder="Buscar participantes..." id="searchInput">
+    <!-- Search and Actions Bar -->
+    <div class="search-container">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <div class="position-relative">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" class="form-control search-box" placeholder="Buscar participantes..." id="searchInput">
+                </div>
             </div>
-        </div>
-        <div class="col-md-6 text-end">
-            <div class="btn-group" role="group">
-                <button class="btn btn-outline-info" onclick="alert('Funcionalidad en desarrollo: Exportar participantes')">
-                    <i class="fas fa-download"></i> Exportar
-                </button>
-                <button class="btn btn-outline-warning" onclick="alert('Funcionalidad en desarrollo: Importar CSV')">
-                    <i class="fas fa-upload"></i> Importar CSV
-                </button>
+            <div class="col-md-6 text-end">
+                <div class="action-buttons">
+                    <button class="btn btn-tech-secondary" onclick="alert('Funcionalidad en desarrollo: Exportar participantes')">
+                        <i class="fas fa-download me-2"></i>Exportar
+                    </button>
+                    <button class="btn btn-tech-secondary" onclick="alert('Funcionalidad en desarrollo: Importar CSV')">
+                        <i class="fas fa-upload me-2"></i>Importar CSV
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -97,17 +265,17 @@
     {% if participantes %}
         <div class="row">
             <div class="col-12">
-                <div class="card">
-                    <div class="card-header bg-light">
+                <div class="card participant-card">
+                    <div class="card-header">
                         <h5 class="mb-0">
-                            <i class="fas fa-list"></i>
+                            <i class="fas fa-list me-2"></i>
                             Participantes Registrados ({{ participantes|length }})
                         </h5>
                     </div>
                     <div class="card-body p-0">
                         <div class="table-responsive">
                             <table class="table table-hover mb-0" id="participantesTable">
-                                <thead class="table-success">
+                                <thead>
                                     <tr>
                                         <th class="ps-3" style="width: 35%;">
                                             <i class="fas fa-user me-2"></i>Participante
@@ -123,12 +291,12 @@
                                     <tr class="participant-row">
                                         <td class="ps-3">
                                             <div class="d-flex align-items-center">
-                                                <div class="avatar me-3" style="background: linear-gradient(45deg, #28a745, #20c997);">
+                                                <div class="avatar me-3">
                                                     {{ p.nombre_participante|first|upper }}
                                                 </div>
                                                 <div>
                                                     <h6 class="mb-1">
-                                                        <a href="{% url 'detalle_participante' p.id_participante %}" class="text-decoration-none text-success participant-name">
+                                                        <a href="{% url 'detalle_participante' p.id_participante %}" class="participant-link participant-name">
                                                             {{ p.nombre_participante }}
                                                         </a>
                                                     </h6>
@@ -141,21 +309,20 @@
                                             {{ p.email_participante }}
                                         </td>
                                         <td class="text-center align-middle">
-                                            <div class="btn-group" role="group" aria-label="Acciones del participante">
-                                                <a href="{% url 'detalle_participante' p.id_participante %}" class="btn btn-outline-success" title="Ver Detalles">
+                                            <div class="action-group">
+                                                <a href="{% url 'detalle_participante' p.id_participante %}" class="btn btn-outline-success btn-sm" title="Ver Detalles">
                                                     <i class="fas fa-eye me-1"></i>Ver
                                                 </a>
-                                                <button class="btn btn-outline-warning" title="Editar" onclick="alert('Funcionalidad en desarrollo: Editar participante')">
+                                                <button class="btn btn-outline-warning btn-sm" title="Editar" onclick="alert('Funcionalidad en desarrollo: Editar participante')">
                                                     <i class="fas fa-edit me-1"></i>Editar
                                                 </button>
-                                                <button class="btn btn-outline-info" title="Constancias" onclick="alert('Funcionalidad en desarrollo: Constancias del participante')">
+                                                <button class="btn btn-outline-info btn-sm" title="Constancias" onclick="alert('Funcionalidad en desarrollo: Constancias del participante')">
                                                     <i class="fas fa-certificate me-1"></i>Constancias
                                                 </button>
+                                                <button class="btn btn-outline-danger btn-sm" title="Eliminar" onclick="confirmarEliminacionParticipante('{{ p.nombre_participante }}')">
+                                                    <i class="fas fa-trash me-1"></i>Eliminar
+                                                </button>
                                             </div>
-                                            <!-- Botón de eliminar separado para mayor visibilidad -->
-                                            <button class="btn btn-outline-danger mt-2" title="Eliminar" onclick="confirmarEliminacionParticipante('{{ p.nombre_participante }}')">
-                                                <i class="fas fa-trash me-1"></i>Eliminar
-                                            </button>
                                         </td>
                                     </tr>
                                     {% endfor %}
@@ -169,21 +336,19 @@
     {% else %}
         <div class="row">
             <div class="col-12">
-                <div class="card border-0 shadow-sm">
-                    <div class="card-body text-center py-5">
-                        <div class="mb-4">
-                            <i class="fas fa-user-slash fa-5x text-muted"></i>
-                        </div>
-                        <h4 class="text-muted mb-3">No hay participantes registrados</h4>
-                        <p class="text-muted mb-4">Comience agregando participantes para generar constancias.</p>
-                        <div class="d-flex justify-content-center gap-2">
-                            <button class="btn btn-success btn-lg" onclick="alert('Funcionalidad en desarrollo: Agregar participante')">
-                                <i class="fas fa-user-plus"></i> Agregar Participante
-                            </button>
-                            <button class="btn btn-outline-success btn-lg" onclick="alert('Funcionalidad en desarrollo: Importar CSV')">
-                                <i class="fas fa-upload"></i> Importar desde CSV
-                            </button>
-                        </div>
+                <div class="empty-state">
+                    <div class="mb-4">
+                        <i class="fas fa-user-slash fa-5x"></i>
+                    </div>
+                    <h4>No hay participantes registrados</h4>
+                    <p>Comience agregando participantes para generar constancias.</p>
+                    <div class="action-buttons">
+                        <button class="btn btn-tech-primary btn-lg me-2" onclick="alert('Funcionalidad en desarrollo: Agregar participante')">
+                            <i class="fas fa-user-plus me-2"></i>Agregar Participante
+                        </button>
+                        <button class="btn btn-tech-secondary btn-lg" onclick="alert('Funcionalidad en desarrollo: Importar CSV')">
+                            <i class="fas fa-upload me-2"></i>Importar desde CSV
+                        </button>
                     </div>
                 </div>
             </div>
