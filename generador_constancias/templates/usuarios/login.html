@@ -70,6 +70,162 @@
             transform: rotate(-30deg);
             z-index: 0;
         }
+        
+        /* Formas adicionales */
+        .green-blob-3 {
+            position: fixed;
+            top: 10%;
+            left: 5%;
+            width: 80px;
+            height: 80px;
+            background: rgba(52, 108, 90, 0.2);
+            border-radius: 45% 55% 65% 35%;
+            transform: rotate(60deg);
+            z-index: 0;
+        }
+        
+        .green-blob-4 {
+            position: fixed;
+            bottom: 10%;
+            right: 8%;
+            width: 90px;
+            height: 90px;
+            background: rgba(38, 76, 65, 0.15);
+            border-radius: 70% 30% 40% 60%;
+            transform: rotate(-45deg);
+            z-index: 0;
+        }
+        
+        .green-blob-5 {
+            position: fixed;
+            top: 60%;
+            left: 3%;
+            width: 60px;
+            height: 60px;
+            background: rgba(42, 84, 72, 0.18);
+            border-radius: 80% 20% 50% 50%;
+            transform: rotate(120deg);
+            z-index: 0;
+        }
+        
+        .green-blob-6 {
+            position: fixed;
+            top: 40%;
+            right: 5%;
+            width: 70px;
+            height: 70px;
+            background: rgba(48, 96, 82, 0.22);
+            border-radius: 35% 65% 45% 55%;
+            transform: rotate(-75deg);
+            z-index: 0;
+        }
+        
+        .green-blob-7 {
+            position: fixed;
+            bottom: 45%;
+            left: 1%;
+            width: 50px;
+            height: 50px;
+            background: rgba(30, 60, 52, 0.12);
+            border-radius: 60% 40% 80% 20%;
+            transform: rotate(95deg);
+            z-index: 0;
+        }
+        
+        .green-blob-8 {
+            position: fixed;
+            top: 80%;
+            right: 15%;
+            width: 65px;
+            height: 65px;
+            background: rgba(55, 110, 95, 0.16);
+            border-radius: 25% 75% 55% 45%;
+            transform: rotate(-120deg);
+            z-index: 0;
+        }
+        
+        /* Animaciones sutiles para las formas */
+        @keyframes float1 {
+            0%, 100% { transform: rotate(-15deg) translateY(0px); }
+            50% { transform: rotate(-15deg) translateY(-10px); }
+        }
+        
+        @keyframes float2 {
+            0%, 100% { transform: rotate(25deg) translateY(0px); }
+            50% { transform: rotate(25deg) translateY(-8px); }
+        }
+        
+        @keyframes float3 {
+            0%, 100% { transform: rotate(45deg) translateY(0px); }
+            50% { transform: rotate(45deg) translateY(-6px); }
+        }
+        
+        @keyframes float4 {
+            0%, 100% { transform: rotate(-30deg) translateY(0px); }
+            50% { transform: rotate(-30deg) translateY(-7px); }
+        }
+        
+        @keyframes float5 {
+            0%, 100% { transform: rotate(60deg) translateY(0px); }
+            50% { transform: rotate(60deg) translateY(-5px); }
+        }
+        
+        @keyframes float6 {
+            0%, 100% { transform: rotate(-45deg) translateY(0px); }
+            50% { transform: rotate(-45deg) translateY(-4px); }
+        }
+        
+        @keyframes float7 {
+            0%, 100% { transform: rotate(120deg) translateY(0px); }
+            50% { transform: rotate(120deg) translateY(-3px); }
+        }
+        
+        @keyframes float8 {
+            0%, 100% { transform: rotate(-75deg) translateY(0px); }
+            50% { transform: rotate(-75deg) translateY(-6px); }
+        }
+        
+        /* Aplicar animaciones a las formas */
+        body::before {
+            animation: float1 6s ease-in-out infinite;
+        }
+        
+        body::after {
+            animation: float2 7s ease-in-out infinite;
+        }
+        
+        .green-blob-1 {
+            animation: float3 8s ease-in-out infinite;
+        }
+        
+        .green-blob-2 {
+            animation: float4 5.5s ease-in-out infinite;
+        }
+        
+        .green-blob-3 {
+            animation: float5 9s ease-in-out infinite;
+        }
+        
+        .green-blob-4 {
+            animation: float6 6.5s ease-in-out infinite;
+        }
+        
+        .green-blob-5 {
+            animation: float7 7.5s ease-in-out infinite;
+        }
+        
+        .green-blob-6 {
+            animation: float8 8.5s ease-in-out infinite;
+        }
+        
+        .green-blob-7 {
+            animation: float5 10s ease-in-out infinite;
+        }
+        
+        .green-blob-8 {
+            animation: float2 5s ease-in-out infinite;
+        }
+        
         .login-container {
             background: white;
             border-radius: 20px;
@@ -107,17 +263,20 @@
             text-align: center;
             margin-bottom: 2rem;
         }
+        
         .login-header h1 {
             color: #2d5a4a;
             font-weight: 600;
             margin-bottom: 0.5rem;
             font-size: 2rem;
         }
+        
         .login-header p {
             color: #4a5d55;
             margin: 0;
             font-size: 1.1rem;
         }
+        
         .form-label {
             color: #2d5a4a;
             font-weight: 600;
@@ -139,6 +298,7 @@
             background-color: #f8fffe;
             color: #2d5a4a;
         }
+        
         .form-control:focus {
             border-color: #2d5a4a;
             box-shadow: 0 0 0 0.2rem rgba(45, 90, 74, 0.25);
@@ -148,6 +308,7 @@
         .form-control::placeholder {
             color: #9ca3af;
         }
+        
         .btn-login {
             background: #2d5a4a;
             border: none;
@@ -163,6 +324,7 @@
             align-items: center;
             justify-content: center;
         }
+        
         .btn-login:hover {
             background: #1a4038;
             transform: translateY(-2px);
@@ -172,15 +334,7 @@
         .btn-login i {
             margin-right: 0.5rem;
         }
-        .trustec-logo {
-            width: 60px;
-            height: 60px;
-            object-fit: contain;
-            margin-right: 1rem;
-            border-radius: 50%;
-            background: #f8fffe;
-            padding: 8px;
-        }
+        
         .error-message {
             background-color: #fed7d7;
             color: #9b2c2c;
@@ -192,6 +346,7 @@
             align-items: center;
             font-size: 0.875rem;
         }
+        
         .error-message i {
             margin-right: 0.5rem;
             color: #e53e3e;
@@ -209,18 +364,23 @@
             body::before, body::after {
                 display: none;
             }
-            .green-blob-1, .green-blob-2 {
-                width: 80px;
-                height: 80px;
+            .green-blob-1, .green-blob-2, .green-blob-3, .green-blob-4,
+            .green-blob-5, .green-blob-6, .green-blob-7, .green-blob-8 {
+                display: none;
             }
         }
-    </style>
     </style>
 </head>
 <body>
     <!-- Formas decorativas de fondo -->
     <div class="green-blob-1"></div>
     <div class="green-blob-2"></div>
+    <div class="green-blob-3"></div>
+    <div class="green-blob-4"></div>
+    <div class="green-blob-5"></div>
+    <div class="green-blob-6"></div>
+    <div class="green-blob-7"></div>
+    <div class="green-blob-8"></div>
     
     <div class="login-container">
                     <!-- Logo principal arriba del título -->
