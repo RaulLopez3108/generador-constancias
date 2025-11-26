@@ -3,53 +3,76 @@
    Modern Tech Theme with Dark Mode Support
    ======================================================================= */
 
-/* Custom CSS Variables - White Background + Black Nav/Footer + Deep Ocean Sunset */
+/* Custom CSS Variables - Nueva paleta Rich Black & Phthalo Green con pasteles */
 :root {
-    /* Base colors - Fondo blanco con navegación negra */
-    --pure-white: #ffffff;               /* Primary background - fondo blanco */
-    --light-gray: #f8f9fa;               /* Fondos secundarios muy claros */
-    --medium-gray: #e9ecef;              /* Bordes y divisores suaves */
-    --dark-gray: #6c757d;                /* Texto secundario */
-    --rich-black: #000000;               /* Navbar, Footer - negro completo */
-    --charcoal: #212529;                 /* Texto principal sobre blanco */
+    /* Nueva paleta de colores con pasteles */
+    --rich-black: #040F0F;               /* Rich Black - Negro principal */
+    --white: #FFFFFF;                    /* Blanco puro */
+    --silver-sand: #BEBFC4;              /* Silver Sand - Gris neutro */
+    --phthalo-green: #183C28;            /* Phthalo Green - Verde principal */
     
-    /* Deep Ocean Sunset Palette para acentos y elementos */
-    --deep-navy: #0d1e4c;               /* Cards, elementos destacados */
-    --dark-slate-blue: #0b1b32;         /* Elementos elevados alternativos */
-    --ocean-slate: #26415e;             /* Elementos secundarios internos */
-    --soft-blue: #83a6ce;               /* Acciones primarias, enlaces */
-    --warm-pink: #c48cb3;               /* Acentos secundarios, hover */
-    --pale-rose: #e5c9d7;               /* Fondos sutiles, elementos suaves */
+    /* Colores pastel */
+    --pastel-mint: #B8E6D3;              /* Mint pastel suave */
+    --pastel-lavender: #E1D4F7;          /* Lavanda pastel */
+    --pastel-peach: #FFD4C4;             /* Durazno pastel */
+    --pastel-blue: #C7E3FF;              /* Azul pastel */
+    --pastel-rose: #F7D4E1;              /* Rosa pastel */
     
-    /* Variaciones para contraste en fondo blanco */
-    --deep-navy-light: #1a2f5f;
-    --ocean-slate-light: #3a5a7a;
-    --soft-blue-light: #a1bdd9;
-    --soft-blue-dark: #6a8bb5;
-    --warm-pink-light: #d9a7c7;
-    --warm-pink-dark: #b0779f;
-    --pale-rose-light: #f0dde6;
-    --pale-rose-dark: #d4b5c8;
+    /* Asignaciones de roles principales */
+    --primary-color: var(--phthalo-green);
+    --secondary-color: var(--pastel-mint);
+    --accent-color: var(--pastel-lavender);
+    --text-primary: var(--rich-black);
+    --text-secondary: var(--silver-sand);
+    --background-primary: var(--white);
+    --background-secondary: var(--rich-black);
+    --text-on-dark: var(--white);
     
-    /* Colores de acento técnicos */
-    --success-blue: #83a6ce;
-    --warning-pink: #c48cb3;
-    --info-cyan: #17a2b8;
-    --danger-coral: #dc3545;
-    --success-green: #28a745;
+    /* Variaciones para diferentes contextos */
+    --phthalo-green-light: #225c3a;
+    --phthalo-green-dark: #0f2a1c;
+    --silver-sand-light: #d4d5d9;
+    --silver-sand-dark: #a8a9af;
+    --pastel-mint-dark: #95d4b8;
+    --pastel-lavender-dark: #d1bef2;
     
-    /* Colores semánticos - esquema blanco */
-    --primary-color: var(--soft-blue);
-    --secondary-color: var(--warm-pink);
-    --background-primary: var(--pure-white);        /* Fondo blanco */
-    --background-secondary: var(--rich-black);      /* Navbar/Footer negro completo */
-    --background-elevated: var(--light-gray);       /* Cards sobre fondo blanco */
-    --background-accent: var(--pale-rose-light);    /* Fondos con toque de color */
-    --text-primary: var(--charcoal);                /* Texto principal sobre blanco */
-    --text-secondary: var(--dark-gray);             /* Texto secundario */
-    --text-on-dark: var(--pure-white);              /* Texto sobre negro */
-    --border-color: var(--medium-gray);
-    --accent-color: var(--soft-blue);
+    /* Colores semánticos actualizados */
+    --success-color: var(--pastel-mint);
+    --warning-color: var(--pastel-peach);
+    --info-color: var(--pastel-blue);
+    --danger-color: #dc3545;
+    
+    /* Fondos y elevaciones */
+    --background-elevated: var(--white);
+    --background-card: var(--rich-black);
+    --background-accent: var(--rich-black);
+    --border-color: var(--silver-sand);
+    
+    /* Variables de compatibilidad para componentes existentes */
+    --warm-pink: var(--pastel-rose);
+    --pure-white: var(--white);
+    --tech-cyan: var(--pastel-blue);
+    --tech-orange: var(--pastel-peach);
+    --emerald-accent: var(--pastel-mint);
+    
+    /* Efectos y sombras */
+    --shadow-sm: 0 1px 3px 0 rgba(4, 15, 15, 0.1), 0 1px 2px 0 rgba(4, 15, 15, 0.06);
+    --shadow-md: 0 4px 6px -1px rgba(4, 15, 15, 0.1), 0 2px 4px -1px rgba(4, 15, 15, 0.06);
+    --shadow-lg: 0 10px 15px -3px rgba(4, 15, 15, 0.1), 0 4px 6px -2px rgba(4, 15, 15, 0.05);
+    --shadow-xl: 0 20px 25px -5px rgba(4, 15, 15, 0.1), 0 10px 10px -5px rgba(4, 15, 15, 0.04);
+    --shadow-accent: 0 0 0 3px rgba(238, 198, 67, 0.1);
+    
+    /* Transiciones */
+    --transition-fast: all 0.15s ease;
+    --transition-normal: all 0.3s ease;
+    --transition-slow: all 0.5s ease;
+    
+    /* Radios de borde */
+    --border-radius: 8px;
+    --border-radius-lg: 12px;
+    --border-radius-xl: 16px;
+}
+    --accent-color: var(--maize-crayola);
     
     /* Layout constants */
     --navbar-height: 64px;
@@ -82,11 +105,11 @@ body {
     -moz-osx-font-smoothing: grayscale;
 }
 
-/* Ocean Sunset Buttons */
+/* Ocean Sunset Buttons - Actualizados para nueva paleta */
 .btn-tech-primary {
-    background-color: var(--soft-blue);
-    border: 1px solid var(--soft-blue);
-    color: var(--pure-white);
+    background-color: var(--primary-color);
+    border: 1px solid var(--primary-color);
+    color: var(--white);
     padding: 0.75rem 1.25rem;
     border-radius: var(--border-radius);
     font-weight: 500;
@@ -95,37 +118,45 @@ body {
     text-transform: none;
     letter-spacing: 0;
     box-shadow: var(--shadow-sm);
+    text-decoration: none;
+    display: inline-block;
+    cursor: pointer;
 }
 
 .btn-tech-primary:hover {
-    background-color: var(--soft-blue-dark);
-    border-color: var(--soft-blue-dark);
-    color: var(--pure-white);
+    background-color: var(--phthalo-green-light);
+    border-color: var(--phthalo-green-light);
+    color: var(--white);
     transform: translateY(-1px);
-    box-shadow: var(--shadow-blue);
+    box-shadow: 0 4px 14px 0 rgba(24, 60, 40, 0.2);
+    text-decoration: none;
 }
 
 .btn-tech-primary:focus {
-    box-shadow: var(--shadow-accent);
+    box-shadow: 0 0 0 3px rgba(24, 60, 40, 0.2);
     outline: none;
 }
 
 .btn-tech-secondary {
     background-color: transparent;
-    border: 1px solid var(--warm-pink);
-    color: var(--warm-pink);
+    border: 1px solid var(--accent-color);
+    color: var(--accent-color);
     padding: 0.75rem 1.25rem;
     border-radius: var(--border-radius);
     font-weight: 500;
     font-size: 0.875rem;
     transition: all var(--transition-fast);
+    text-decoration: none;
+    display: inline-block;
+    cursor: pointer;
 }
 
 .btn-tech-secondary:hover {
-    background-color: var(--warm-pink);
-    border-color: var(--warm-pink);
-    color: var(--pure-white);
+    background-color: var(--accent-color);
+    border-color: var(--accent-color);
+    color: var(--rich-black);
     transform: translateY(-1px);
+    text-decoration: none;
 }
 
 .btn-tech-ghost {
@@ -137,63 +168,78 @@ body {
     font-weight: 500;
     font-size: 0.875rem;
     transition: all var(--transition-fast);
+    text-decoration: none;
+    display: inline-block;
+    cursor: pointer;
 }
 
 .btn-tech-ghost:hover {
     background-color: var(--background-elevated);
     color: var(--text-primary);
+    text-decoration: none;
 }
 
 .btn-tech-info {
-    background: linear-gradient(135deg, var(--tech-cyan) 0%, #0284c7 100%);
+    background: var(--accent-color);
     border: none;
-    color: white;
+    color: var(--rich-black);
     padding: 0.75rem 1.5rem;
     border-radius: var(--border-radius);
     transition: var(--transition-normal);
     font-weight: 600;
+    text-decoration: none;
+    display: inline-block;
+    cursor: pointer;
 }
 
 .btn-tech-info:hover {
+    background: var(--maize-light);
     transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(6, 182, 212, 0.4);
-    color: white;
+    box-shadow: 0 8px 25px rgba(238, 198, 67, 0.4);
+    color: var(--rich-black);
+    text-decoration: none;
 }
 
 .btn-tech-warning {
-    background: linear-gradient(135deg, var(--tech-orange) 0%, #d97706 100%);
+    background: var(--phthalo-green);
     border: none;
-    color: white;
+    color: var(--white);
     padding: 0.75rem 1.5rem;
     border-radius: var(--border-radius);
     transition: var(--transition-normal);
     font-weight: 600;
+    text-decoration: none;
+    display: inline-block;
+    cursor: pointer;
 }
 
 .btn-tech-warning:hover {
+    background: var(--phthalo-green-light);
     transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(245, 158, 11, 0.4);
-    color: white;
+    box-shadow: 0 8px 25px rgba(24, 60, 40, 0.4);
+    color: var(--white);
+    text-decoration: none;
 }
 
 /* Modern Minimal Cards */
 .card-tech {
-    background-color: var(--background-secondary);
+    background-color: var(--background-card);
     border: 1px solid var(--border-color);
     border-radius: var(--border-radius-lg);
     box-shadow: var(--shadow-sm);
     overflow: hidden;
     transition: all var(--transition-normal);
+    color: var(--white);
 }
 
 .card-tech:hover {
     transform: translateY(-2px);
     box-shadow: var(--shadow-lg);
-    border-color: var(--emerald-accent);
+    border-color: var(--accent-color);
 }
 
 .card-tech .card-header {
-    background-color: var(--background-secondary);
+    background-color: var(--white);
     border-bottom: 1px solid var(--border-color);
     padding: 1.25rem 1.5rem;
     border-radius: 0;
@@ -229,7 +275,7 @@ body {
     left: 0;
     right: 0;
     height: 3px;
-    background: linear-gradient(90deg, var(--soft-blue) 0%, var(--warm-pink) 100%);
+    background: linear-gradient(90deg, var(--primary-color) 0%, var(--accent-color) 100%);
     transform: scaleX(0);
     transition: transform var(--transition-normal);
     transform-origin: left;
@@ -243,7 +289,7 @@ body {
     transform: translateY(-4px);
     box-shadow: var(--shadow-xl);
     border-color: var(--soft-blue);
-    background-color: var(--pure-white);  /* Blanco puro en hover */
+    background-color: var(--white);  /* Blanco puro en hover */
 }
 
 .module-card .card-body {
@@ -360,16 +406,16 @@ body {
 /* Ocean Sunset Utilities */
 .text-primary-modern { color: var(--text-primary) !important; }
 .text-secondary-modern { color: var(--text-secondary) !important; }
-.text-accent { color: var(--soft-blue) !important; }
-.text-success { color: var(--soft-blue-light) !important; }
-.text-warm { color: var(--warm-pink) !important; }
+.text-accent { color: var(--accent-color) !important; }
+.text-success { color: var(--primary-color) !important; }
+.text-warm { color: var(--accent-color) !important; }
 .text-muted { color: var(--light-gray) !important; }
 
 .bg-primary-modern { background-color: var(--background-primary) !important; }
 .bg-secondary-modern { background-color: var(--background-secondary) !important; }
 .bg-elevated { background-color: var(--background-elevated) !important; }
-.bg-accent { background-color: var(--soft-blue) !important; }
-.bg-warm { background-color: var(--warm-pink) !important; }
+.bg-accent { background-color: var(--accent-color) !important; }
+.bg-warm { background-color: var(--primary-color) !important; }
 
 .border-modern { border-color: var(--ocean-slate-light) !important; }
 .border-accent { border-color: var(--soft-blue) !important; }
@@ -497,7 +543,7 @@ body {
     left: 0;
     width: 0;
     height: 1px;
-    background: var(--soft-blue);  /* Azul celeste */
+    background: var(--accent-color);  /* Amarillo dorado */
     transition: width var(--transition-fast);
 }
 

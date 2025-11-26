@@ -52,12 +52,14 @@
     }
     
     .welcome-info small {
-        color: var(--text-secondary);
+        color: #666666;
+        font-weight: 500;
     }
     
     .welcome-info strong {
-        color: var(--soft-blue);
+        color: #333333;
         font-size: 1.1rem;
+        font-weight: 600;
     }
     
     /* Ocultar imágenes grandes innecesarias */
@@ -102,26 +104,33 @@
         display: flex;
         flex-direction: column;
         height: 100%;
+        background: var(--rich-black) !important;
+        border-radius: 12px;
+        margin: 0;
+        padding: 1.5rem;
     }
     
     .module-icon {
         font-size: 3.5rem;
         margin-bottom: 1rem;
-        color: var(--soft-blue);
+        color: #00D4AA !important;
         transition: all var(--transition-normal);
-        filter: drop-shadow(0 0 10px rgba(131, 166, 206, 0.3));
+        filter: drop-shadow(0 0 15px rgba(0, 212, 170, 0.5));
     }
     
     .module-card .card-title {
-        color: var(--text-primary);
-        font-weight: 600;
+        color: #FFFFFF !important;
+        font-weight: 700;
         margin-bottom: 1rem;
+        font-size: 1.3rem;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
     }
     
     .module-card .card-text {
-        color: var(--text-secondary);
+        color: #E0E0E0 !important;
         font-size: 0.95rem;
         line-height: 1.5;
+        text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
     }
     
     .quick-stats {
@@ -163,6 +172,20 @@
         font-weight: 500;
     }
     
+    /* Dark stats styling for when background is dark */
+    .quick-stats[style*="--rich-black"] .stat-number {
+        color: var(--maize-crayola) !important;
+    }
+    
+    .quick-stats[style*="--rich-black"] .stat-label {
+        color: var(--silver-sand) !important;
+    }
+    
+    .quick-stats[style*="--rich-black"] .stat-item {
+        background-color: transparent !important;
+        border-color: var(--phthalo-green) !important;
+    }
+    
     .btn-tech-primary {
         background-color: var(--soft-blue);
         border: 1px solid var(--soft-blue);
@@ -184,39 +207,49 @@
     }
     
     .btn-tech-secondary {
-        background: transparent;
-        border: 2px solid var(--warm-pink);
-        color: var(--warm-pink);
+        background: transparent !important;
+        border: 2px solid #FF6B9D !important;
+        color: #FF6B9D !important;
         padding: 0.75rem 1.5rem;
         border-radius: var(--border-radius);
         transition: all var(--transition-fast);
         font-weight: 600;
         text-transform: none;
         letter-spacing: 0;
+        text-decoration: none;
     }
     
     .btn-tech-secondary:hover {
-        background-color: var(--warm-pink);
+        background-color: #FF6B9D !important;
+        border-color: #FF6B9D !important;
+        color: #000000 !important;
+        transform: translateY(-2px);
+        text-decoration: none;
+    }
         border-color: var(--warm-pink);
         color: var(--pure-white);
         transform: translateY(-1px);
     }
     
     .btn-tech-info {
-        background-color: var(--ocean-slate);
-        border: 1px solid var(--ocean-slate);
-        color: var(--pure-white);
+        background: #00D4AA !important;
+        border: 2px solid #00D4AA !important;
+        color: #000000 !important;
         padding: 0.75rem 1.5rem;
         border-radius: var(--border-radius);
         transition: all var(--transition-fast);
         font-weight: 600;
+        text-decoration: none;
     }
     
     .btn-tech-info:hover {
-        background-color: var(--ocean-slate-dark);
-        border-color: var(--ocean-slate-dark);
-        color: var(--pure-white);
-        transform: translateY(-1px);
+        background: #00B894 !important;
+        border-color: #00B894 !important;
+        color: #000000 !important;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0, 212, 170, 0.4);
+        text-decoration: none;
+    }
         box-shadow: var(--shadow-lg);
     }
     
@@ -253,10 +286,30 @@
         border-bottom: 1px solid var(--soft-blue);
     }
     
+    /* Dark headers for specific components */
+    .card-tech .card-header.dark-header {
+        background: var(--rich-black) !important;
+        color: var(--white) !important;
+        border-bottom: 2px solid var(--maize-crayola) !important;
+    }
+    
+    .card-tech .card-header.dark-header h5 {
+        color: var(--white) !important;
+        margin: 0;
+        font-weight: 600;
+        font-size: 1.1rem;
+    }
+    
+    .card-tech .card-header.dark-header i {
+        color: var(--maize-crayola) !important;
+        margin-right: 0.5rem;
+    }
+    
     .card-tech .card-header h5 {
         color: var(--text-primary);
         margin: 0;
         font-weight: 600;
+        font-size: 1.1rem;
     }
     
     .card-tech .card-body {
@@ -264,15 +317,24 @@
     }
     
     .quick-action-btn {
-        background-color: #ffffff;
-        border: 1px solid var(--soft-blue);
-        color: var(--text-secondary);
+        background-color: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: #666666;
         padding: 1.5rem;
         border-radius: var(--border-radius);
         transition: all var(--transition-normal);
         text-decoration: none;
         display: block;
         text-align: center;
+        font-weight: 500;
+    }
+    
+    .quick-action-btn:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+        color: #FFFFFF;
+        transform: translateY(-2px);
+        text-decoration: none;
+        border-color: rgba(255, 255, 255, 0.2);
     }
     
     .quick-action-btn:hover {
@@ -285,14 +347,20 @@
     }
     
     .activity-placeholder {
-        color: var(--text-secondary);
+        color: #666666;
         padding: 3rem;
         text-align: center;
+        font-weight: 500;
     }
     
     .activity-placeholder i {
-        color: var(--ocean-slate);
+        color: #888888;
         margin-bottom: 1rem;
+    }
+    
+    .activity-placeholder h5 {
+        color: #555555;
+        font-weight: 600;
     }
     
     @media (max-width: 768px) {
@@ -332,36 +400,6 @@
 </div>
 
 <div class="container-fluid px-4">
-    <!-- Estadísticas rápidas -->
-    <div class="quick-stats">
-        <div class="row">
-            <div class="col-md-3">
-                <div class="stat-item">
-                    <div class="stat-number">0</div>
-                    <div class="stat-label">Eventos Registrados</div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="stat-item">
-                    <div class="stat-number">0</div>
-                    <div class="stat-label">Participantes</div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="stat-item">
-                    <div class="stat-number">0</div>
-                    <div class="stat-label">Constancias Generadas</div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="stat-item">
-                    <div class="stat-number">0</div>
-                    <div class="stat-label">Plantillas</div>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <!-- Módulos principales -->
     <div class="row">
         <div class="col-md-4">
@@ -373,8 +411,8 @@
                     <h5 class="card-title">Gestión de Eventos</h5>
                     <p class="card-text">Registre y administre eventos académicos, conferencias, talleres y actividades universitarias.</p>
                     <div class="mt-auto">
-                        <a href="{% url 'lista_eventos' %}" class="btn btn-tech-primary me-2">
-                            <i class="fas fa-list"></i> Ver Eventos
+                        <a href="{% url 'lista_eventos' %}" class="btn btn-tech-info me-2">
+                            <i class="fas fa-calendar"></i> Ver Eventos
                         </a>
                         <a href="#" class="btn btn-tech-secondary" onclick="alert('Funcionalidad en desarrollo: Crear nuevo evento')">
                             <i class="fas fa-plus"></i> Nuevo
@@ -413,7 +451,7 @@
                     <h5 class="card-title">Generar Constancias</h5>
                     <p class="card-text">Cree constancias personalizadas utilizando plantillas profesionales y datos de participantes.</p>
                     <div class="mt-auto">
-                        <a href="{% url 'pagina_generar' %}" class="btn btn-tech-warning me-2">
+                        <a href="{% url 'pagina_generar' %}" class="btn btn-tech-info me-2">
                             <i class="fas fa-file-pdf"></i> Generar
                         </a>
                         <a href="#" class="btn btn-tech-secondary" onclick="alert('Funcionalidad en desarrollo: Cargar CSV')">
@@ -429,7 +467,7 @@
     <div class="row mt-4">
         <div class="col-12">
             <div class="card-tech card">
-                <div class="card-header">
+                <div class="card-header dark-header">
                     <h5 class="mb-0">
                         <i class="fas fa-bolt"></i> Acciones Rápidas
                     </h5>
@@ -470,7 +508,7 @@
     <div class="row mt-4">
         <div class="col-12">
             <div class="card-tech card">
-                <div class="card-header">
+                <div class="card-header dark-header">
                     <h5 class="mb-0">
                         <i class="fas fa-history"></i> Actividad Reciente
                     </h5>

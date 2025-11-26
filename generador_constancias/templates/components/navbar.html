@@ -4,10 +4,10 @@
 <nav class="modern-navbar" id="modernNavbar">
     <div class="container-fluid">
         <div class="d-flex align-items-center justify-content-between w-100">
-            <div class="navbar-brand d-flex align-items-center">
+            <a href="{% url 'dashboard' %}" class="navbar-brand d-flex align-items-center text-decoration-none">
                 <img src="{% static 'images/logo_trustec.png' %}" alt="Trustec" class="navbar-logo">
                 <span class="brand-text">Certif Kit</span>
-            </div>
+            </a>
             
             <div class="navbar-nav d-flex flex-row align-items-center">
                 <a class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}" href="{% url 'dashboard' %}">
@@ -69,9 +69,9 @@
     
     .navbar-logo:hover {
         transform: scale(1.05);
-        border-color: var(--soft-blue);  /* Hover azul celeste */
-        box-shadow: 0 0 15px rgba(131, 166, 206, 0.4);
-        background: rgba(131, 166, 206, 0.1);
+        border-color: var(--accent-color);  /* Hover amarillo dorado */
+        box-shadow: 0 0 15px rgba(238, 198, 67, 0.4);
+        background: rgba(238, 198, 67, 0.1);
     }
     
     .brand-text {
@@ -83,7 +83,7 @@
     }
     
     .brand-text:hover {
-        color: var(--soft-blue);  /* Hover azul celeste */
+        color: var(--accent-color);  /* Hover amarillo dorado */
     }
     
     .navbar-brand {
@@ -128,7 +128,7 @@
         left: 50%;
         width: 0;
         height: 2px;
-        background: var(--soft-blue);  /* Azul celeste para acentos */
+        background: var(--accent-color);  /* Amarillo dorado para acentos */
         transition: all var(--transition-fast);
         transform: translateX(-50%);
     }
@@ -151,13 +151,13 @@
     
     .navbar-nav .nav-link:hover i {
         transform: scale(1.1);
-        color: var(--soft-blue);
+        color: var(--accent-color);
     }
     
     .navbar-nav .nav-link.active {
         background-color: rgba(255, 255, 255, 0.15);  /* Fondo más visible */
-        color: var(--soft-blue);  /* Azul celeste para activo */
-        border: 1px solid rgba(131, 166, 206, 0.3);
+        color: var(--accent-color);  /* Amarillo dorado para activo */
+        border: 1px solid rgba(238, 198, 67, 0.3);
     }
     
     .navbar-nav .nav-link.logout-link:hover {
