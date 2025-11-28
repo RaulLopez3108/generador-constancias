@@ -9,6 +9,14 @@
         background-color: var(--background-primary);
         color: var(--text-primary);
         padding-top: 80px;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .main-content {
+        flex: 1;
+        padding-bottom: 3rem;
     }
     
     .modern-page-header {
@@ -28,14 +36,15 @@
     }
     
     .page-title i {
-        color: var(--emerald-accent);
+        color: #00D4AA;
         font-size: 2.2rem;
     }
     
     .page-subtitle {
-        color: var(--text-secondary);
+        color: #555555;
         font-size: 1.1rem;
         margin: 0;
+        font-weight: 500;
     }
     
     .event-card {
@@ -55,27 +64,41 @@
     }
     
     .card-header {
-        background-color: var(--background-elevated);
+        background-color: var(--rich-black) !important;
         border-bottom: 1px solid var(--border-color);
-        color: var(--text-primary);
+        color: #FFFFFF !important;
+    }
+    
+    .card-header h5 {
+        color: #FFFFFF !important;
+        margin-bottom: 0;
+    }
+    
+    .card-header i {
+        color: #00D4AA !important;
     }
     
     .event-icon {
         font-size: 2rem;
-        color: var(--emerald-accent);
+        color: #00D4AA;
         transition: all var(--transition-fast);
     }
     
     .table {
         background-color: transparent;
         color: var(--text-primary);
+        margin-bottom: 0;
     }
     
     .table thead th {
-        background-color: var(--background-elevated);
-        color: var(--text-primary);
+        background-color: #1a1a1a !important;
+        color: #FFFFFF !important;
         border-color: var(--border-color);
         font-weight: 600;
+        padding: 0 0.75rem !important;
+        height: 40px !important;
+        vertical-align: middle !important;
+        line-height: 1 !important;
     }
     
     .table tbody tr {
@@ -89,32 +112,36 @@
     
     .table td {
         vertical-align: middle;
-        padding: 1rem 0.75rem;
+        padding: 0.75rem;
         border-color: var(--border-color);
     }
     
     .btn-tech-primary {
-        background-color: var(--emerald-accent);
-        border-color: var(--emerald-accent);
-        color: var(--pure-white);
+        background-color: #00D4AA !important;
+        border-color: #00D4AA !important;
+        color: #000000 !important;
+        font-weight: 600;
     }
     
     .btn-tech-primary:hover {
-        background-color: var(--success-green);
-        border-color: var(--success-green);
-        color: var(--pure-white);
+        background-color: #00B894 !important;
+        border-color: #00B894 !important;
+        color: #000000 !important;
+        transform: translateY(-2px);
     }
     
     .btn-tech-secondary {
-        background-color: transparent;
-        border-color: var(--border-color);
-        color: var(--text-secondary);
+        background-color: transparent !important;
+        border-color: #FF6B9D !important;
+        color: #FF6B9D !important;
+        font-weight: 600;
     }
     
     .btn-tech-secondary:hover {
-        background-color: var(--background-elevated);
-        border-color: var(--emerald-accent);
-        color: var(--text-primary);
+        background-color: #FF6B9D !important;
+        border-color: #FF6B9D !important;
+        color: #000000 !important;
+        transform: translateY(-2px);
     }
     
     .empty-state {
@@ -141,20 +168,92 @@
         margin-bottom: 2rem;
     }
     
-    .action-buttons .btn {
-        margin: 0 0.25rem;
-        font-size: 0.875rem;
-        padding: 0.5rem 1rem;
+    /* Botones de acción con colores fuertes */
+    .btn-outline-success {
+        border-color: #00D4AA !important;
+        color: #00D4AA !important;
+        font-weight: 500;
+    }
+    
+    .btn-outline-success:hover {
+        background-color: #00D4AA !important;
+        color: #000000 !important;
+    }
+    
+    .btn-outline-warning {
+        border-color: #FFB347 !important;
+        color: #FFB347 !important;
+        font-weight: 500;
+    }
+    
+    .btn-outline-warning:hover {
+        background-color: #FFB347 !important;
+        color: #000000 !important;
+    }
+    
+    .btn-outline-danger {
+        border-color: #FF6B6B !important;
+        color: #FF6B6B !important;
+        font-weight: 500;
+    }
+    
+    .btn-outline-danger:hover {
+        background-color: #FF6B6B !important;
+        color: #FFFFFF !important;
+    }
+    
+    /* Sección de estadísticas */
+    .stats-section {
+        background: linear-gradient(135deg, var(--rich-black) 0%, #1a1a1a 100%);
+        border-radius: 15px;
+        padding: 2rem;
+        margin: 2rem 0;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    }
+    
+    .stat-card {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
+        padding: 1.5rem;
+        text-align: center;
+        transition: all 0.3s ease;
+    }
+    
+    .stat-card:hover {
+        background: rgba(255, 255, 255, 0.08);
+        transform: translateY(-5px);
+    }
+    
+    .stat-number {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: #FFFFFF;
+        margin-bottom: 0.5rem;
+    }
+    
+    .stat-label {
+        color: #FFFFFF;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-weight: 500;
+    }
+    
+    .stat-icon {
+        font-size: 2rem;
+        color: #FFFFFF;
+        margin-bottom: 1rem;
     }
     
     .event-link {
-        color: var(--emerald-accent);
+        color: #00D4AA;
         text-decoration: none;
         font-weight: 600;
     }
     
     .event-link:hover {
-        color: var(--success-green);
+        color: #00B894;
         text-decoration: none;
     }
 </style>
@@ -163,6 +262,7 @@
 {% block content %}
 {% include 'components/navbar.html' %}
 
+<div class="main-content">
 <div class="container-fluid px-4">
     <!-- Page Header -->
     <div class="modern-page-header">
@@ -187,25 +287,63 @@
         </div>
     </div>
 
+    <!-- Sección de Estadísticas -->
+    <div class="stats-section">
+        <div class="row">
+            <div class="col-md-3 mb-3">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-calendar-check"></i>
+                    </div>
+                    <div class="stat-number">{{ eventos|length|default:0 }}</div>
+                    <div class="stat-label">Total Eventos</div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="stat-number">0</div>
+                    <div class="stat-label">En Progreso</div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="stat-number">0</div>
+                    <div class="stat-label">Finalizados</div>
+                </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-calendar-plus"></i>
+                    </div>
+                    <div class="stat-number">{{ eventos|length|default:0 }}</div>
+                    <div class="stat-label">Este Mes</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     {% if eventos %}
         <div class="row">
             <div class="col-12">
                 <div class="card event-card">
-                    <div class="card-header">
-                        <h5 class="mb-0">
-                            <i class="fas fa-list me-2"></i>
-                            Eventos Registrados ({{ eventos|length }})
-                        </h5>
-                    </div>
                     <div class="card-body p-0">
                         <div class="table-responsive">
                             <table class="table table-hover mb-0">
                                 <thead>
                                     <tr>
-                                        <th class="ps-3" style="width: 60%;">
-                                            <i class="fas fa-calendar-check me-2"></i>Título del Evento
-                                        </th>
-                                        <th class="text-center" style="width: 40%;">Acciones</th>
+                                        <th>Título del Evento</th>
+                                        <th>Fecha</th>
+                                        <th>Modalidad</th>
+                                        <th>Duración</th>
+                                        <th>Participantes</th>
+                                        <th>Acciones</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -264,6 +402,7 @@
             </div>
         </div>
     {% endif %}
+</div>
 </div>
 {% endblock %}
 
