@@ -6,9 +6,16 @@
 {% block extra_css %}
 <style>
     body {
-        background-color: var(--background-primary);
-        color: var(--text-primary);
+        background-color: #FFFFFF;
+        color: #040F0F;
         padding-top: 80px;
+    }
+    
+    .main-content {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+        padding-bottom: 60px;
     }
     
     .modern-page-header {
@@ -18,7 +25,7 @@
     }
     
     .page-title {
-        color: var(--text-primary);
+        color: #040F0F;
         font-weight: 700;
         font-size: 2.5rem;
         margin-bottom: 0.5rem;
@@ -28,35 +35,77 @@
     }
     
     .page-title i {
-        color: var(--emerald-accent);
+        color: #00D4AA;
         font-size: 2.2rem;
     }
     
     .page-subtitle {
-        color: var(--text-secondary);
+        color: #BEBFC4;
         font-size: 1.1rem;
         margin: 0;
     }
     
     .participant-card {
-        background-color: var(--background-secondary);
-        border: 1px solid var(--border-color);
-        border-radius: var(--border-radius-lg);
-        box-shadow: var(--shadow-sm);
-        transition: all var(--transition-normal);
+        background-color: #FFFFFF;
+        border: 1px solid #E0E0E0;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
         overflow: hidden;
     }
     
     .participant-card:hover {
         transform: translateY(-2px);
-        box-shadow: var(--shadow-lg);
-        border-color: var(--emerald-accent);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        border-color: #00D4AA;
     }
     
     .card-header {
-        background-color: var(--background-elevated);
-        border-bottom: 1px solid var(--border-color);
-        color: var(--text-primary);
+        background-color: #040F0F;
+        border-bottom: 1px solid #E0E0E0;
+        color: #FFFFFF;
+    }
+    
+    .card-header h5 {
+        color: #FFFFFF !important;
+        margin-bottom: 0;
+    }
+    
+    .card-header i {
+        color: #00D4AA !important;
+    }
+    
+    /* Botones principales unificados */
+    .btn-dashboard {
+        background-color: #6C757D;
+        border-color: #6C757D;
+        color: #FFFFFF;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-dashboard:hover {
+        background-color: #FF6B9D;
+        border-color: #FF6B9D;
+        color: #FFFFFF;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(255, 107, 157, 0.4);
+    }
+    
+    .btn-add-primary {
+        background-color: #00D4AA;
+        border-color: #00D4AA;
+        color: #FFFFFF;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-add-primary:hover {
+        background-color: #00A693;
+        border-color: #00A693;
+        color: #FFFFFF;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(0, 166, 147, 0.4);
     }
     
     .avatar {
@@ -67,36 +116,53 @@
         align-items: center;
         justify-content: center;
         font-weight: bold;
-        color: var(--pure-white);
+        color: #FFFFFF;
         font-size: 1.2rem;
-        background: linear-gradient(135deg, var(--emerald-accent) 0%, var(--success-green) 100%);
-        border: 2px solid var(--border-color);
-        transition: all var(--transition-fast);
+        background: linear-gradient(135deg, #00D4AA 0%, #FF6B9D 100%);
+        border: 2px solid #E0E0E0;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+    
+    .participant-link {
+        color: #00D4AA;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+    
+    .participant-link:hover {
+        color: #FF6B9D;
+        text-decoration: none;
+        transform: translateX(3px);
     }
     
     .search-container {
-        background-color: var(--background-secondary);
-        border: 1px solid var(--border-color);
-        border-radius: var(--border-radius-lg);
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(248, 249, 250, 0.9) 100%);
+        border: 1px solid rgba(0, 212, 170, 0.2);
+        border-radius: 15px;
         padding: 1.5rem;
         margin-bottom: 2rem;
-        box-shadow: var(--shadow-sm);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        backdrop-filter: blur(10px);
     }
     
     .search-box {
-        background-color: var(--background-elevated);
-        border: 1px solid var(--border-color);
-        border-radius: var(--border-radius);
+        background-color: #FFFFFF;
+        border: 2px solid #E0E0E0;
+        border-radius: 10px;
         padding-left: 45px;
-        color: var(--text-primary);
-        transition: all var(--transition-fast);
+        color: #040F0F;
+        transition: all 0.3s ease;
+        height: 45px;
     }
     
     .search-box:focus {
-        border-color: var(--emerald-accent);
-        box-shadow: var(--shadow-accent);
-        background-color: var(--background-elevated);
-        color: var(--text-primary);
+        border-color: #00D4AA;
+        box-shadow: 0 0 0 0.2rem rgba(0, 212, 170, 0.25);
+        background-color: #FFFFFF;
+        color: #040F0F;
+        outline: none;
     }
     
     .search-icon {
@@ -104,81 +170,104 @@
         left: 15px;
         top: 50%;
         transform: translateY(-50%);
-        color: var(--text-secondary);
+        color: #00D4AA;
+        z-index: 10;
     }
     
     .table {
         background-color: transparent;
-        color: var(--text-primary);
+        color: #040F0F;
+        margin-bottom: 0;
     }
     
     .table thead th {
-        background-color: var(--background-elevated);
-        color: var(--text-primary);
-        border-color: var(--border-color);
+        background-color: #1a1a1a !important;
+        color: #FFFFFF !important;
+        border-color: #E0E0E0;
         font-weight: 600;
+        padding: 0 0.75rem !important;
+        height: 40px !important;
+        vertical-align: middle !important;
+        line-height: 1 !important;
     }
     
     .table tbody tr {
-        border-color: var(--border-color);
-        transition: background-color var(--transition-fast);
+        border-color: #E0E0E0;
+        transition: background-color 0.3s ease;
     }
     
     .table tbody tr:hover {
-        background-color: var(--background-elevated);
+        background-color: #F8F9FA;
     }
     
     .table td {
         vertical-align: middle;
-        padding: 1rem 0.75rem;
-        border-color: var(--border-color);
+        padding: 0.75rem;
+        border-color: #E0E0E0;
     }
     
-    .btn-tech-primary {
-        background-color: var(--emerald-accent);
-        border-color: var(--emerald-accent);
-        color: var(--pure-white);
+    .btn-outline-success {
+        border-color: #00D4AA !important;
+        color: #00D4AA !important;
     }
     
-    .btn-tech-primary:hover {
-        background-color: var(--success-green);
-        border-color: var(--success-green);
-        color: var(--pure-white);
+    .btn-outline-success:hover {
+        background-color: #00D4AA !important;
+        color: #FFFFFF !important;
     }
     
-    .btn-tech-secondary {
-        background-color: transparent;
-        border-color: var(--border-color);
-        color: var(--text-secondary);
+    .btn-outline-warning {
+        border-color: #EEC643 !important;
+        color: #EEC643 !important;
     }
     
-    .btn-tech-secondary:hover {
-        background-color: var(--background-elevated);
-        border-color: var(--emerald-accent);
-        color: var(--text-primary);
+    .btn-outline-warning:hover {
+        background-color: #EEC643 !important;
+        color: #040F0F !important;
+    }
+    
+    .btn-outline-info {
+        border-color: #FF6B9D !important;
+        color: #FF6B9D !important;
+    }
+    
+    .btn-outline-info:hover {
+        background-color: #FF6B9D !important;
+        color: #FFFFFF !important;
+    }
+    
+    .btn-outline-danger {
+        border-color: #DC3545 !important;
+        color: #DC3545 !important;
+    }
+    
+    .btn-outline-danger:hover {
+        background-color: #DC3545 !important;
+        color: #FFFFFF !important;
     }
     
     .empty-state {
-        background-color: var(--background-secondary);
-        border: 1px solid var(--border-color);
-        border-radius: var(--border-radius-lg);
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(248, 249, 250, 0.9) 100%);
+        border: 1px solid rgba(0, 212, 170, 0.2);
+        border-radius: 15px;
         padding: 4rem 2rem;
         text-align: center;
-        box-shadow: var(--shadow-sm);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        backdrop-filter: blur(10px);
     }
     
     .empty-state i {
-        color: var(--text-secondary);
+        color: #BEBFC4;
         margin-bottom: 1.5rem;
     }
     
     .empty-state h4 {
-        color: var(--text-primary);
+        color: #040F0F;
         margin-bottom: 1rem;
     }
     
     .empty-state p {
-        color: var(--text-secondary);
+        color: #BEBFC4;
         margin-bottom: 2rem;
     }
     
@@ -186,17 +275,6 @@
         margin: 0 0.25rem;
         font-size: 0.875rem;
         padding: 0.5rem 1rem;
-    }
-    
-    .participant-link {
-        color: var(--emerald-accent);
-        text-decoration: none;
-        font-weight: 600;
-    }
-    
-    .participant-link:hover {
-        color: var(--success-green);
-        text-decoration: none;
     }
     
     .action-group {
@@ -209,6 +287,11 @@
     .action-group .btn {
         font-size: 0.8rem;
         padding: 0.4rem 0.8rem;
+        transition: all 0.3s ease;
+    }
+    
+    .action-group .btn:hover {
+        transform: translateY(-2px);
     }
 </style>
 {% endblock %}
@@ -216,23 +299,23 @@
 {% block content %}
 {% include 'components/navbar.html' %}
 
+<div class="main-content">
 <div class="container-fluid px-4">
     <!-- Page Header -->
     <div class="modern-page-header">
         <div class="row align-items-center">
             <div class="col-md-8">
                 <h1 class="page-title">
-                    <i class="fas fa-users"></i>
                     Lista de Participantes
                 </h1>
                 <p class="page-subtitle">Administre todos los participantes registrados en el sistema</p>
             </div>
             <div class="col-md-4 text-end">
                 <div class="action-buttons">
-                    <a href="{% url 'dashboard' %}" class="btn btn-tech-secondary">
+                    <a href="{% url 'dashboard' %}" class="btn btn-dashboard">
                         <i class="fas fa-arrow-left me-2"></i>Dashboard
                     </a>
-                    <button class="btn btn-tech-primary" onclick="alert('Funcionalidad en desarrollo: Agregar nuevo participante')">
+                    <button class="btn btn-add-primary" onclick="alert('Funcionalidad en desarrollo: Agregar nuevo participante')">
                         <i class="fas fa-user-plus me-2"></i>Nuevo Participante
                     </button>
                 </div>
@@ -277,19 +360,17 @@
                             <table class="table table-hover mb-0" id="participantesTable">
                                 <thead>
                                     <tr>
-                                        <th class="ps-3" style="width: 35%;">
-                                            <i class="fas fa-user me-2"></i>Participante
-                                        </th>
-                                        <th style="width: 30%;">
-                                            <i class="fas fa-envelope me-2"></i>Email
-                                        </th>
-                                        <th class="text-center" style="width: 35%;">Acciones</th>
+                                        <th>Participante</th>
+                                        <th>Email</th>
+                                        <th>Rol</th>
+                                        <th>Eventos</th>
+                                        <th>Acciones</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {% for p in participantes %}
                                     <tr class="participant-row">
-                                        <td class="ps-3">
+                                        <td>
                                             <div class="d-flex align-items-center">
                                                 <div class="avatar me-3">
                                                     {{ p.nombre_participante|first|upper }}
@@ -308,7 +389,13 @@
                                             <i class="fas fa-envelope text-muted me-2"></i>
                                             {{ p.email_participante }}
                                         </td>
-                                        <td class="text-center align-middle">
+                                        <td class="align-middle">
+                                            <span class="badge bg-primary">{{ p.rol_participante|default:"Participante" }}</span>
+                                        </td>
+                                        <td class="align-middle text-center">
+                                            <span class="badge bg-info">0 eventos</span>
+                                        </td>
+                                        <td class="align-middle">
                                             <div class="action-group">
                                                 <a href="{% url 'detalle_participante' p.id_participante %}" class="btn btn-outline-success btn-sm" title="Ver Detalles">
                                                     <i class="fas fa-eye me-1"></i>Ver
@@ -343,10 +430,10 @@
                     <h4>No hay participantes registrados</h4>
                     <p>Comience agregando participantes para generar constancias.</p>
                     <div class="action-buttons">
-                        <button class="btn btn-tech-primary btn-lg me-2" onclick="alert('Funcionalidad en desarrollo: Agregar participante')">
+                        <button class="btn btn-add-primary btn-lg me-2" onclick="alert('Funcionalidad en desarrollo: Agregar participante')">
                             <i class="fas fa-user-plus me-2"></i>Agregar Participante
                         </button>
-                        <button class="btn btn-tech-secondary btn-lg" onclick="alert('Funcionalidad en desarrollo: Importar CSV')">
+                        <button class="btn btn-secondary btn-lg" onclick="alert('Funcionalidad en desarrollo: Importar CSV')">
                             <i class="fas fa-upload me-2"></i>Importar desde CSV
                         </button>
                     </div>
@@ -355,6 +442,21 @@
         </div>
     {% endif %}
 </div>
+</div>
+
+<!-- Footer -->
+<footer class="bg-dark text-white py-3 mt-auto">
+    <div class="container-fluid px-4">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <p class="mb-0">&copy; 2024 Sistema de Constancias. Todos los derechos reservados.</p>
+            </div>
+            <div class="col-md-6 text-end">
+                <small class="text-muted">Desarrollado con Django & Bootstrap</small>
+            </div>
+        </div>
+    </div>
+</footer>
 {% endblock %}
 
 {% block extra_js %}

@@ -202,48 +202,37 @@
         color: #FFFFFF !important;
     }
     
-    /* Sección de estadísticas */
-    .stats-section {
-        background: linear-gradient(135deg, var(--rich-black) 0%, #1a1a1a 100%);
-        border-radius: 15px;
-        padding: 2rem;
-        margin: 2rem 0;
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-    }
-    
-    .stat-card {
-        background: rgba(255, 255, 255, 0.05);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 12px;
-        padding: 1.5rem;
-        text-align: center;
+    /* Botones principales unificados */
+    .btn-dashboard {
+        background-color: #6C757D;
+        border-color: #6C757D;
+        color: #FFFFFF;
+        font-weight: 600;
         transition: all 0.3s ease;
     }
     
-    .stat-card:hover {
-        background: rgba(255, 255, 255, 0.08);
-        transform: translateY(-5px);
+    .btn-dashboard:hover {
+        background-color: #FF6B9D;
+        border-color: #FF6B9D;
+        color: #FFFFFF;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(255, 107, 157, 0.4);
     }
     
-    .stat-number {
-        font-size: 2.5rem;
-        font-weight: 700;
+    .btn-add-primary {
+        background-color: #00D4AA;
+        border-color: #00D4AA;
         color: #FFFFFF;
-        margin-bottom: 0.5rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
     }
     
-    .stat-label {
+    .btn-add-primary:hover {
+        background-color: #00A693;
+        border-color: #00A693;
         color: #FFFFFF;
-        font-size: 0.9rem;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        font-weight: 500;
-    }
-    
-    .stat-icon {
-        font-size: 2rem;
-        color: #FFFFFF;
-        margin-bottom: 1rem;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(0, 166, 147, 0.4);
     }
     
     .event-link {
@@ -269,61 +258,18 @@
         <div class="row align-items-center">
             <div class="col-md-8">
                 <h1 class="page-title">
-                    <i class="fas fa-calendar-alt"></i>
                     Lista de Eventos
                 </h1>
                 <p class="page-subtitle">Administre todos los eventos registrados en el sistema</p>
             </div>
             <div class="col-md-4 text-end">
                 <div class="action-buttons">
-                    <a href="{% url 'dashboard' %}" class="btn btn-tech-secondary">
+                    <a href="{% url 'dashboard' %}" class="btn btn-dashboard">
                         <i class="fas fa-arrow-left me-2"></i>Dashboard
                     </a>
-                    <button class="btn btn-tech-primary" onclick="alert('Funcionalidad en desarrollo: Crear nuevo evento')">
+                    <button class="btn btn-add-primary" onclick="alert('Funcionalidad en desarrollo: Crear nuevo evento')">
                         <i class="fas fa-plus me-2"></i>Nuevo Evento
                     </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Sección de Estadísticas -->
-    <div class="stats-section">
-        <div class="row">
-            <div class="col-md-3 mb-3">
-                <div class="stat-card">
-                    <div class="stat-icon">
-                        <i class="fas fa-calendar-check"></i>
-                    </div>
-                    <div class="stat-number">{{ eventos|length|default:0 }}</div>
-                    <div class="stat-label">Total Eventos</div>
-                </div>
-            </div>
-            <div class="col-md-3 mb-3">
-                <div class="stat-card">
-                    <div class="stat-icon">
-                        <i class="fas fa-clock"></i>
-                    </div>
-                    <div class="stat-number">0</div>
-                    <div class="stat-label">En Progreso</div>
-                </div>
-            </div>
-            <div class="col-md-3 mb-3">
-                <div class="stat-card">
-                    <div class="stat-icon">
-                        <i class="fas fa-check-circle"></i>
-                    </div>
-                    <div class="stat-number">0</div>
-                    <div class="stat-label">Finalizados</div>
-                </div>
-            </div>
-            <div class="col-md-3 mb-3">
-                <div class="stat-card">
-                    <div class="stat-icon">
-                        <i class="fas fa-calendar-plus"></i>
-                    </div>
-                    <div class="stat-number">{{ eventos|length|default:0 }}</div>
-                    <div class="stat-label">Este Mes</div>
                 </div>
             </div>
         </div>
@@ -349,7 +295,7 @@
                                 <tbody>
                                     {% for e in eventos %}
                                     <tr>
-                                        <td class="ps-3">
+                                        <td>
                                             <div class="d-flex align-items-center">
                                                 <div class="event-icon me-3">
                                                     <i class="fas fa-calendar-alt"></i>
@@ -364,7 +310,11 @@
                                                 </div>
                                             </div>
                                         </td>
-                                        <td class="text-center">
+                                        <td>{{ e.fecha_evento|default:"No especificada" }}</td>
+                                        <td>{{ e.modalidad_evento|default:"No especificada" }}</td>
+                                        <td>{{ e.duracion_horas|default:"No especificada" }} horas</td>
+                                        <td>{{ e.participantes.count|default:"0" }}</td>
+                                        <td>
                                             <div class="btn-group" role="group" aria-label="Acciones del evento">
                                                 <a href="{% url 'detalle_evento' e.id_evento %}" class="btn btn-outline-success btn-sm" title="Ver Detalles">
                                                     <i class="fas fa-eye me-1"></i>Ver
