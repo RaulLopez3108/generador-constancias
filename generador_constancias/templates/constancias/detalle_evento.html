@@ -5,55 +5,186 @@
 
 {% block extra_css %}
 <style>
+    body {
+        background-color: #FFFFFF;
+        color: #040F0F;
+        padding-top: 80px;
+    }
+    
+    .main-content {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+        padding-bottom: 60px;
+    }
+    
     .event-header {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, #040F0F 0%, #1a1a1a 100%);
         color: white;
         border-radius: 15px;
         padding: 2rem;
         margin-bottom: 2rem;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
     }
+    
     .info-card {
         border: none;
-        border-radius: 10px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         margin-bottom: 1.5rem;
-    }
-    .participant-item {
-        border: 1px solid #e9ecef;
-        border-radius: 8px;
-        padding: 1rem;
-        margin-bottom: 0.5rem;
+        background-color: #FFFFFF;
         transition: all 0.3s ease;
     }
-    .participant-item:hover {
-        background-color: #f8f9fa;
-        border-color: #28a745;
+    
+    .info-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
     }
+    
+    .card-header-colored {
+        background: linear-gradient(135deg, #040F0F 0%, #1a1a1a 100%);
+        color: white;
+        border-bottom: none;
+        border-radius: 12px 12px 0 0 !important;
+    }
+    
+    .card-header-colored h5 {
+        color: white;
+    }
+    
+    .navigation-buttons {
+        margin-bottom: 1rem;
+    }
+    
+    .btn-outline-secondary:hover {
+        background-color: #FF6B9D !important;
+        border-color: #FF6B9D !important;
+        color: white !important;
+    }
+    
+    .btn-outline-pink {
+        color: #FF6B9D;
+        border-color: #FF6B9D;
+        background-color: white;
+    }
+    
+    .btn-outline-pink:hover {
+        background-color: #FF6B9D !important;
+        border-color: #FF6B9D !important;
+        color: white !important;
+    }
+    
+    .avatar-large {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #00D4AA 0%, #40E0D0 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        font-weight: bold;
+        color: white;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+    
+    .participant-item {
+        border: 1px solid #E0E0E0;
+        border-radius: 12px;
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        transition: all 0.3s ease;
+        background: rgba(255, 255, 255, 0.9);
+        backdrop-filter: blur(10px);
+    }
+    
+    .participant-item:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0, 212, 170, 0.15);
+        border-color: #00D4AA;
+    }
+    
+    .stat-number {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: #00D4AA;
+        line-height: 1;
+    }
+    
+    .stat-label {
+        color: #BEBFC4;
+        font-weight: 500;
+        text-transform: uppercase;
+        font-size: 0.875rem;
+        letter-spacing: 0.5px;
+    }
+    
     .badge-custom {
-        font-size: 0.9rem;
+        background-color: #00D4AA;
+        color: white;
+        font-size: 0.875rem;
         padding: 0.5rem 1rem;
+        border-radius: 25px;
+    }
+    
+    .event-link {
+        color: #00D4AA;
+        text-decoration: none;
+        font-weight: 500;
+        transition: color 0.3s ease;
+    }
+    
+    .event-link:hover {
+        color: #FF6B9D;
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 3rem 1rem;
+        color: #BEBFC4;
     }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="container mt-4">
+<!-- Incluir navbar -->
+{% include 'components/navbar.html' %}
+
+<div class="main-content">
+<div class="container-fluid px-4">
+    <!-- Botón de navegación -->
+    <div class="navigation-buttons">
+        <div class="row">
+            <div class="col-12">
+                <a href="{% url 'lista_eventos' %}" class="btn btn-outline-secondary" style="border-color: #6c757d; color: #6c757d; transition: all 0.3s ease;">
+                    <i class="fas fa-arrow-left me-2"></i>Regresar
+                </a>
+            </div>
+        </div>
+    </div>
+    
     <!-- Header del evento -->
     <div class="event-header">
         <div class="row align-items-center">
-            <div class="col-md-8">
-                <h1 class="mb-2">
-                    <i class="fas fa-calendar-alt me-3"></i>
-                    {{ evento.titulo_evento }}
-                </h1>
-                <p class="mb-0 opacity-75">Información detallada del evento y participantes</p>
+            <div class="col-md-2 text-center">
+                <div class="avatar-large mx-auto">
+                    <i class="fas fa-calendar-alt"></i>
+                </div>
             </div>
-            <div class="col-md-4 text-end">
-                <a href="{% url 'lista_eventos' %}" class="btn btn-outline-light me-2">
-                    <i class="fas fa-arrow-left"></i> Volver a Eventos
-                </a>
-                <button class="btn btn-warning">
-                    <i class="fas fa-edit"></i> Editar
+            <div class="col-md-7">
+                <h1 class="mb-2">{{ evento.titulo_evento }}</h1>
+                <p class="mb-1 opacity-75">
+                    <i class="fas fa-calendar me-2"></i>
+                    Del {{ evento.fecha_inicio|date:"d/m/Y" }} al {{ evento.fecha_fin|date:"d/m/Y" }}
+                </p>
+                <p class="mb-0 opacity-75">
+                    <i class="fas fa-hashtag me-2"></i>
+                    ID: {{ evento.id_evento }}
+                </p>
+            </div>
+            <div class="col-md-3 text-end">
+                <button class="btn btn-outline-light">
+                    <i class="fas fa-edit me-2"></i>Editar
                 </button>
             </div>
         </div>
@@ -63,7 +194,7 @@
         <!-- Información del evento -->
         <div class="col-md-6">
             <div class="info-card card h-100">
-                <div class="card-header bg-primary text-white">
+                <div class="card-header card-header-colored">
                     <h5 class="mb-0">
                         <i class="fas fa-info-circle me-2"></i>
                         Información del Evento
@@ -127,34 +258,34 @@
         <!-- Estadísticas rápidas -->
         <div class="col-md-6">
             <div class="info-card card h-100">
-                <div class="card-header bg-success text-white">
+                <div class="card-header card-header-colored">
                     <h5 class="mb-0">
-                        <i class="fas fa-chart-pie me-2"></i>
+                        <i class="fas fa-chart-bar me-2"></i>
                         Estadísticas
                     </h5>
                 </div>
                 <div class="card-body text-center">
-                    <div class="row">
+                    <div class="row mb-4">
                         <div class="col-6">
                             <div class="border-end">
-                                <h2 class="text-success mb-1">{{ participantes|length }}</h2>
-                                <p class="text-muted mb-0">Participantes</p>
+                                <div class="stat-number">{{ participantes|length }}</div>
+                                <div class="stat-label">Participantes</div>
                             </div>
                         </div>
                         <div class="col-6">
-                            <h2 class="text-warning mb-1">0</h2>
-                            <p class="text-muted mb-0">Constancias</p>
+                            <button class="btn btn-sm w-100 h-100 d-flex flex-column align-items-center justify-content-center" onclick="showAnalysisModal()" style="min-height: 70px; border: none; background: transparent;">
+                                <div class="stat-number" style="font-size: 1.5rem;"><i class="fas fa-chart-line"></i></div>
+                                <div class="stat-label">Análisis Detallado</div>
+                            </button>
                         </div>
                     </div>
                     
-                    <hr>
-                    
                     <div class="d-grid gap-2">
-                        <button class="btn btn-success">
-                            <i class="fas fa-user-plus"></i> Agregar Participante
+                        <button class="btn btn-outline-success">
+                            <i class="fas fa-user-plus me-2"></i>Agregar Participante
                         </button>
-                        <button class="btn btn-warning">
-                            <i class="fas fa-certificate"></i> Generar Constancias
+                        <button class="btn btn-outline-pink">
+                            <i class="fas fa-certificate me-2"></i>Generar Constancias
                         </button>
                     </div>
                 </div>
@@ -166,18 +297,18 @@
     <div class="row mt-4">
         <div class="col-12">
             <div class="info-card card">
-                <div class="card-header bg-light">
+                <div class="card-header card-header-colored">
                     <div class="d-flex justify-content-between align-items-center">
                         <h5 class="mb-0">
-                            <i class="fas fa-users text-success me-2"></i>
+                            <i class="fas fa-users me-2"></i>
                             Participantes Inscritos ({{ participantes|length }})
                         </h5>
                         <div class="btn-group">
-                            <button class="btn btn-sm btn-outline-success">
-                                <i class="fas fa-user-plus"></i> Agregar
+                            <button class="btn btn-outline-light btn-sm">
+                                <i class="fas fa-user-plus me-2"></i>Agregar
                             </button>
-                            <button class="btn btn-sm btn-outline-info">
-                                <i class="fas fa-download"></i> Exportar
+                            <button class="btn btn-outline-light btn-sm">
+                                <i class="fas fa-download me-2"></i>Exportar
                             </button>
                         </div>
                     </div>
@@ -190,13 +321,13 @@
                                 <div class="participant-item">
                                     <div class="d-flex align-items-center">
                                         <div class="me-3">
-                                            <div class="rounded-circle bg-success text-white d-flex align-items-center justify-content-center" style="width: 50px; height: 50px; font-size: 1.2rem; font-weight: bold;">
+                                            <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px; background: linear-gradient(135deg, #00D4AA 0%, #40E0D0 100%); color: white; font-size: 1.2rem; font-weight: bold;">
                                                 {{ p.nombre_participante|first|upper }}
                                             </div>
                                         </div>
                                         <div class="flex-grow-1">
                                             <h6 class="mb-1">
-                                                <a href="{% url 'detalle_participante' p.id_participante %}" class="text-decoration-none text-success">
+                                                <a href="{% url 'detalle_participante' p.id_participante %}" class="event-link">
                                                     {{ p.nombre_participante }}
                                                 </a>
                                             </h6>
@@ -221,16 +352,79 @@
                             {% endfor %}
                         </div>
                     {% else %}
-                        <div class="text-center py-4">
-                            <i class="fas fa-user-slash fa-3x text-muted mb-3"></i>
-                            <h5 class="text-muted">Aún no hay participantes registrados</h5>
-                            <p class="text-muted mb-4">Agregue participantes para comenzar a gestionar constancias.</p>
-                            <button class="btn btn-success">
-                                <i class="fas fa-user-plus"></i> Agregar Primer Participante
+                        <div class="empty-state">
+                            <i class="fas fa-user-slash fa-4x mb-3"></i>
+                            <h5>Aún no hay participantes registrados</h5>
+                            <p class="mb-4">Agregue participantes para comenzar a gestionar constancias.</p>
+                            <button class="btn btn-outline-success">
+                                <i class="fas fa-user-plus me-2"></i>Agregar Primer Participante
                             </button>
                         </div>
                     {% endif %}
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+<!-- Footer -->
+<footer class="bg-dark text-white py-3 mt-auto">
+    <div class="container-fluid px-4">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <p class="mb-0">&copy; 2024 Sistema de Constancias. Todos los derechos reservados.</p>
+            </div>
+            <div class="col-md-6 text-end">
+                <small class="text-muted">Desarrollado con Django & Bootstrap</small>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- Modal para Análisis Detallado -->
+<div class="modal fade" id="analysisModal" tabindex="-1" aria-labelledby="analysisModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-info text-white">
+                <h5 class="modal-title" id="analysisModalLabel">
+                    <i class="fas fa-chart-line me-2"></i>Análisis Detallado
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center py-4">
+                <div class="mb-4">
+                    <i class="fas fa-cogs fa-4x text-info mb-3"></i>
+                    <h4 class="text-info">Funcionalidad en Desarrollo</h4>
+                </div>
+                <p class="text-muted mb-4">
+                    Estamos trabajando en un dashboard avanzado de análisis de datos que incluirá:
+                </p>
+                <div class="row text-start">
+                    <div class="col-md-6">
+                        <ul class="list-unstyled text-muted">
+                            <li><i class="fas fa-check-circle text-success me-2"></i>Métricas de participación</li>
+                            <li><i class="fas fa-check-circle text-success me-2"></i>Tendencias de asistencia</li>
+                            <li><i class="fas fa-check-circle text-success me-2"></i>Reportes personalizados</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <ul class="list-unstyled text-muted">
+                            <li><i class="fas fa-check-circle text-success me-2"></i>Gráficos interactivos</li>
+                            <li><i class="fas fa-check-circle text-success me-2"></i>Análisis demográfico</li>
+                            <li><i class="fas fa-check-circle text-success me-2"></i>Exportación avanzada</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="alert alert-info mt-3">
+                    <i class="fas fa-info-circle me-2"></i>
+                    <strong>Próximamente disponible</strong> en futuras actualizaciones del sistema.
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-times me-2"></i>Cerrar
+                </button>
             </div>
         </div>
     </div>
@@ -243,6 +437,29 @@ $(document).ready(function() {
     // Tooltip para botones
     $('[data-bs-toggle="tooltip"]').tooltip();
 });
+
+// Función para mostrar modal de análisis detallado
+function showAnalysisModal() {
+    console.log('showAnalysisModal called'); // Debug
+    
+    // Intentar con Bootstrap 5 nativo primero
+    const modal = document.getElementById('analysisModal');
+    if (modal) {
+        console.log('Modal element found, trying Bootstrap 5'); // Debug
+        const bootstrapModal = new bootstrap.Modal(modal);
+        bootstrapModal.show();
+    } else {
+        console.log('Modal element not found, trying jQuery'); // Debug
+        // Fallback a jQuery si está disponible
+        if (typeof $ !== 'undefined') {
+            $('#analysisModal').modal('show');
+        } else {
+            console.log('jQuery not available, showing alert'); // Debug
+            // Último recurso: alert
+            alert('Funcionalidad en desarrollo: Estamos trabajando en un dashboard avanzado de análisis de datos que incluirá métricas de participación, tendencias de asistencia, reportes personalizados y gráficos interactivos. ¡Próximamente disponible!');
+        }
+    }
+}
 </script>
 {% endblock %}
 
