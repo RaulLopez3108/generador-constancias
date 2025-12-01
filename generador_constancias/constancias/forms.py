@@ -28,6 +28,7 @@ class EventoForm(forms.ModelForm):
     archivo_plantilla = forms.FileField(
         label="Plantilla de Constancia",
         help_text="Suba un archivo .docx para usar como plantilla de constancia",
+        required=False,  # No obligatorio para permitir editar eventos sin cambiar plantilla
         widget=forms.FileInput(attrs={
             'class': 'form-control',
             'accept': '.docx,.doc'
@@ -37,7 +38,7 @@ class EventoForm(forms.ModelForm):
     class Meta:
         model = Evento
         fields = ['titulo_evento', 'tipo_evento', 'modalidad_evento', 'fecha_inicio', 
-                 'fecha_fin', 'duracion_horas', 'descripcion']
+                 'fecha_fin', 'duracion_horas', 'descripcion', 'participantes']
         
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -89,19 +90,41 @@ class EventoForm(forms.ModelForm):
         self.fields['modalidad_evento'].required = True
         self.fields['fecha_inicio'].required = True
         self.fields['fecha_fin'].required = True
-        self.fields['archivo_plantilla'].required = True
+        
+        # El archivo de plantilla solo es obligatorio al crear un nuevo evento
+        if not self.instance or not self.instance.pk:
+            self.fields['archivo_plantilla'].required = True
+        else:
+            self.fields['archivo_plantilla'].required = False
         
         # Campos opcionales
         self.fields['duracion_horas'].required = False
         self.fields['descripcion'].required = False
+        
+        # Configurar campo participantes si está presente
+        if 'participantes' in self.fields:
+            self.fields['participantes'].widget.attrs.update({
+                'class': 'form-control',
+                'multiple': True,
+                'size': '5'
+            })
+            self.fields['participantes'].required = False
 
     def clean_archivo_plantilla(self):
         archivo = self.cleaned_data.get('archivo_plantilla')
+        
+        # Si es un evento nuevo y no hay archivo, es requerido
+        if not self.instance or not self.instance.pk:
+            if not archivo:
+                raise forms.ValidationError("La plantilla es obligatoria para eventos nuevos.")
+        
+        # Si hay archivo, validarlo
         if archivo:
             if not archivo.name.endswith(('.docx', '.doc')):
                 raise forms.ValidationError("El archivo debe ser un documento de Word (.docx o .doc)")
             if archivo.size > 5 * 1024 * 1024:  # 5MB máximo
                 raise forms.ValidationError("El archivo no puede ser mayor a 5MB")
+        
         return archivo
 
     def clean(self):

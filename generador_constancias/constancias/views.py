@@ -10,11 +10,30 @@ from io import BytesIO
 import os
 import csv
 import io
+import zipfile
+import tempfile
+import subprocess
 from django.conf import settings
 from .models import Participante, Evento, Plantilla, TipoEvento, ModalidadEvento
 from django.db.models import Min, Count
 from datetime import datetime, timedelta
 import logging
+
+# Para generación de PDF con ReportLab
+from reportlab.lib.pagesizes import letter
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.lib.units import inch
+from reportlab.lib.enums import TA_CENTER, TA_JUSTIFY
+from reportlab.pdfgen import canvas
+
+# Para conversión a PDF
+try:
+    from docx2pdf import convert
+    DOCX2PDF_AVAILABLE = True
+except ImportError:
+    DOCX2PDF_AVAILABLE = False
+    LIBREOFFICE_AVAILABLE = False
 
 # Configurar logging
 logger = logging.getLogger(__name__)
@@ -97,6 +116,7 @@ def detalle_evento(request,pk):
     
 
 @login_required
+@login_required
 def generar_constancia(request, participante_pk, evento_pk, plantilla_pk):
     # 1. OBTENER OBJETOS
     try:
@@ -126,7 +146,6 @@ def generar_constancia(request, participante_pk, evento_pk, plantilla_pk):
     except Exception as e:
         return HttpResponse(f"Error al cargar el archivo DOCX: {e}", status=500)
 
-
     # 4. LÓGICA DE REEMPLAZO (Función central para sustituir texto)
     def replace_text_in_element(element, replacements):
         """Reemplaza los marcadores en un párrafo o celda."""
@@ -148,16 +167,34 @@ def generar_constancia(request, participante_pk, evento_pk, plantilla_pk):
                 for cell in row.cells:
                     for p in cell.paragraphs:
                         replace_text_in_element(p, replacements)
+                        
+        # C. Reemplazar en headers y footers
+        for section in doc.sections:
+            # Header
+            if section.header:
+                for p in section.header.paragraphs:
+                    replace_text_in_element(p, replacements)
+                for table in section.header.tables:
+                    for row in table.rows:
+                        for cell in row.cells:
+                            for p in cell.paragraphs:
+                                replace_text_in_element(p, replacements)
+            
+            # Footer
+            if section.footer:
+                for p in section.footer.paragraphs:
+                    replace_text_in_element(p, replacements)
+                for table in section.footer.tables:
+                    for row in table.rows:
+                        for cell in row.cells:
+                            for p in cell.paragraphs:
+                                replace_text_in_element(p, replacements)
 
     replace_all_markers(document, sustituciones)
 
-
-    # 5. PREPARAR RESPUESTA HTTP
-    
-    # Prepara el nombre del archivo para la descarga
+    # 5. PREPARAR RESPUESTA HTTP DOCX
     nombre_archivo = f"Constancia_{participante.nombre_participante.replace(' ', '_')}.docx"
     
-    # Crea el objeto de respuesta HTTP para un archivo DOCX
     response = HttpResponse(
         content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document'
     )
@@ -165,8 +202,365 @@ def generar_constancia(request, participante_pk, evento_pk, plantilla_pk):
     
     # Guarda el documento modificado directamente en la respuesta
     document.save(response)
-
     return response
+
+
+def convertir_docx_a_pdf(docx_path):
+    """Convierte un archivo DOCX a PDF usando diferentes métodos disponibles"""
+    
+    # Método 1: Intentar con docx2pdf (Windows)
+    if DOCX2PDF_AVAILABLE:
+        try:
+            with tempfile.NamedTemporaryFile(suffix='.pdf', delete=False) as temp_pdf:
+                temp_pdf_path = temp_pdf.name
+            
+            convert(docx_path, temp_pdf_path)
+            
+            with open(temp_pdf_path, 'rb') as pdf_file:
+                pdf_content = pdf_file.read()
+            
+            os.unlink(temp_pdf_path)
+            return pdf_content
+            
+        except Exception as e:
+            logger.warning(f"docx2pdf falló: {e}")
+    
+    # Método 2: Intentar con LibreOffice (Linux/Mac)
+    if LIBREOFFICE_AVAILABLE:
+        try:
+            with tempfile.TemporaryDirectory() as temp_dir:
+                # Ejecutar LibreOffice en modo headless
+                cmd = [
+                    'libreoffice', 
+                    '--headless', 
+                    '--convert-to', 
+                    'pdf', 
+                    '--outdir', 
+                    temp_dir, 
+                    docx_path
+                ]
+                
+                result = subprocess.run(cmd, capture_output=True, timeout=30)
+                
+                if result.returncode == 0:
+                    # Buscar el archivo PDF generado
+                    pdf_filename = os.path.splitext(os.path.basename(docx_path))[0] + '.pdf'
+                    pdf_path = os.path.join(temp_dir, pdf_filename)
+                    
+                    if os.path.exists(pdf_path):
+                        with open(pdf_path, 'rb') as pdf_file:
+                            return pdf_file.read()
+                    
+        except Exception as e:
+            logger.warning(f"LibreOffice conversion falló: {e}")
+    
+    # Método 3: Fallback - crear PDF simple con ReportLab
+    logger.info("Usando fallback de ReportLab para generar PDF")
+    return generar_pdf_simple_fallback(docx_path)
+
+
+def generar_pdf_simple_fallback(docx_path):
+    """Genera un PDF simple extrayendo texto del DOCX"""
+    try:
+        from reportlab.pdfgen import canvas
+        from reportlab.lib.pagesizes import letter
+        
+        # Leer el contenido del DOCX
+        doc = Document(docx_path)
+        
+        buffer = BytesIO()
+        p = canvas.Canvas(buffer, pagesize=letter)
+        
+        y_position = 750
+        line_height = 20
+        
+        for paragraph in doc.paragraphs:
+            if paragraph.text.strip():
+                # Dividir líneas largas
+                text = paragraph.text
+                if len(text) > 80:
+                    words = text.split()
+                    line = ""
+                    for word in words:
+                        if len(line + word) < 80:
+                            line += word + " "
+                        else:
+                            p.drawString(72, y_position, line.strip())
+                            y_position -= line_height
+                            line = word + " "
+                            
+                            if y_position < 50:
+                                p.showPage()
+                                y_position = 750
+                    
+                    if line.strip():
+                        p.drawString(72, y_position, line.strip())
+                        y_position -= line_height
+                else:
+                    p.drawString(72, y_position, text)
+                    y_position -= line_height
+                
+                if y_position < 50:
+                    p.showPage()
+                    y_position = 750
+        
+        p.save()
+        return buffer.getvalue()
+        
+    except Exception as e:
+        logger.error(f"Error en PDF fallback: {e}")
+        raise
+    
+    # Configuración del documento PDF
+    doc = SimpleDocTemplate(
+        buffer,
+        pagesize=A4,
+        rightMargin=72,
+        leftMargin=72,
+        topMargin=72,
+        bottomMargin=18
+    )
+    
+    # Estilos
+    styles = getSampleStyleSheet()
+    title_style = ParagraphStyle(
+        'CustomTitle',
+        parent=styles['Heading1'],
+        fontSize=24,
+        spaceAfter=30,
+        alignment=TA_CENTER,
+        textColor='navy'
+    )
+    
+    subtitle_style = ParagraphStyle(
+        'CustomSubtitle',
+        parent=styles['Heading2'],
+        fontSize=18,
+        spaceAfter=20,
+        alignment=TA_CENTER
+    )
+    
+    body_style = ParagraphStyle(
+        'CustomBody',
+        parent=styles['Normal'],
+        fontSize=12,
+        spaceAfter=12,
+        alignment=TA_JUSTIFY,
+        leading=16
+    )
+    
+    center_style = ParagraphStyle(
+        'CustomCenter',
+        parent=styles['Normal'],
+        fontSize=12,
+        alignment=TA_CENTER,
+        spaceAfter=12
+    )
+    
+    # Contenido del PDF
+    story = []
+    
+    # Título principal
+    story.append(Paragraph("CONSTANCIA DE PARTICIPACIÓN", title_style))
+    story.append(Spacer(1, 20))
+    
+    # Información del evento
+    story.append(Paragraph(f"<b>{sustituciones['{{TITULO_EVENTO}}']}</b>", subtitle_style))
+    story.append(Spacer(1, 15))
+    
+    # Texto principal de la constancia
+    texto_constancia = f"""
+    Por medio de la presente se hace <b>CONSTAR</b> que <b>{sustituciones['{{NOMBRE_PARTICIPANTE}}']}</b> 
+    participó en el evento <b>{sustituciones['{{TITULO_EVENTO}}']}</b>, en calidad de <b>{sustituciones['{{ROL_PARTICIPANTE}}']}</b>.
+    """
+    
+    story.append(Paragraph(texto_constancia, body_style))
+    story.append(Spacer(1, 20))
+    
+    # Detalles del evento
+    detalles = f"""
+    <b>Tipo de Evento:</b> {sustituciones['{{TIPO_EVENTO}}']}<br/>
+    <b>Modalidad:</b> {sustituciones['{{MODALIDAD}}']}<br/>
+    <b>Fecha de Inicio:</b> {sustituciones['{{FECHA_INICIO}}']}<br/>
+    <b>Fecha de Finalización:</b> {sustituciones['{{FECHA_FIN}}']}<br/>
+    <b>Duración:</b> {sustituciones['{{DURACION_HORAS}}']} horas académicas
+    """
+    
+    story.append(Paragraph(detalles, body_style))
+    story.append(Spacer(1, 30))
+    
+    # Fecha de emisión
+    fecha_emision = datetime.now().strftime('%d de %B de %Y')
+    # Convertir nombres de meses al español
+    meses_esp = {
+        'January': 'enero', 'February': 'febrero', 'March': 'marzo', 'April': 'abril',
+        'May': 'mayo', 'June': 'junio', 'July': 'julio', 'August': 'agosto',
+        'September': 'septiembre', 'October': 'octubre', 'November': 'noviembre', 'December': 'diciembre'
+    }
+    for eng, esp in meses_esp.items():
+        fecha_emision = fecha_emision.replace(eng, esp)
+    
+    story.append(Paragraph(f"Se extiende la presente constancia el día {fecha_emision}.", center_style))
+    story.append(Spacer(1, 50))
+    
+    # Espacio para firma
+    story.append(Paragraph("_" * 50, center_style))
+    story.append(Paragraph("<b>Firma Autorizada</b>", center_style))
+    
+    # Generar el PDF
+    doc.build(story)
+    
+    buffer.seek(0)
+    return buffer.getvalue()
+
+
+@login_required
+@login_required
+def generar_constancias_masivas(request, evento_pk):
+    """Vista para generar todas las constancias de un evento en un ZIP"""
+    try:
+        evento = Evento.objects.get(pk=evento_pk)
+        
+        # Verificar que el evento tiene una plantilla
+        if not evento.plantilla_id:
+            messages.error(request, f"El evento '{evento.titulo_evento}' no tiene una plantilla asociada.")
+            return redirect('detalle_evento', pk=evento_pk)
+        
+        participantes = evento.participantes.all()
+        
+        if not participantes.exists():
+            messages.warning(request, "No hay participantes registrados en este evento.")
+            return redirect('detalle_evento', pk=evento_pk)
+        
+        plantilla = evento.plantilla_id
+        
+        # Crear un archivo ZIP en memoria
+        zip_buffer = BytesIO()
+        
+        with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED) as zip_file:
+            for participante in participantes:
+                try:
+                    # Cargar y procesar plantilla para cada participante
+                    document = Document(plantilla.archivo.path)
+                    
+                    # Definir sustituciones para cada participante
+                    sustituciones = {
+                        '{{TITULO_EVENTO}}': evento.titulo_evento,
+                        '{{NOMBRE_PARTICIPANTE}}': participante.nombre_participante,
+                        '{{ROL_PARTICIPANTE}}': participante.rol_participante,
+                        '{{FECHA_INICIO}}': evento.fecha_inicio.strftime('%d/%m/%Y'),
+                        '{{FECHA_FIN}}': evento.fecha_fin.strftime('%d/%m/%Y'),
+                        '{{DURACION_HORAS}}': str(evento.duracion_horas) if evento.duracion_horas else 'No especificada',
+                        '{{MODALIDAD}}': evento.get_modalidad_evento_display(),
+                        '{{TIPO_EVENTO}}': evento.get_tipo_evento_display(),
+                    }
+                    
+                    # Aplicar sustituciones
+                    def replace_text_in_element(element, replacements):
+                        for run in element.runs:
+                            for key, value in replacements.items():
+                                if key in run.text:
+                                    run.text = run.text.replace(key, value)
+
+                    def replace_all_markers(doc, replacements):
+                        for p in doc.paragraphs:
+                            replace_text_in_element(p, replacements)
+                        
+                        for table in doc.tables:
+                            for row in table.rows:
+                                for cell in row.cells:
+                                    for p in cell.paragraphs:
+                                        replace_text_in_element(p, replacements)
+
+                    replace_all_markers(document, sustituciones)
+                    
+                    # Crear archivo temporal para el DOCX procesado
+                    with tempfile.NamedTemporaryFile(suffix='.docx', delete=False) as temp_docx:
+                        document.save(temp_docx)
+                        temp_docx_path = temp_docx.name
+                    
+                    # Convertir a PDF
+                    pdf_content = convertir_docx_a_pdf(temp_docx_path)
+                    
+                    # Limpiar archivo temporal
+                    os.unlink(temp_docx_path)
+                    
+                    # Nombre del archivo dentro del ZIP
+                    nombre_archivo = f"Constancia_{participante.nombre_participante.replace(' ', '_')}_{participante.id_participante}.pdf"
+                    
+                    # Agregar al ZIP
+                    zip_file.writestr(nombre_archivo, pdf_content)
+                    
+                except Exception as e:
+                    logger.error(f"Error generando constancia para {participante.nombre_participante}: {e}")
+                    # En caso de error, agregar DOCX sin convertir
+                    try:
+                        document = Document(plantilla.archivo.path)
+                        
+                        sustituciones = {
+                            '{{TITULO_EVENTO}}': evento.titulo_evento,
+                            '{{NOMBRE_PARTICIPANTE}}': participante.nombre_participante,
+                            '{{ROL_PARTICIPANTE}}': participante.rol_participante,
+                            '{{FECHA_INICIO}}': evento.fecha_inicio.strftime('%d/%m/%Y'),
+                            '{{FECHA_FIN}}': evento.fecha_fin.strftime('%d/%m/%Y'),
+                            '{{DURACION_HORAS}}': str(evento.duracion_horas) if evento.duracion_horas else 'No especificada',
+                            '{{MODALIDAD}}': evento.get_modalidad_evento_display(),
+                            '{{TIPO_EVENTO}}': evento.get_tipo_evento_display(),
+                        }
+                        
+                        def replace_text_in_element(element, replacements):
+                            for run in element.runs:
+                                for key, value in replacements.items():
+                                    if key in run.text:
+                                        run.text = run.text.replace(key, value)
+
+                        def replace_all_markers(doc, replacements):
+                            for p in doc.paragraphs:
+                                replace_text_in_element(p, replacements)
+                            
+                            for table in doc.tables:
+                                for row in table.rows:
+                                    for cell in row.cells:
+                                        for p in cell.paragraphs:
+                                            replace_text_in_element(p, replacements)
+
+                        replace_all_markers(document, sustituciones)
+                        
+                        # Guardar como DOCX en el ZIP como fallback
+                        with tempfile.NamedTemporaryFile(suffix='.docx', delete=False) as temp_docx:
+                            document.save(temp_docx)
+                            temp_docx_path = temp_docx.name
+                        
+                        with open(temp_docx_path, 'rb') as f:
+                            docx_content = f.read()
+                        
+                        os.unlink(temp_docx_path)
+                        
+                        nombre_archivo_docx = f"Constancia_{participante.nombre_participante.replace(' ', '_')}_{participante.id_participante}.docx"
+                        zip_file.writestr(nombre_archivo_docx, docx_content)
+                        
+                    except Exception as e2:
+                        logger.error(f"Error también en fallback DOCX para {participante.nombre_participante}: {e2}")
+                        continue
+        
+        # Preparar respuesta
+        zip_buffer.seek(0)
+        
+        response = HttpResponse(zip_buffer.getvalue(), content_type='application/zip')
+        nombre_zip = f"Constancias_{evento.titulo_evento.replace(' ', '_')}_{len(participantes)}_participantes.zip"
+        response['Content-Disposition'] = f'attachment; filename="{nombre_zip}"'
+        
+        messages.success(request, f'Generadas constancias para {len(participantes)} participantes del evento "{evento.titulo_evento}"')
+        
+        return response
+        
+    except Evento.DoesNotExist:
+        messages.error(request, "El evento especificado no existe.")
+        return redirect('lista_eventos')
+    except Exception as e:
+        logger.error(f"Error en generación masiva: {e}")
+        messages.error(request, f"Error al generar las constancias: {str(e)}")
+        return redirect('detalle_evento', pk=evento_pk)
     
    
 
@@ -242,14 +636,8 @@ def pagina_generar_constancia(request):
                         'participantes_evento': participantes_evento,
                     })
                 
-                # Usar la plantilla del evento
-                plantilla = evento.plantilla_id
-                
-                # Aquí implementarías la generación masiva
-                messages.success(request, f"Generando constancias para {participantes_generar.count()} participantes del evento '{evento.titulo_evento}' con la plantilla del evento.")
-                # Por ahora redireccionar al primer participante como ejemplo
-                primer_participante = participantes_generar.first()
-                return redirect('generar_constancia', primer_participante.id_participante, evento.id_evento, plantilla.id_plantilla)
+                # Redirigir a la vista de generación masiva
+                return redirect('generar_constancias_masivas', evento_pk=evento.id_evento)
                 
             except Evento.DoesNotExist as e:
                 messages.error(request, f"Error: {str(e)}")
@@ -873,8 +1261,8 @@ def editar_evento(request, pk):
         
         if form.is_valid():
             try:
-                # Si se sube un nuevo archivo de plantilla
-                if 'archivo_plantilla' in request.FILES:
+                # Solo procesar nueva plantilla si se proporciona un archivo
+                if 'archivo_plantilla' in request.FILES and request.FILES['archivo_plantilla']:
                     archivo_plantilla = form.cleaned_data['archivo_plantilla']
                     
                     # Eliminar plantilla anterior si existe
@@ -897,7 +1285,7 @@ def editar_evento(request, pk):
                     
                     evento.plantilla_id = plantilla
                 
-                # Guardar el evento
+                # Guardar el evento (esto preservará los participantes)
                 evento = form.save()
                 
                 messages.success(request, f'El evento "{evento.titulo_evento}" ha sido actualizado exitosamente.')
@@ -947,3 +1335,212 @@ def api_participantes_evento(request, evento_pk):
     except Exception as e:
         logger.error(f"Error en API participantes evento: {e}")
         return JsonResponse({'error': 'Error interno del servidor'}, status=500)
+
+
+# --- Funciones auxiliares para conversión PDF ---
+
+def convertir_docx_a_pdf(docx_path):
+    """
+    Convierte un archivo DOCX a PDF usando múltiples métodos de fallback.
+    
+    Args:
+        docx_path (str): Ruta al archivo DOCX
+        
+    Returns:
+        bytes: Contenido del PDF generado
+        
+    Raises:
+        Exception: Si todos los métodos de conversión fallan
+    """
+    try:
+        # Método 1: docx2pdf
+        output_dir = os.path.dirname(docx_path)
+        pdf_path = os.path.join(output_dir, os.path.splitext(os.path.basename(docx_path))[0] + '.pdf')
+        
+        try:
+            from docx2pdf import convert
+            convert(docx_path, pdf_path)
+            
+            if os.path.exists(pdf_path):
+                with open(pdf_path, 'rb') as f:
+                    pdf_content = f.read()
+                os.unlink(pdf_path)
+                return pdf_content
+        except Exception as e:
+            logger.warning(f"docx2pdf falló: {e}")
+        
+        # Método 2: LibreOffice
+        try:
+            result = subprocess.run([
+                'libreoffice', '--headless', '--convert-to', 'pdf', 
+                '--outdir', output_dir, docx_path
+            ], capture_output=True, text=True, timeout=30)
+            
+            if result.returncode == 0 and os.path.exists(pdf_path):
+                with open(pdf_path, 'rb') as f:
+                    pdf_content = f.read()
+                os.unlink(pdf_path)
+                return pdf_content
+        except Exception as e:
+            logger.warning(f"LibreOffice falló: {e}")
+        
+        # Método 3: ReportLab fallback - crear PDF básico
+        logger.warning("Usando fallback ReportLab para crear PDF básico")
+        return crear_pdf_basico_desde_docx(docx_path)
+        
+    except Exception as e:
+        logger.error(f"Error en conversión DOCX a PDF: {e}")
+        raise
+
+def crear_pdf_basico_desde_docx(docx_path):
+    """
+    Crea un PDF básico extrayendo texto de un DOCX usando ReportLab.
+    
+    Args:
+        docx_path (str): Ruta al archivo DOCX
+        
+    Returns:
+        bytes: Contenido del PDF generado
+    """
+    from reportlab.lib.pagesizes import letter
+    from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
+    from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+    from reportlab.lib.units import inch
+    from reportlab.lib.enums import TA_CENTER
+    from docx import Document
+    
+    # Leer contenido del DOCX
+    doc = Document(docx_path)
+    
+    # Crear PDF en memoria
+    buffer = BytesIO()
+    pdf_doc = SimpleDocTemplate(buffer, pagesize=letter, topMargin=1*inch, bottomMargin=1*inch)
+    
+    # Estilos
+    styles = getSampleStyleSheet()
+    title_style = ParagraphStyle(
+        'CustomTitle',
+        parent=styles['Title'],
+        fontSize=18,
+        spaceAfter=20,
+        alignment=TA_CENTER
+    )
+    normal_style = styles['Normal']
+    
+    story = []
+    
+    # Extraer y agregar párrafos
+    for i, paragraph in enumerate(doc.paragraphs):
+        text = paragraph.text.strip()
+        if text:
+            if i == 0:  # Primer párrafo como título
+                story.append(Paragraph(text, title_style))
+            else:
+                story.append(Paragraph(text, normal_style))
+            story.append(Spacer(1, 12))
+    
+    # Generar PDF
+    pdf_doc.build(story)
+    buffer.seek(0)
+    
+    return buffer.getvalue()
+
+
+def generar_pdf_constancia(sustituciones):
+    """Genera un PDF de constancia usando ReportLab"""
+    
+    buffer = BytesIO()
+    pdf_doc = SimpleDocTemplate(buffer, pagesize=letter, 
+                               rightMargin=72, leftMargin=72, 
+                               topMargin=72, bottomMargin=72)
+    
+    # Estilos
+    styles = getSampleStyleSheet()
+    
+    title_style = ParagraphStyle(
+        'CustomTitle',
+        parent=styles['Heading1'],
+        fontSize=20,
+        spaceAfter=30,
+        alignment=TA_CENTER,
+        fontName='Helvetica-Bold'
+    )
+    
+    subtitle_style = ParagraphStyle(
+        'CustomSubtitle',
+        parent=styles['Heading2'],
+        fontSize=18,
+        spaceAfter=20,
+        alignment=TA_CENTER
+    )
+    
+    body_style = ParagraphStyle(
+        'CustomBody',
+        parent=styles['Normal'],
+        fontSize=12,
+        spaceAfter=12,
+        alignment=TA_JUSTIFY,
+        leading=16
+    )
+    
+    center_style = ParagraphStyle(
+        'CustomCenter',
+        parent=styles['Normal'],
+        fontSize=12,
+        alignment=TA_CENTER,
+        spaceAfter=12
+    )
+    
+    # Contenido del PDF
+    story = []
+    
+    # Título principal
+    story.append(Paragraph("CONSTANCIA DE PARTICIPACIÓN", title_style))
+    story.append(Spacer(1, 20))
+    
+    # Información del evento
+    story.append(Paragraph(f"<b>{sustituciones['{{TITULO_EVENTO}}']}</b>", subtitle_style))
+    story.append(Spacer(1, 15))
+    
+    # Texto principal de la constancia
+    texto_constancia = f"""
+    Por medio de la presente se hace <b>CONSTAR</b> que <b>{sustituciones['{{NOMBRE_PARTICIPANTE}}']}</b> 
+    participó en el evento <b>{sustituciones['{{TITULO_EVENTO}}']}</b>, en calidad de <b>{sustituciones['{{ROL_PARTICIPANTE}}']}</b>.
+    """
+    
+    story.append(Paragraph(texto_constancia, body_style))
+    story.append(Spacer(1, 20))
+    
+    # Detalles del evento
+    detalles = f"""
+    <b>Tipo de Evento:</b> {sustituciones['{{TIPO_EVENTO}}']}<br/>
+    <b>Modalidad:</b> {sustituciones['{{MODALIDAD}}']}<br/>
+    <b>Fecha de Inicio:</b> {sustituciones['{{FECHA_INICIO}}']}<br/>
+    <b>Fecha de Finalización:</b> {sustituciones['{{FECHA_FIN}}']}<br/>
+    <b>Duración:</b> {sustituciones['{{DURACION_HORAS}}']} horas académicas
+    """
+    
+    story.append(Paragraph(detalles, body_style))
+    story.append(Spacer(1, 30))
+    
+    # Fecha de expedición
+    from datetime import datetime
+    import locale
+    
+    # Configurar locale para español (fallback a inglés si no está disponible)
+    try:
+        locale.setlocale(locale.LC_TIME, 'es_ES.UTF-8')
+    except locale.Error:
+        try:
+            locale.setlocale(locale.LC_TIME, 'es_ES')
+        except locale.Error:
+            pass  # Usar locale por defecto
+    
+    fecha_expedicion = datetime.now().strftime('%d de %B de %Y')
+    story.append(Paragraph(f"Expedida el {fecha_expedicion}", center_style))
+    
+    # Generar PDF
+    pdf_doc.build(story)
+    buffer.seek(0)
+    
+    return buffer.getvalue()

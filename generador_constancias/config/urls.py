@@ -53,6 +53,7 @@ urlpatterns = [
     path('generar/', constancias_views.pagina_generar_constancia, name='pagina_generar'),
     path('generar/<int:participante_pk>/<int:evento_pk>/<int:plantilla_pk>/', 
      constancias_views.generar_constancia, name='generar_constancia'),
+    path('generar-masivas/<int:evento_pk>/', constancias_views.generar_constancias_masivas, name='generar_constancias_masivas'),
 ]
 
 if settings.DEBUG:
