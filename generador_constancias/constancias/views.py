@@ -416,6 +416,7 @@ def generar_pdf_simple_fallback(docx_path):
 
 @login_required
 @login_required
+@login_required
 def generar_constancias_masivas(request, evento_pk):
     """Vista para generar todas las constancias de un evento en un ZIP"""
     try:
@@ -443,19 +444,16 @@ def generar_constancias_masivas(request, evento_pk):
                     # Cargar y procesar plantilla para cada participante
                     document = Document(plantilla.archivo.path)
                     
-                    # Definir sustituciones para cada participante
+                    # Definir sustituciones para cada participante (igual que la función individual)
                     sustituciones = {
                         '{{TITULO_EVENTO}}': evento.titulo_evento,
                         '{{NOMBRE_PARTICIPANTE}}': participante.nombre_participante,
                         '{{ROL_PARTICIPANTE}}': participante.rol_participante,
                         '{{FECHA_INICIO}}': evento.fecha_inicio.strftime('%d/%m/%Y'),
                         '{{FECHA_FIN}}': evento.fecha_fin.strftime('%d/%m/%Y'),
-                        '{{DURACION_HORAS}}': str(evento.duracion_horas) if evento.duracion_horas else 'No especificada',
-                        '{{MODALIDAD}}': evento.get_modalidad_evento_display(),
-                        '{{TIPO_EVENTO}}': evento.get_tipo_evento_display(),
                     }
                     
-                    # Aplicar sustituciones
+                    # Aplicar sustituciones usando la misma lógica que la función individual
                     def replace_text_in_element(element, replacements):
                         for run in element.runs:
                             for key, value in replacements.items():
@@ -474,39 +472,38 @@ def generar_constancias_masivas(request, evento_pk):
 
                     replace_all_markers(document, sustituciones)
                     
-                    # Crear archivo temporal para el DOCX procesado
-                    with tempfile.NamedTemporaryFile(suffix='.docx', delete=False) as temp_docx:
-                        document.save(temp_docx)
-                        temp_docx_path = temp_docx.name
+                    # Guardar DOCX directamente en memoria (sin archivos temporales)
+                    docx_buffer = BytesIO()
+                    document.save(docx_buffer)
+                    docx_buffer.seek(0)
                     
-                    # Convertir a PDF
-                    pdf_content = convertir_docx_a_pdf(temp_docx_path)
+                    # Nombre del archivo DOCX dentro del ZIP
+                    nombre_archivo = f"Constancia_{participante.nombre_participante.replace(' ', '_')}_{participante.id_participante}.docx"
                     
-                    # Limpiar archivo temporal
-                    os.unlink(temp_docx_path)
-                    
-                    # Nombre del archivo dentro del ZIP
-                    nombre_archivo = f"Constancia_{participante.nombre_participante.replace(' ', '_')}_{participante.id_participante}.pdf"
-                    
-                    # Agregar al ZIP
-                    zip_file.writestr(nombre_archivo, pdf_content)
+                    # Agregar DOCX al ZIP
+                    zip_file.writestr(nombre_archivo, docx_buffer.getvalue())
                     
                 except Exception as e:
                     logger.error(f"Error generando constancia para {participante.nombre_participante}: {e}")
-                    # En caso de error, agregar DOCX sin convertir
-                    try:
-                        document = Document(plantilla.archivo.path)
-                        
-                        sustituciones = {
-                            '{{TITULO_EVENTO}}': evento.titulo_evento,
-                            '{{NOMBRE_PARTICIPANTE}}': participante.nombre_participante,
-                            '{{ROL_PARTICIPANTE}}': participante.rol_participante,
-                            '{{FECHA_INICIO}}': evento.fecha_inicio.strftime('%d/%m/%Y'),
-                            '{{FECHA_FIN}}': evento.fecha_fin.strftime('%d/%m/%Y'),
-                            '{{DURACION_HORAS}}': str(evento.duracion_horas) if evento.duracion_horas else 'No especificada',
-                            '{{MODALIDAD}}': evento.get_modalidad_evento_display(),
-                            '{{TIPO_EVENTO}}': evento.get_tipo_evento_display(),
-                        }
+                    continue
+        
+        # Preparar respuesta ZIP
+        zip_buffer.seek(0)
+        response = HttpResponse(zip_buffer.getvalue(), content_type='application/zip')
+        nombre_zip = f"Constancias_{evento.titulo_evento.replace(' ', '_')}_{timezone.now().strftime('%Y%m%d_%H%M')}.zip"
+        response['Content-Disposition'] = f'attachment; filename="{nombre_zip}"'
+        
+        messages.success(request, f'Se generaron {participantes.count()} constancias para el evento "{evento.titulo_evento}"')
+        
+        return response
+        
+    except Evento.DoesNotExist:
+        messages.error(request, "El evento no existe.")
+        return redirect('lista_eventos')
+    except Exception as e:
+        logger.error(f"Error al generar constancias masivas: {e}")
+        messages.error(request, f"Error al generar las constancias: {str(e)}")
+        return redirect('detalle_evento', pk=evento_pk)
                         
                         def replace_text_in_element(element, replacements):
                             for run in element.runs:
