@@ -1,0 +1,752 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+{% if editing %}Editar Evento - {{ evento.titulo_evento }}{% else %}Registrar Nuevo Evento{% endif %}
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    body {
+        background-color: #FFFFFF;
+        color: #040F0F;
+        padding-top: 80px;
+    }
+    
+    .main-content {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+        padding-bottom: 60px;
+    }
+    
+    .page-header {
+        background: linear-gradient(135deg, #040F0F 0%, #1a1a1a 100%);
+        color: white;
+        border-radius: 15px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    }
+    
+    .form-card {
+        border: none;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        margin-bottom: 1.5rem;
+        background-color: #FFFFFF;
+        transition: all 0.3s ease;
+    }
+    
+    .form-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    }
+    
+    .card-header-colored {
+        background: linear-gradient(135deg, #040F0F 0%, #1a1a1a 100%);
+        color: white;
+        border-bottom: none;
+        border-radius: 12px 12px 0 0 !important;
+    }
+    
+    .card-header-colored h5 {
+        color: white;
+    }
+    
+    .navigation-buttons {
+        margin-bottom: 1rem;
+    }
+    
+    .btn-outline-secondary:hover {
+        background-color: #FF6B9D !important;
+        border-color: #FF6B9D !important;
+        color: white !important;
+    }
+    
+    .form-control {
+        border: 2px solid #E0E0E0;
+        border-radius: 8px;
+        padding: 0.75rem 1rem;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+    }
+    
+    .form-control:focus {
+        border-color: #00D4AA;
+        box-shadow: 0 0 0 0.2rem rgba(0, 212, 170, 0.25);
+    }
+    
+    .form-label {
+        font-weight: 600;
+        color: #040F0F;
+        margin-bottom: 0.5rem;
+    }
+    
+    .btn-primary {
+        background: linear-gradient(135deg, #00D4AA 0%, #40E0D0 100%);
+        border: none;
+        border-radius: 8px;
+        padding: 0.75rem 2rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-primary:hover {
+        background: linear-gradient(135deg, #FF6B9D 0%, #FF8FA3 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(255, 107, 157, 0.3);
+    }
+    
+    .btn-outline-pink {
+        color: #FF6B9D;
+        border-color: #FF6B9D;
+        background-color: white;
+    }
+    
+    .btn-outline-pink:hover {
+        background-color: #FF6B9D !important;
+        border-color: #FF6B9D !important;
+        color: white !important;
+    }
+    
+    .icon-wrapper {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #00D4AA 0%, #40E0D0 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.5rem;
+        margin: 0 auto 1rem;
+    }
+    
+    .help-text {
+        font-size: 0.875rem;
+        color: #BEBFC4;
+        margin-top: 0.25rem;
+    }
+    
+    .required-indicator {
+        color: #FF6B9D;
+        font-weight: 600;
+    }
+    
+    .form-section {
+        margin-bottom: 2rem;
+    }
+    
+    .file-input-wrapper {
+        position: relative;
+        display: inline-block;
+        width: 100%;
+    }
+    
+    .file-input-wrapper input[type=file] {
+        border: 2px dashed #00D4AA;
+        background: rgba(0, 212, 170, 0.05);
+        padding: 1rem;
+        text-align: center;
+        transition: all 0.3s ease;
+    }
+    
+    .file-input-wrapper input[type=file]:hover {
+        border-color: #FF6B9D;
+        background: rgba(255, 107, 157, 0.05);
+    }
+    
+    .file-input-wrapper input[type=file]::file-selector-button {
+        background: linear-gradient(135deg, #00D4AA 0%, #40E0D0 100%);
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        color: white;
+        font-weight: 600;
+        margin-right: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    .file-input-wrapper input[type=file]::file-selector-button:hover {
+        background: linear-gradient(135deg, #FF6B9D 0%, #FF8FA3 100%);
+        transform: translateY(-1px);
+    }
+    
+    .loading-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 9999;
+        justify-content: center;
+        align-items: center;
+    }
+    
+    .loading-spinner {
+        background: white;
+        padding: 2rem;
+        border-radius: 10px;
+        text-align: center;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    }
+    
+    .spinner {
+        border: 4px solid #f3f3f3;
+        border-radius: 50%;
+        border-top: 4px solid #00D4AA;
+        width: 40px;
+        height: 40px;
+        animation: spin 2s linear infinite;
+        margin: 0 auto 1rem;
+    }
+    
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- FORMULARIO PRINCIPAL -->
+<!-- Incluir navbar -->
+{% include 'components/navbar.html' %}
+
+<div class="main-content">
+<div class="container-fluid px-4">
+    <!-- Botón de navegación -->
+    <div class="navigation-buttons">
+        <div class="row">
+            <div class="col-12">
+                <a href="{% url 'lista_eventos' %}" class="btn btn-outline-secondary" style="border-color: #6c757d; color: #6c757d; transition: all 0.3s ease;">
+                    <i class="fas fa-arrow-left me-2"></i>Regresar
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Header de la página -->
+    <div class="page-header">
+        <div class="row align-items-center">
+            <div class="col-md-2 text-center">
+                <div class="icon-wrapper">
+                    {% if editing %}
+                    <i class="fas fa-edit"></i>
+                    {% else %}
+                    <i class="fas fa-calendar-plus"></i>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-md-10">
+                {% if editing %}
+                <h1 class="mb-2">Editar Evento</h1>
+                <p class="mb-0 opacity-75">
+                    <i class="fas fa-edit me-2"></i>
+                    Modifique los campos necesarios para actualizar el evento
+                </p>
+                {% else %}
+                <h1 class="mb-2">Registrar Nuevo Evento</h1>
+                <p class="mb-0 opacity-75">
+                    <i class="fas fa-info-circle me-2"></i>
+                    Complete los siguientes campos para crear un nuevo evento en el sistema
+                </p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Mensajes de Django -->
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {% if message.tags == 'error' %}
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                {% elif message.tags == 'success' %}
+                    <i class="fas fa-check-circle me-2"></i>
+                {% elif message.tags == 'warning' %}
+                    <i class="fas fa-exclamation-circle me-2"></i>
+                {% else %}
+                    <i class="fas fa-info-circle me-2"></i>
+                {% endif %}
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <form method="post" enctype="multipart/form-data" id="eventoForm" action="{% if editing %}{% url 'editar_evento' evento.id_evento %}{% else %}{% url 'crear_evento' %}{% endif %}" class="needs-validation">
+        {% csrf_token %}
+        
+        <div class="row">
+            <!-- Información Básica -->
+            <div class="col-md-8">
+                <div class="form-card card">
+                    <div class="card-header card-header-colored">
+                        <h5 class="mb-0">
+                            <i class="fas fa-info-circle me-2"></i>
+                            Información Básica del Evento
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-section">
+                            <div class="row">
+                                <div class="col-12">
+                                    <label for="{{ form.titulo_evento.id_for_label }}" class="form-label">
+                                        Título del Evento <span class="required-indicator">*</span>
+                                    </label>
+                                    {{ form.titulo_evento }}
+                                    {% if form.titulo_evento.errors %}
+                                        <div class="text-danger">{{ form.titulo_evento.errors }}</div>
+                                    {% endif %}
+                                    <div class="help-text">Ingrese un título descriptivo y claro para el evento</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-section">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label for="{{ form.tipo_evento.id_for_label }}" class="form-label">
+                                        Tipo de Evento <span class="required-indicator">*</span>
+                                    </label>
+                                    {{ form.tipo_evento }}
+                                    {% if form.tipo_evento.errors %}
+                                        <div class="text-danger">{{ form.tipo_evento.errors }}</div>
+                                    {% endif %}
+                                    <div class="help-text">Categoría del evento a realizar</div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="{{ form.modalidad_evento.id_for_label }}" class="form-label">
+                                        Modalidad <span class="required-indicator">*</span>
+                                    </label>
+                                    {{ form.modalidad_evento }}
+                                    {% if form.modalidad_evento.errors %}
+                                        <div class="text-danger">{{ form.modalidad_evento.errors }}</div>
+                                    {% endif %}
+                                    <div class="help-text">Formato de realización del evento</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-section">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label for="{{ form.fecha_inicio.id_for_label }}" class="form-label">
+                                        Fecha de Inicio <span class="required-indicator">*</span>
+                                    </label>
+                                    {{ form.fecha_inicio }}
+                                    {% if form.fecha_inicio.errors %}
+                                        <div class="text-danger">{{ form.fecha_inicio.errors }}</div>
+                                    {% endif %}
+                                    <div class="help-text">Fecha de inicio del evento</div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="{{ form.fecha_fin.id_for_label }}" class="form-label">
+                                        Fecha de Finalización <span class="required-indicator">*</span>
+                                    </label>
+                                    {{ form.fecha_fin }}
+                                    {% if form.fecha_fin.errors %}
+                                        <div class="text-danger">{{ form.fecha_fin.errors }}</div>
+                                    {% endif %}
+                                    <div class="help-text">Fecha de finalización del evento</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-section">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label for="{{ form.duracion_horas.id_for_label }}" class="form-label">
+                                        Duración (Horas Académicas)
+                                    </label>
+                                    {{ form.duracion_horas }}
+                                    {% if form.duracion_horas.errors %}
+                                        <div class="text-danger">{{ form.duracion_horas.errors }}</div>
+                                    {% endif %}
+                                    <div class="help-text">Duración total en horas académicas (opcional)</div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="{{ form.archivo_plantilla.id_for_label }}" class="form-label">
+                                        Plantilla de Constancia {% if not editing %}<span class="required-indicator">*</span>{% endif %}
+                                    </label>
+                                    {{ form.archivo_plantilla }}
+                                    {% if form.archivo_plantilla.errors %}
+                                        <div class="text-danger">{{ form.archivo_plantilla.errors }}</div>
+                                    {% endif %}
+                                    {% if editing %}
+                                        <div class="help-text">Suba un nuevo archivo .docx para reemplazar la plantilla actual (opcional)</div>
+                                        {% if evento.plantilla_id %}
+                                        <div class="mt-2">
+                                            <small class="text-info">
+                                                <i class="fas fa-file-word me-1"></i>
+                                                Plantilla actual: {{ evento.plantilla_id.nombre_plantilla }}
+                                            </small>
+                                        </div>
+                                        {% endif %}
+                                    {% else %}
+                                        <div class="help-text">Suba un archivo .docx para usar como plantilla (máx. 5MB)</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-section">
+                            <div class="row">
+                                <div class="col-12">
+                                    <label for="{{ form.descripcion.id_for_label }}" class="form-label">
+                                        Descripción del Evento
+                                    </label>
+                                    {{ form.descripcion }}
+                                    {% if form.descripcion.errors %}
+                                        <div class="text-danger">{{ form.descripcion.errors }}</div>
+                                    {% endif %}
+                                    <div class="help-text">Descripción breve del evento (opcional)</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Panel de Resumen -->
+            <div class="col-md-4">
+                <div class="form-card card h-100">
+                    <div class="card-header card-header-colored">
+                        <h5 class="mb-0">
+                            <i class="fas fa-eye me-2"></i>
+                            Vista Previa
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="text-center mb-4">
+                            <div class="icon-wrapper">
+                                <i class="fas fa-calendar-check"></i>
+                            </div>
+                            <h6 class="text-muted">Resumen del Evento</h6>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <strong><i class="fas fa-tag text-muted me-2"></i>Estado:</strong>
+                            <span class="badge bg-success">Activo</span>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <strong><i class="fas fa-users text-muted me-2"></i>Participantes:</strong>
+                            <p class="mb-0 text-muted small">Se asignarán después de crear el evento</p>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <strong><i class="fas fa-certificate text-muted me-2"></i>Constancias:</strong>
+                            <p class="mb-0 text-muted small">Disponibles una vez registrados los participantes</p>
+                        </div>
+                        
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <strong>Nota:</strong> Después de crear el evento podrá agregar participantes y gestionar constancias.
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <button type="button" id="btnMostrarResumen" class="btn btn-primary">
+                                {% if editing %}
+                                <i class="fas fa-save me-2"></i>Guardar Cambios
+                                {% else %}
+                                <i class="fas fa-plus me-2"></i>Crear Evento
+                                {% endif %}
+                            </button>
+                            {% if editing %}
+                            <a href="{% url 'detalle_evento' evento.id_evento %}" class="btn btn-outline-pink">
+                                <i class="fas fa-eye me-2"></i>Ver Evento
+                            </a>
+                            {% else %}
+                            <button type="button" class="btn btn-outline-pink">
+                                <i class="fas fa-eye me-2"></i>Vista Previa
+                            </button>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+</div>
+
+<!-- Loading Overlay -->
+<div id="loadingOverlay" class="loading-overlay">
+    <div class="loading-spinner">
+        <div class="spinner"></div>
+        {% if editing %}
+        <h5>Guardando cambios...</h5>
+        <p class="text-muted">Por favor espere mientras actualizamos el evento</p>
+        {% else %}
+        <h5>Creando evento...</h5>
+        <p class="text-muted">Por favor espere mientras procesamos la información</p>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Modal de Resumen -->
+<div class="modal fade" id="modalResumen" tabindex="-1" aria-labelledby="modalResumenLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-dark text-white">
+                <h5 class="modal-title" id="modalResumenLabel">
+                    {% if editing %}
+                    <i class="fas fa-edit me-2"></i>Confirmar Cambios
+                    {% else %}
+                    <i class="fas fa-eye me-2"></i>Resumen del Evento
+                    {% endif %}
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>
+                    {% if editing %}
+                    <strong>Revise los cambios antes de guardar el evento</strong>
+                    {% else %}
+                    <strong>Revise los datos antes de crear el evento</strong>
+                    {% endif %}
+                </div>
+                
+                <!-- Información Básica -->
+                <h6 class="text-primary"><i class="fas fa-info-circle me-2"></i>Información Básica</h6>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <strong>Título:</strong>
+                        <div class="p-2 bg-light rounded mt-1" id="resumen-titulo"></div>
+                    </div>
+                    <div class="col-md-6">
+                        <strong>Tipo:</strong>
+                        <div class="p-2 bg-light rounded mt-1" id="resumen-tipo"></div>
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <strong>Modalidad:</strong>
+                        <div class="p-2 bg-light rounded mt-1" id="resumen-modalidad"></div>
+                    </div>
+                    <div class="col-md-6">
+                        <strong>Duración:</strong>
+                        <div class="p-2 bg-light rounded mt-1" id="resumen-duracion"></div>
+                    </div>
+                </div>
+                
+                <!-- Fechas -->
+                <h6 class="text-primary"><i class="fas fa-calendar-alt me-2"></i>Fechas</h6>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <strong>Fecha de Inicio:</strong>
+                        <div class="p-2 bg-light rounded mt-1" id="resumen-fecha-inicio"></div>
+                    </div>
+                    <div class="col-md-6">
+                        <strong>Fecha de Fin:</strong>
+                        <div class="p-2 bg-light rounded mt-1" id="resumen-fecha-fin"></div>
+                    </div>
+                </div>
+                
+                <!-- Plantilla -->
+                <h6 class="text-primary"><i class="fas fa-file-word me-2"></i>Plantilla</h6>
+                <div class="row mb-3">
+                    <div class="col-md-8">
+                        <strong>Archivo:</strong>
+                        <div class="p-2 bg-light rounded mt-1" id="resumen-archivo"></div>
+                    </div>
+                    <div class="col-md-4">
+                        <strong>Tamaño:</strong>
+                        <div class="p-2 bg-light rounded mt-1" id="resumen-archivo-tamano"></div>
+                    </div>
+                </div>
+                
+                <!-- Descripción -->
+                <div id="resumen-descripcion-container" style="display: none;">
+                    <h6 class="text-primary"><i class="fas fa-align-left me-2"></i>Descripción</h6>
+                    <div class="p-2 bg-light rounded mb-3" id="resumen-descripcion"></div>
+                </div>
+                
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <strong>Atención:</strong> Una vez confirmado, el evento será creado en el sistema.
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-times me-2"></i>Cancelar
+                </button>
+                <button type="button" id="btnConfirmarCreacion" class="btn" style="background-color: #1e3a8a; color: white; border-color: #1e3a8a;" onmouseover="this.style.backgroundColor='#1e40af'" onmouseout="this.style.backgroundColor='#1e3a8a'">
+                    {% if editing %}
+                    <i class="fas fa-save me-2"></i>Confirmar y Guardar Cambios
+                    {% else %}
+                    <i class="fas fa-check me-2"></i>Confirmar y Crear Evento
+                    {% endif %}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(document).ready(function() {
+    console.log('JavaScript cargado correctamente');
+    
+    // Función para validar el formulario
+    function validarFormulario() {
+        const form = document.getElementById('eventoForm');
+        let esValido = true;
+        let errores = [];
+        
+        // Validar campos requeridos
+        const campos = [
+            { name: 'titulo_evento', label: 'Título del Evento' },
+            { name: 'tipo_evento', label: 'Tipo de Evento' },
+            { name: 'modalidad_evento', label: 'Modalidad' },
+            { name: 'fecha_inicio', label: 'Fecha de Inicio' },
+            { name: 'fecha_fin', label: 'Fecha de Fin' }
+        ];
+        
+        // Solo validar archivo si estamos creando (no editando)
+        {% if not editing %}
+        campos.push({ name: 'archivo_plantilla', label: 'Archivo de Plantilla' });
+        {% endif %}
+        
+        campos.forEach(function(campo) {
+            const elemento = form.querySelector(`[name="${campo.name}"]`);
+            if (!elemento.value || elemento.value.trim() === '') {
+                esValido = false;
+                errores.push(campo.label);
+            }
+        });
+        
+        if (!esValido) {
+            alert('Por favor complete los siguientes campos obligatorios:\\n\\n' + errores.join('\\n'));
+            return false;
+        }
+        
+        // Validar fechas
+        const fechaInicio = new Date($('[name="fecha_inicio"]').val());
+        const fechaFin = new Date($('[name="fecha_fin"]').val());
+        
+        if (fechaFin < fechaInicio) {
+            alert('La fecha de finalización no puede ser anterior a la fecha de inicio');
+            return false;
+        }
+        
+        return true;
+    }
+    
+    // Función para llenar el resumen
+    function llenarResumen() {
+        const tipoLabels = {
+            'CUR': 'Curso',
+            'TAL': 'Taller', 
+            'SEM': 'Seminario',
+            'CON': 'Conferencia',
+            'DIP': 'Diplomado',
+            'COG': 'Congreso'
+        };
+        
+        const modalidadLabels = {
+            'PRE': 'Presencial',
+            'VIR': 'Virtual',
+            'HIB': 'Híbrido'
+        };
+        
+        // Llenar datos básicos
+        $('#resumen-titulo').text($('[name="titulo_evento"]').val());
+        $('#resumen-tipo').html(`<span class="badge bg-info">${tipoLabels[$('[name="tipo_evento"]').val()] || 'N/A'}</span>`);
+        $('#resumen-modalidad').html(`<span class="badge bg-success">${modalidadLabels[$('[name="modalidad_evento"]').val()] || 'N/A'}</span>`);
+        
+        // Duración (opcional)
+        const duracion = $('[name="duracion_horas"]').val();
+        if (duracion && duracion.trim() !== '') {
+            $('#resumen-duracion').text(duracion + ' horas académicas');
+        } else {
+            $('#resumen-duracion').text('No especificada');
+        }
+        
+        // Fechas
+        const fechaInicio = new Date($('[name="fecha_inicio"]').val());
+        const fechaFin = new Date($('[name="fecha_fin"]').val());
+        $('#resumen-fecha-inicio').html(`<i class="fas fa-calendar-check me-2 text-success"></i>${fechaInicio.toLocaleDateString('es-ES')}`);
+        $('#resumen-fecha-fin').html(`<i class="fas fa-calendar-times me-2 text-danger"></i>${fechaFin.toLocaleDateString('es-ES')}`);
+        
+        // Archivo
+        const archivo = $('[name="archivo_plantilla"]')[0].files[0];
+        if (archivo) {
+            $('#resumen-archivo').html(`<i class="fas fa-file-alt me-2 text-primary"></i>${archivo.name}`);
+            $('#resumen-archivo-tamano').text(formatBytes(archivo.size));
+        }
+        
+        // Descripción
+        const descripcion = $('[name="descripcion"]').val();
+        if (descripcion && descripcion.trim() !== '') {
+            $('#resumen-descripcion-container').show();
+            $('#resumen-descripcion').text(descripcion);
+        } else {
+            $('#resumen-descripcion-container').hide();
+        }
+    }
+    
+    // Función para formatear bytes
+    function formatBytes(bytes) {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+    
+    // Evento del botón "Ver Resumen y Crear"
+    $('#btnMostrarResumen').on('click', function() {
+        if (validarFormulario()) {
+            llenarResumen();
+            $('#modalResumen').modal('show');
+        }
+    });
+    
+    // Evento del botón "Confirmar y Crear Evento"
+    $('#btnConfirmarCreacion').on('click', function() {
+        $('#modalResumen').modal('hide');
+        
+        // Mostrar loading
+        $('#loadingOverlay').css('display', 'flex');
+        
+        // Enviar formulario
+        setTimeout(function() {
+            $('#eventoForm').submit();
+        }, 500);
+    });
+    
+    // Validación de archivo
+    $('[name="archivo_plantilla"]').on('change', function() {
+        const file = this.files[0];
+        const helpText = $(this).closest('.col-md-6').find('.help-text');
+        
+        if (file) {
+            if (file.size > 5 * 1024 * 1024) {
+                alert('El archivo es muy grande. Máximo 5MB permitido');
+                $(this).val('');
+                return;
+            }
+            
+            if (!file.name.endsWith('.docx') && !file.name.endsWith('.doc')) {
+                alert('Solo se permiten archivos .docx o .doc');
+                $(this).val('');
+                return;
+            }
+            
+            helpText.html(`<span class="text-success"><i class="fas fa-check-circle me-1"></i>Archivo: ${file.name}</span>`);
+        }
+    });
+});
+</script>
+{% endblock %}

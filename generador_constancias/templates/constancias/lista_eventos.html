@@ -245,6 +245,72 @@
         color: #00B894;
         text-decoration: none;
     }
+    
+    /* Dropdown styles */
+    .dropdown-toggle::after {
+        display: none;
+    }
+    
+    .dropdown .btn-link {
+        color: #6c757d !important;
+        text-decoration: none;
+    }
+    
+    .dropdown .btn-link:hover {
+        color: #495057 !important;
+        background-color: transparent;
+    }
+    
+    .dropdown-menu {
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+        min-width: 160px;
+        z-index: 1050;
+        margin-top: 0.125rem;
+    }
+    
+    .dropdown-item {
+        padding: 0.5rem 1rem;
+        font-size: 0.875rem;
+        color: #495057;
+        transition: all 0.2s ease;
+    }
+    
+    .dropdown-item:hover {
+        background-color: #f8f9fa;
+        color: #495057;
+    }
+    
+    .dropdown-item.text-danger:hover {
+        background-color: #f8d7da;
+        color: #721c24;
+    }
+    
+    .dropdown-divider {
+        margin: 0.5rem 0;
+    }
+    
+    /* Forzar el dropdown fuera de la tabla */
+    .table .dropdown {
+        position: static;
+    }
+    
+    .table tbody tr:hover {
+        background-color: var(--background-elevated);
+    }
+    
+    .table .dropdown-menu {
+        position: absolute;
+        transform: none !important;
+        z-index: 1050;
+        margin-top: 0.125rem;
+    }
+    
+    /* Para el último dropdown de la tabla */
+    .table tbody tr:last-child .dropdown-menu {
+        transform: translate3d(0px, -100%, 0px) !important;
+    }
 </style>
 {% endblock %}
 
@@ -267,9 +333,9 @@
                     <a href="{% url 'dashboard' %}" class="btn btn-dashboard">
                         <i class="fas fa-arrow-left me-2"></i>Dashboard
                     </a>
-                    <button class="btn btn-add-primary" onclick="alert('Funcionalidad en desarrollo: Crear nuevo evento')">
+                    <a href="{% url 'crear_evento' %}" class="btn btn-add-primary">
                         <i class="fas fa-plus me-2"></i>Nuevo Evento
-                    </button>
+                    </a>
                 </div>
             </div>
         </div>
@@ -306,25 +372,62 @@
                                                             {{ e.titulo_evento }}
                                                         </a>
                                                     </h6>
-                                                    <small class="text-muted">ID: {{ e.id_evento }}</small>
+                                                    <small class="text-muted">{{ e.get_tipo_evento_display }}</small>
                                                 </div>
                                             </div>
                                         </td>
-                                        <td>{{ e.fecha_evento|default:"No especificada" }}</td>
-                                        <td>{{ e.modalidad_evento|default:"No especificada" }}</td>
-                                        <td>{{ e.duracion_horas|default:"No especificada" }} horas</td>
-                                        <td>{{ e.participantes.count|default:"0" }}</td>
                                         <td>
-                                            <div class="btn-group" role="group" aria-label="Acciones del evento">
-                                                <a href="{% url 'detalle_evento' e.id_evento %}" class="btn btn-outline-success btn-sm" title="Ver Detalles">
-                                                    <i class="fas fa-eye me-1"></i>Ver
-                                                </a>
-                                                <button class="btn btn-outline-warning btn-sm" title="Editar" onclick="alert('Funcionalidad en desarrollo: Editar evento')">
-                                                    <i class="fas fa-edit me-1"></i>Editar
+                                            <div>
+                                                <strong>{{ e.fecha_inicio|date:"d/m/Y" }}</strong>
+                                                {% if e.fecha_fin != e.fecha_inicio %}
+                                                    <br><small class="text-muted">hasta {{ e.fecha_fin|date:"d/m/Y" }}</small>
+                                                {% endif %}
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-info">{{ e.get_modalidad_evento_display }}</span>
+                                        </td>
+                                        <td>
+                                            {% if e.duracion_horas %}
+                                                {{ e.duracion_horas }} horas
+                                            {% else %}
+                                                <span class="text-muted">No especificada</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ e.participantes.count|default:"0" }}</td>
+                                        <td class="text-center">
+                                            <div class="dropdown">
+                                                <button class="btn btn-sm btn-link text-muted dropdown-toggle" type="button" data-bs-toggle="dropdown" data-bs-boundary="viewport" data-bs-placement="bottom-end" aria-expanded="false" style="border: none; box-shadow: none;">
+                                                    <i class="fas fa-ellipsis-v"></i>
                                                 </button>
-                                                <button class="btn btn-outline-danger btn-sm" title="Eliminar" onclick="confirmarEliminacion('{{ e.titulo_evento }}')">
-                                                    <i class="fas fa-trash me-1"></i>Eliminar
-                                                </button>
+                                                <ul class="dropdown-menu dropdown-menu-end shadow">
+                                                    <li>
+                                                        <a class="dropdown-item" href="{% url 'detalle_evento' e.id_evento %}">
+                                                            <i class="fas fa-eye text-success me-2"></i>Ver Detalles
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <a class="dropdown-item" href="{% url 'editar_evento' e.id_evento %}">
+                                                            <i class="fas fa-edit text-warning me-2"></i>Editar
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <a class="dropdown-item" href="{% url 'gestionar_participantes' %}?evento_id={{ e.id_evento }}">
+                                                            <i class="fas fa-users text-info me-2"></i>Participantes
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <a class="dropdown-item" href="{% url 'pagina_generar' %}?evento_id={{ e.id_evento }}">
+                                                            <i class="fas fa-certificate text-primary me-2"></i>Constancias
+                                                        </a>
+                                                    </li>
+                                                    <li><hr class="dropdown-divider"></li>
+                                                    <li>
+                                                        <a class="dropdown-item text-danger" href="{% url 'eliminar_evento' e.id_evento %}?origen=lista_eventos">
+                                                            <i class="fas fa-trash me-2"></i>Eliminar
+                                                        </a>
+                                                    </li>
+                                                </ul>
                                             </div>
                                         </td>
                                     </tr>

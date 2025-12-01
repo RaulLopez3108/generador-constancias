@@ -143,6 +143,32 @@
         padding: 3rem 1rem;
         color: #BEBFC4;
     }
+    
+    /* Estilos para el dropdown de eliminación */
+    .dropdown-menu .dropdown-item {
+        display: flex;
+        align-items: center;
+        padding: 0.75rem 1rem;
+    }
+    
+    .dropdown-menu .dropdown-item i {
+        width: 20px;
+        flex-shrink: 0;
+    }
+    
+    .dropdown-menu .dropdown-item:hover {
+        background-color: #f8f9fa;
+    }
+    
+    .dropdown-menu .dropdown-item .fw-semibold {
+        font-size: 0.875rem;
+        line-height: 1.2;
+    }
+    
+    .dropdown-menu .dropdown-item small {
+        font-size: 0.75rem;
+        line-height: 1;
+    }
 </style>
 {% endblock %}
 
@@ -183,9 +209,34 @@
                 </p>
             </div>
             <div class="col-md-3 text-end">
-                <button class="btn btn-outline-light">
-                    <i class="fas fa-edit me-2"></i>Editar
-                </button>
+                <div class="btn-group">
+                    <a href="{% url 'editar_evento' evento.id_evento %}" class="btn btn-outline-light me-2">
+                        <i class="fas fa-edit me-2"></i>Editar
+                    </a>
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-outline-light dropdown-toggle" data-bs-toggle="dropdown">
+                            <i class="fas fa-ellipsis-v"></i>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li>
+                                <a class="dropdown-item" href="{% url 'pagina_generar' %}?evento_id={{ evento.id_evento }}">
+                                    <i class="fas fa-certificate text-primary me-2"></i>Generar Constancias
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{% url 'exportar_participantes_evento_csv' evento.id_evento %}">
+                                    <i class="fas fa-download text-info me-2"></i>Exportar CSV
+                                </a>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <a class="dropdown-item text-danger" href="{% url 'eliminar_evento' evento.id_evento %}?origen=detalle_evento">
+                                    <i class="fas fa-trash me-2"></i>Eliminar Evento
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -281,10 +332,10 @@
                     </div>
                     
                     <div class="d-grid gap-2">
-                        <button class="btn btn-outline-success">
-                            <i class="fas fa-user-plus me-2"></i>Agregar Participante
-                        </button>
-                        <button class="btn btn-outline-pink">
+                        <a href="{% url 'gestionar_participantes' %}?evento_id={{ evento.id_evento }}" class="btn btn-outline-success">
+                            <i class="fas fa-user-plus me-2"></i>Gestionar Participantes
+                        </a>
+                        <button class="btn btn-outline-pink" onclick="window.location.href='{% url 'pagina_generar' %}?evento_id={{ evento.id_evento }}'">
                             <i class="fas fa-certificate me-2"></i>Generar Constancias
                         </button>
                     </div>
@@ -304,12 +355,15 @@
                             Participantes Inscritos ({{ participantes|length }})
                         </h5>
                         <div class="btn-group">
-                            <button class="btn btn-outline-light btn-sm">
+                            <a href="{% url 'gestionar_participantes' %}?evento_id={{ evento.id_evento }}" class="btn btn-outline-light btn-sm">
                                 <i class="fas fa-user-plus me-2"></i>Agregar
-                            </button>
-                            <button class="btn btn-outline-light btn-sm">
-                                <i class="fas fa-download me-2"></i>Exportar
-                            </button>
+                            </a>
+                            <a href="{% url 'exportar_participantes_evento_csv' evento.id_evento %}" class="btn btn-outline-light btn-sm">
+                                <i class="fas fa-download me-2"></i>Exportar CSV
+                            </a>
+                            <a href="{% url 'cargar_participantes_csv' %}?evento_id={{ evento.id_evento }}" class="btn btn-outline-light btn-sm">
+                                <i class="fas fa-upload me-2"></i>Importar CSV
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -338,12 +392,41 @@
                                         </div>
                                         <div>
                                             <div class="btn-group-vertical btn-group-sm">
-                                                <a href="{% url 'detalle_participante' p.id_participante %}" class="btn btn-outline-primary btn-sm">
+                                                <a href="{% url 'detalle_participante' p.id_participante %}" class="btn btn-outline-primary btn-sm" title="Ver detalles">
                                                     <i class="fas fa-eye"></i>
                                                 </a>
-                                                <button class="btn btn-outline-warning btn-sm">
+                                                <button class="btn btn-outline-warning btn-sm" title="Generar constancia">
                                                     <i class="fas fa-certificate"></i>
                                                 </button>
+                                                <div class="btn-group dropstart">
+                                                    <button type="button" class="btn btn-outline-danger btn-sm dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" title="Opciones de eliminación">
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
+                                                    <ul class="dropdown-menu">
+                                                        <li>
+                                                            <h6 class="dropdown-header">Eliminar</h6>
+                                                        </li>
+                                                        <li>
+                                                            <a class="dropdown-item" href="{% url 'eliminar_participante_de_evento' evento.id_evento p.id_participante %}">
+                                                                <i class="fas fa-user-minus text-warning me-2"></i>
+                                                                <div>
+                                                                    <div class="fw-semibold">Remover del evento</div>
+                                                                    <small class="text-muted">Solo de este evento</small>
+                                                                </div>
+                                                            </a>
+                                                        </li>
+                                                        <li><hr class="dropdown-divider"></li>
+                                                        <li>
+                                                            <a class="dropdown-item" href="{% url 'eliminar_participante' p.id_participante %}?origen=detalle_evento&evento_id={{ evento.id_evento }}">
+                                                                <i class="fas fa-user-times text-danger me-2"></i>
+                                                                <div>
+                                                                    <div class="fw-semibold">Eliminar permanentemente</div>
+                                                                    <small class="text-muted">Del sistema completo</small>
+                                                                </div>
+                                                            </a>
+                                                        </li>
+                                                    </ul>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -356,9 +439,9 @@
                             <i class="fas fa-user-slash fa-4x mb-3"></i>
                             <h5>Aún no hay participantes registrados</h5>
                             <p class="mb-4">Agregue participantes para comenzar a gestionar constancias.</p>
-                            <button class="btn btn-outline-success">
-                                <i class="fas fa-user-plus me-2"></i>Agregar Primer Participante
-                            </button>
+                            <a href="{% url 'gestionar_participantes' %}?evento_id={{ evento.id_evento }}" class="btn btn-outline-success">
+                                <i class="fas fa-user-plus me-2"></i>Gestionar Participantes
+                            </a>
                         </div>
                     {% endif %}
                 </div>
@@ -367,20 +450,6 @@
     </div>
 </div>
 </div>
-
-<!-- Footer -->
-<footer class="bg-dark text-white py-3 mt-auto">
-    <div class="container-fluid px-4">
-        <div class="row align-items-center">
-            <div class="col-md-6">
-                <p class="mb-0">&copy; 2024 Sistema de Constancias. Todos los derechos reservados.</p>
-            </div>
-            <div class="col-md-6 text-end">
-                <small class="text-muted">Desarrollado con Django & Bootstrap</small>
-            </div>
-        </div>
-    </div>
-</footer>
 
 <!-- Modal para Análisis Detallado -->
 <div class="modal fade" id="analysisModal" tabindex="-1" aria-labelledby="analysisModalLabel" aria-hidden="true">

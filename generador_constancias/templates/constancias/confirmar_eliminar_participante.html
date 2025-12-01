@@ -1,0 +1,149 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+{% if accion == 'remover_de_evento' %}
+Remover Participante del Evento
+{% else %}
+Eliminar Participante
+{% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <!-- Botón de regreso -->
+    <div class="mb-4">
+        {% if accion == 'remover_de_evento' %}
+            <a href="{% url 'detalle_evento' evento.id_evento %}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-2"></i>Regresar al Evento
+            </a>
+        {% elif origen == 'detalle_evento' and evento_id %}
+            <a href="{% url 'detalle_evento' evento_id %}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-2"></i>Regresar al Evento
+            </a>
+        {% else %}
+            <a href="{% url 'lista_participantes' %}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-2"></i>Lista de Participantes
+            </a>
+        {% endif %}
+    </div>
+
+    <!-- Card de confirmación -->
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="card border-danger">
+                <div class="card-header bg-danger bg-opacity-10 text-center">
+                    <h4 class="card-title mb-0 text-danger">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        {% if accion == 'remover_de_evento' %}
+                            Confirmar Remoción
+                        {% else %}
+                            Confirmar Eliminación
+                        {% endif %}
+                    </h4>
+                </div>
+                <div class="card-body">
+                    {% if accion == 'remover_de_evento' %}
+                        <div class="alert alert-warning">
+                            <h5 class="alert-heading">
+                                <i class="fas fa-user-minus me-2"></i>
+                                Remover del Evento
+                            </h5>
+                            <p class="mb-0">
+                                ¿Estás seguro de que deseas remover a 
+                                <strong>"{{ participante.nombre_participante }}"</strong> 
+                                del evento <strong>"{{ evento.titulo_evento }}"</strong>?
+                            </p>
+                        </div>
+                        
+                        <div class="mt-3">
+                            <h6><i class="fas fa-info-circle text-info me-2"></i>Información:</h6>
+                            <ul class="text-muted">
+                                <li>El participante será removido únicamente de este evento</li>
+                                <li>El participante seguirá existiendo en el sistema</li>
+                                <li>Podrá ser agregado nuevamente al evento en el futuro</li>
+                            </ul>
+                        </div>
+                    {% else %}
+                        <div class="alert alert-danger">
+                            <h5 class="alert-heading">
+                                <i class="fas fa-user-times me-2"></i>
+                                Eliminar Participante
+                            </h5>
+                            <p class="mb-0">
+                                ¿Estás seguro de que deseas eliminar permanentemente a 
+                                <strong>"{{ participante.nombre_participante }}"</strong>?
+                            </p>
+                        </div>
+                        
+                        <div class="mt-3">
+                            <h6><i class="fas fa-exclamation-triangle text-danger me-2"></i>Advertencia:</h6>
+                            <ul class="text-muted">
+                                <li><strong>Esta acción no se puede deshacer</strong></li>
+                                <li>El participante será eliminado de todos los eventos</li>
+                                <li>Se perderán todas las asociaciones y datos relacionados</li>
+                            </ul>
+                        </div>
+                    {% endif %}
+
+                    <!-- Información del participante -->
+                    <div class="card mt-4">
+                        <div class="card-body bg-light">
+                            <h6 class="card-subtitle mb-2">Datos del participante:</h6>
+                            <div class="row">
+                                <div class="col-sm-4"><strong>Nombre:</strong></div>
+                                <div class="col-sm-8">{{ participante.nombre_participante }}</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-4"><strong>Email:</strong></div>
+                                <div class="col-sm-8">{{ participante.email_participante }}</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-4"><strong>Rol:</strong></div>
+                                <div class="col-sm-8">{{ participante.rol_participante }}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Botones de acción -->
+                    <div class="d-flex justify-content-between mt-4">
+                        {% if accion == 'remover_de_evento' %}
+                            <a href="{% url 'detalle_evento' evento.id_evento %}" class="btn btn-secondary">
+                                <i class="fas fa-times me-2"></i>Cancelar
+                            </a>
+                            <form method="post" style="display: inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-warning">
+                                    <i class="fas fa-user-minus me-2"></i>
+                                    Remover del Evento
+                                </button>
+                            </form>
+                        {% else %}
+                            {% if origen == 'detalle_evento' and evento_id %}
+                                <a href="{% url 'detalle_evento' evento_id %}" class="btn btn-secondary">
+                                    <i class="fas fa-times me-2"></i>Cancelar
+                                </a>
+                            {% else %}
+                                <a href="{% url 'lista_participantes' %}" class="btn btn-secondary">
+                                    <i class="fas fa-times me-2"></i>Cancelar
+                                </a>
+                            {% endif %}
+                            <form method="post" style="display: inline;">
+                                {% csrf_token %}
+                                {% if origen == 'detalle_evento' and evento_id %}
+                                    <input type="hidden" name="redirect_to" value="detalle_evento">
+                                    <input type="hidden" name="evento_id" value="{{ evento_id }}">
+                                {% endif %}
+                                <button type="submit" class="btn btn-danger">
+                                    <i class="fas fa-user-times me-2"></i>
+                                    Eliminar Permanentemente
+                                </button>
+                            </form>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

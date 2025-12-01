@@ -1,299 +1,698 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Generar Constancias - Sistema de Constancias{% endblock %}
+{% block title %}Generador de Constancias{% endblock %}
 
 {% block extra_css %}
 <style>
-    .form-container {
-        background: #f8f9fa;
+    body {
+        background-color: #FFFFFF;
+        color: #040F0F;
+        padding-top: 80px;
+    }
+    
+    .main-content {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+        padding-bottom: 60px;
+    }
+    
+    .generator-header {
+        background: linear-gradient(135deg, #040F0F 0%, #1a1a1a 100%);
+        color: white;
         border-radius: 15px;
         padding: 2rem;
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-    }
-    .form-header {
-        background: linear-gradient(135deg, #ffc107 0%, #ff8f00 100%);
-        color: white;
-        padding: 1.5rem;
-        border-radius: 10px;
         margin-bottom: 2rem;
-        text-align: center;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
     }
-    .form-group {
-        margin-bottom: 1.5rem;
+    
+    .step-card {
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s ease;
+        margin-bottom: 2rem;
     }
-    .form-label {
-        font-weight: 600;
-        color: #2c3e50;
-        margin-bottom: 0.5rem;
+    
+    .step-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
     }
-    .form-select, .form-control {
+    
+    .step-header {
+        background: linear-gradient(135deg, #00D4AA 0%, #40E0D0 100%);
+        color: white;
+        padding: 1rem 1.5rem;
+        border-radius: 15px 15px 0 0;
+        border-bottom: none;
+    }
+    
+    .step-disabled .step-header {
+        background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+    }
+    
+    .step-number {
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
+        width: 30px;
+        height: 30px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        margin-right: 10px;
+    }
+    
+    .search-input {
         border: 2px solid #e9ecef;
         border-radius: 10px;
         padding: 0.75rem 1rem;
         transition: all 0.3s ease;
     }
-    .form-select:focus, .form-control:focus {
-        border-color: #ffc107;
-        box-shadow: 0 0 0 0.25rem rgba(255, 193, 7, 0.25);
+    
+    .search-input:focus {
+        border-color: #00D4AA;
+        box-shadow: 0 0 0 0.2rem rgba(0, 212, 170, 0.25);
     }
-    .generate-btn {
-        background: linear-gradient(135deg, #ffc107 0%, #ff8f00 100%);
-        border: none;
-        border-radius: 25px;
-        padding: 1rem 2.5rem;
-        font-weight: 600;
-        font-size: 1.1rem;
+    
+    .option-card {
+        border: 2px solid #e9ecef;
+        border-radius: 10px;
+        padding: 1rem;
+        cursor: pointer;
         transition: all 0.3s ease;
-        box-shadow: 0 4px 15px rgba(255, 193, 7, 0.3);
+        margin-bottom: 0.5rem;
     }
-    .generate-btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 25px rgba(255, 193, 7, 0.4);
+    
+    .option-card:hover {
+        border-color: #00D4AA;
+        background-color: #f8fffe;
     }
-    .step-indicator {
-        display: flex;
-        justify-content: center;
-        margin-bottom: 2rem;
+    
+    .option-card.selected {
+        border-color: #00D4AA;
+        background-color: #e8fff9;
+        box-shadow: 0 0 0 0.2rem rgba(0, 212, 170, 0.25);
     }
-    .step {
-        background: #e9ecef;
-        color: #6c757d;
-        border-radius: 50%;
-        width: 40px;
-        height: 40px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin: 0 1rem;
+    
+    .option-card.disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+    
+    .generate-btn {
+        background: linear-gradient(135deg, #00D4AA 0%, #40E0D0 100%);
+        border: none;
+        color: white;
+        padding: 0.75rem 2rem;
+        border-radius: 10px;
         font-weight: bold;
         transition: all 0.3s ease;
     }
-    .step.active {
-        background: #ffc107;
+    
+    .generate-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0, 212, 170, 0.3);
+    }
+    
+    .generate-btn:disabled {
+        background: #6c757d;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+    }
+    
+    .mass-generate-btn {
+        background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+        border: none;
+        color: white;
+        padding: 0.75rem 2rem;
+        border-radius: 10px;
+        font-weight: bold;
+        transition: all 0.3s ease;
+    }
+    
+    .mass-generate-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(255, 107, 107, 0.3);
+    }
+    
+    .origin-badge {
+        font-size: 0.8rem;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-weight: 600;
+    }
+    
+    .origin-dashboard {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         color: white;
     }
-    .step.completed {
-        background: #28a745;
+    
+    .origin-evento {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
         color: white;
+    }
+    
+    .origin-participante {
+        background: linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%);
+        color: white;
+    }
+    
+    .plantilla-preview {
+        background: #f8f9fa;
+        border: 2px dashed #dee2e6;
+        border-radius: 10px;
+        padding: 2rem;
+        text-align: center;
+        margin-top: 1rem;
+    }
+    
+    .dropdown-custom {
+        border: 2px solid #e9ecef;
+        border-radius: 10px;
+        background: white;
+        max-height: 200px;
+        overflow-y: auto;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        z-index: 1000;
+    }
+    
+    .dropdown-item-custom {
+        padding: 0.75rem 1rem;
+        border-bottom: 1px solid #f1f3f4;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    
+    .dropdown-item-custom:hover {
+        background-color: #f8f9fa;
+    }
+    
+    .dropdown-item-custom.selected {
+        background-color: #e8fff9;
+        color: #00D4AA;
+        font-weight: 600;
     }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="container mt-4">
-    <div class="row justify-content-center">
-        <div class="col-lg-8">
-            <div class="form-header">
-                <h1 class="mb-2">
-                    <i class="fas fa-certificate fa-2x mb-3"></i><br>
-                    Generar Constancias
-                </h1>
-                <p class="mb-0 opacity-75">Seleccione los datos necesarios para crear su constancia personalizada</p>
-            </div>
+{% include 'components/navbar.html' %}
 
-            <!-- Indicador de pasos -->
-            <div class="step-indicator">
-                <div class="step active">1</div>
-                <div class="step">2</div>
-                <div class="step">3</div>
-            </div>
-
-            <div class="form-container">
-                <div class="row mb-4">
-                    <div class="col-12">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <h4 class="text-primary mb-0">
-                                <i class="fas fa-cogs me-2"></i>Configuración de Constancia
-                            </h4>
-                            <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary">
-                                <i class="fas fa-arrow-left"></i> Volver
-                            </a>
-                        </div>
-                        <hr>
-                    </div>
+<div class="main-content">
+    <div class="container">
+        <!-- Header con información del origen -->
+        <div class="generator-header">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1><i class="fas fa-certificate me-3"></i>Generador de Constancias</h1>
+                    <p class="mb-0 opacity-75">Crea constancias personalizadas para eventos y participantes</p>
                 </div>
-
-                <form method="post" id="generateForm">
-                    {% csrf_token %}
-                    
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label class="form-label">
-                                    <i class="fas fa-user text-success me-2"></i>Seleccionar Participante
-                                </label>
-                                {{ form.participante }}
-                                <small class="form-text text-muted">
-                                    Elija el participante para quien se generará la constancia
-                                </small>
-                            </div>
-                        </div>
-
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label class="form-label">
-                                    <i class="fas fa-calendar-alt text-primary me-2"></i>Seleccionar Evento
-                                </label>
-                                {{ form.evento }}
-                                <small class="form-text text-muted">
-                                    Seleccione el evento relacionado con la constancia
-                                </small>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-12">
-                            <div class="form-group">
-                                <label class="form-label">
-                                    <i class="fas fa-file-alt text-warning me-2"></i>Seleccionar Plantilla
-                                </label>
-                                {{ form.plantilla }}
-                                <small class="form-text text-muted">
-                                    Elija la plantilla de diseño para la constancia
-                                </small>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Vista previa (placeholder) -->
-                    <div class="row mb-4">
-                        <div class="col-12">
-                            <div class="card border-2 border-dashed">
-                                <div class="card-body text-center py-4">
-                                    <i class="fas fa-eye fa-3x text-muted mb-3"></i>
-                                    <h5 class="text-muted">Vista Previa</h5>
-                                    <p class="text-muted mb-0">
-                                        Seleccione todos los campos para ver una vista previa de la constancia
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-12 text-center">
-                            <button type="submit" class="generate-btn btn btn-warning btn-lg">
-                                <i class="fas fa-download me-2"></i>
-                                Generar y Descargar Constancia
-                            </button>
-                        </div>
-                    </div>
-                </form>
-
-                <!-- Instrucciones -->
-                <div class="row mt-4">
-                    <div class="col-12">
-                        <div class="alert alert-info">
-                            <h6 class="alert-heading">
-                                <i class="fas fa-info-circle me-2"></i>Instrucciones
-                            </h6>
-                            <ul class="mb-0">
-                                <li>Complete todos los campos requeridos</li>
-                                <li>La constancia se generará en formato DOCX</li>
-                                <li>Puede personalizar las plantillas desde el panel de administración</li>
-                                <li>Los datos se extraen automáticamente de la información registrada</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Acciones rápidas -->
-            <div class="row mt-4">
-                <div class="col-12">
-                    <div class="card">
-                        <div class="card-header">
-                            <h5 class="mb-0">
-                                <i class="fas fa-bolt text-warning"></i> Acciones Rápidas
-                            </h5>
-                        </div>
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-md-4">
-                                    <a href="{% url 'lista_participantes' %}" class="btn btn-outline-success w-100 mb-2">
-                                        <i class="fas fa-users"></i><br>
-                                        Gestionar Participantes
-                                    </a>
-                                </div>
-                                <div class="col-md-4">
-                                    <a href="{% url 'lista_eventos' %}" class="btn btn-outline-primary w-100 mb-2">
-                                        <i class="fas fa-calendar"></i><br>
-                                        Gestionar Eventos
-                                    </a>
-                                </div>
-                                <div class="col-md-4">
-                                    <button class="btn btn-outline-warning w-100 mb-2">
-                                        <i class="fas fa-file-alt"></i><br>
-                                        Gestionar Plantillas
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                <div>
+                    {% if origen == 'dashboard' %}
+                        <span class="origin-badge origin-dashboard">
+                            <i class="fas fa-home me-1"></i>Dashboard
+                        </span>
+                    {% elif origen == 'evento' %}
+                        <span class="origin-badge origin-evento">
+                            <i class="fas fa-calendar me-1"></i>Desde Evento
+                        </span>
+                    {% elif origen == 'participante' %}
+                        <span class="origin-badge origin-participante">
+                            <i class="fas fa-user me-1"></i>Desde Participante
+                        </span>
+                    {% endif %}
                 </div>
             </div>
         </div>
+
+        <!-- Botón de regreso -->
+        <div class="mb-4">
+            {% if origen == 'evento' and evento_preseleccionado %}
+                <a href="{% url 'detalle_evento' evento_preseleccionado.id_evento %}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-2"></i>Regresar al Evento
+                </a>
+            {% elif origen == 'participante' and participante_preseleccionado %}
+                <a href="{% url 'detalle_participante' participante_preseleccionado.id_participante %}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-2"></i>Regresar al Participante
+                </a>
+            {% else %}
+                <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-2"></i>Dashboard
+                </a>
+            {% endif %}
+        </div>
+
+        <form method="post" id="generarForm">
+            {% csrf_token %}
+            
+            <!-- Paso 1: Seleccionar Evento -->
+            <div class="step-card {% if origen == 'participante' and not evento_preseleccionado %}{% else %}{% endif %}" id="eventoStep">
+                <div class="step-header">
+                    <span class="step-number">1</span>
+                    <h4 class="d-inline mb-0">Seleccionar Evento</h4>
+                    {% if evento_preseleccionado %}
+                        <span class="badge bg-light text-dark ms-2">Preseleccionado</span>
+                    {% endif %}
+                </div>
+                <div class="card-body p-4">
+                    {% if evento_preseleccionado %}
+                        <!-- Evento preseleccionado -->
+                        <div class="option-card selected">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h5 class="mb-1">{{ evento_preseleccionado.titulo_evento }}</h5>
+                                    <p class="text-muted mb-2">{{ evento_preseleccionado.descripcion|default:"Sin descripción" }}</p>
+                                    <div class="d-flex gap-3">
+                                        <small class="text-muted">
+                                            <i class="fas fa-calendar me-1"></i>
+                                            {{ evento_preseleccionado.fecha_inicio|date:"d/m/Y" }}
+                                        </small>
+                                        <small class="text-muted">
+                                            <i class="fas fa-users me-1"></i>
+                                            {{ evento_preseleccionado.participantes.count }} participantes
+                                        </small>
+                                    </div>
+                                </div>
+                                <span class="badge bg-primary">{{ evento_preseleccionado.get_tipo_evento_display }}</span>
+                            </div>
+                        </div>
+                        <input type="hidden" id="eventoId" name="evento_id" value="{{ evento_preseleccionado.id_evento }}">
+                    {% else %}
+                        <!-- Búsqueda de eventos -->
+                        <div class="mb-3">
+                            <input type="text" 
+                                   class="form-control search-input" 
+                                   id="eventoSearch" 
+                                   placeholder="Buscar evento por nombre..."
+                                   autocomplete="off">
+                        </div>
+                        
+                        <div id="eventosContainer">
+                            {% for evento in eventos %}
+                            <div class="option-card evento-option" 
+                                 data-id="{{ evento.id_evento }}"
+                                 data-title="{{ evento.titulo_evento }}"
+                                 data-participantes="{{ evento.participantes.count }}">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <h6 class="mb-1">{{ evento.titulo_evento }}</h6>
+                                        <p class="text-muted small mb-2">{{ evento.descripcion|default:"Sin descripción"|truncatechars:80 }}</p>
+                                        <div class="d-flex gap-3">
+                                            <small class="text-muted">
+                                                <i class="fas fa-calendar me-1"></i>
+                                                {{ evento.fecha_inicio|date:"d/m/Y" }}
+                                            </small>
+                                            <small class="text-muted">
+                                                <i class="fas fa-users me-1"></i>
+                                                {{ evento.participantes.count }} participantes
+                                            </small>
+                                        </div>
+                                    </div>
+                                    <span class="badge bg-primary">{{ evento.get_tipo_evento_display }}</span>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        <input type="hidden" id="eventoId" name="evento_id">
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Paso 2: Seleccionar Participante -->
+            <div class="step-card {% if evento_preseleccionado %}{% else %}step-disabled{% endif %}" id="participanteStep">
+                <div class="step-header">
+                    <span class="step-number">2</span>
+                    <h4 class="d-inline mb-0">Seleccionar Participante</h4>
+                    {% if participante_preseleccionado %}
+                        <span class="badge bg-light text-dark ms-2">Preseleccionado</span>
+                    {% elif origen == 'evento' %}
+                        <span class="badge bg-light text-dark ms-2">Del evento seleccionado</span>
+                    {% endif %}
+                </div>
+                <div class="card-body p-4">
+                    {% if participante_preseleccionado %}
+                        <!-- Participante preseleccionado -->
+                        <div class="option-card selected">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="mb-1">{{ participante_preseleccionado.nombre_participante }}</h6>
+                                    <small class="text-muted">{{ participante_preseleccionado.email_participante }}</small>
+                                </div>
+                                <span class="badge bg-secondary">{{ participante_preseleccionado.rol_participante }}</span>
+                            </div>
+                        </div>
+                        <input type="hidden" id="participanteId" name="participante_id" value="{{ participante_preseleccionado.id_participante }}">
+                    {% else %}
+                        <!-- Búsqueda de participantes -->
+                        <div class="mb-3">
+                            <input type="text" 
+                                   class="form-control search-input" 
+                                   id="participanteSearch" 
+                                   placeholder="Buscar participante por nombre o email..."
+                                   autocomplete="off"
+                                   {% if not evento_preseleccionado and origen != 'evento' %}disabled{% endif %}>
+                        </div>
+                        
+                        <div id="participantesContainer">
+                            {% if evento_preseleccionado %}
+                                {% for participante in participantes_evento %}
+                                <div class="option-card participante-option" 
+                                     data-id="{{ participante.id_participante }}"
+                                     data-nombre="{{ participante.nombre_participante }}"
+                                     data-email="{{ participante.email_participante }}">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h6 class="mb-1">{{ participante.nombre_participante }}</h6>
+                                            <small class="text-muted">{{ participante.email_participante }}</small>
+                                        </div>
+                                        <span class="badge bg-secondary">{{ participante.rol_participante }}</span>
+                                    </div>
+                                </div>
+                                {% empty %}
+                                <div class="text-center py-4">
+                                    <i class="fas fa-user-slash fa-3x text-muted mb-3"></i>
+                                    <h6 class="text-muted">No hay participantes en este evento</h6>
+                                    <p class="text-muted small">Agrega participantes al evento para poder generar constancias</p>
+                                </div>
+                                {% endfor %}
+                            {% else %}
+                                <div class="text-center py-4">
+                                    <i class="fas fa-arrow-up fa-2x text-muted mb-2"></i>
+                                    <p class="text-muted">Primero selecciona un evento</p>
+                                </div>
+                            {% endif %}
+                        </div>
+                        <input type="hidden" id="participanteId" name="participante_id">
+                        
+                        <!-- Opción de generar para todos -->
+                        {% if evento_preseleccionado and participantes_evento %}
+                        <hr class="my-4">
+                        <div class="text-center">
+                            <div class="alert alert-info mb-3">
+                                <i class="fas fa-info-circle me-2"></i>
+                                <strong>Opciones de generación:</strong> Puede seleccionar un participante específico o generar constancias para todos
+                            </div>
+                            <button type="button" class="mass-generate-btn" id="generarTodosBtn">
+                                <i class="fas fa-users me-2"></i>
+                                Generar para todos los participantes ({{ participantes_evento.count }})
+                            </button>
+                        </div>
+                        {% endif %}
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Botón de generar -->
+            <div class="text-center mt-4">
+                <button type="submit" class="generate-btn" id="generarBtn" disabled>
+                    <i class="fas fa-file-pdf me-2"></i>
+                    Generar Constancia
+                </button>
+            </div>
+        </form>
     </div>
 </div>
 {% endblock %}
 
 {% block extra_js %}
 <script>
-$(document).ready(function() {
-    // Mejorar los selects con clases Bootstrap
-    $('#id_participante, #id_evento, #id_plantilla').addClass('form-select');
+document.addEventListener('DOMContentLoaded', function() {
+    // Referencias a elementos
+    // Referencias a elementos
+    const eventoSearch = document.getElementById('eventoSearch');
+    const participanteSearch = document.getElementById('participanteSearch');
     
-    // Validación del formulario
-    $('#generateForm').on('submit', function(e) {
-        var participante = $('#id_participante').val();
-        var evento = $('#id_evento').val();
-        var plantilla = $('#id_plantilla').val();
-        
-        if (!participante || !evento || !plantilla) {
-            e.preventDefault();
-            alert('Por favor, complete todos los campos antes de generar la constancia.');
-            return false;
-        }
-        
-        // Mostrar indicador de carga
-        $('.generate-btn').html('<i class="fas fa-spinner fa-spin me-2"></i>Generando...');
-        $('.generate-btn').prop('disabled', true);
-    });
+    const eventoId = document.getElementById('eventoId');
+    const participanteId = document.getElementById('participanteId');
     
-    // Actualizar pasos del indicador
-    $('#id_participante, #id_evento, #id_plantilla').on('change', function() {
-        updateStepIndicator();
-    });
+    const participanteStep = document.getElementById('participanteStep');
     
-    function updateStepIndicator() {
-        var participante = $('#id_participante').val();
-        var evento = $('#id_evento').val();
-        var plantilla = $('#id_plantilla').val();
-        
-        // Resetear pasos
-        $('.step').removeClass('active completed');
-        
-        if (participante) {
-            $('.step:eq(0)').addClass('completed');
-            $('.step:eq(1)').addClass('active');
-        } else {
-            $('.step:eq(0)').addClass('active');
-        }
-        
-        if (participante && evento) {
-            $('.step:eq(1)').removeClass('active').addClass('completed');
-            $('.step:eq(2)').addClass('active');
-        }
-        
-        if (participante && evento && plantilla) {
-            $('.step:eq(2)').removeClass('active').addClass('completed');
+    const generarBtn = document.getElementById('generarBtn');
+    const generarTodosBtn = document.getElementById('generarTodosBtn');
+    const generarForm = document.getElementById('generarForm');
+    
+    const origen = '{{ origen }}';
+    const eventoPreseleccionado = {% if evento_preseleccionado %}{{ evento_preseleccionado.id_evento }}{% else %}null{% endif %};
+    const participantePreseleccionado = {% if participante_preseleccionado %}{{ participante_preseleccionado.id_participante }}{% else %}null{% endif %};
+    const plantillaEvento = {% if evento_preseleccionado and evento_preseleccionado.plantilla_id %}{{ evento_preseleccionado.plantilla_id.id_plantilla }}{% else %}null{% endif %};
+
+    // Inicialización según el origen
+    if (eventoPreseleccionado) {
+        habilitarPaso(participanteStep);
+        if (participanteSearch) {
+            participanteSearch.disabled = false;
         }
     }
+
+    // Funciones para manejar pasos
+    function habilitarPaso(paso) {
+        paso.classList.remove('step-disabled');
+        const inputs = paso.querySelectorAll('input, button');
+        inputs.forEach(input => input.disabled = false);
+    }
+
+    function deshabilitarPaso(paso) {
+        paso.classList.add('step-disabled');
+        const inputs = paso.querySelectorAll('input, button');
+        inputs.forEach(input => input.disabled = true);
+    }
+
+    // Búsqueda de eventos
+    if (eventoSearch) {
+        eventoSearch.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            const opciones = document.querySelectorAll('.evento-option');
+            
+            opciones.forEach(opcion => {
+                const title = opcion.dataset.title.toLowerCase();
+                if (title.includes(searchTerm)) {
+                    opcion.style.display = 'block';
+                } else {
+                    opcion.style.display = 'none';
+                }
+            });
+        });
+    }
+
+    // Selección de evento
+    document.addEventListener('click', function(e) {
+        if (e.target.closest('.evento-option')) {
+            const opcion = e.target.closest('.evento-option');
+            
+            // Limpiar selecciones anteriores
+            document.querySelectorAll('.evento-option').forEach(opt => {
+                opt.classList.remove('selected');
+            });
+            
+            // Seleccionar nueva opción
+            opcion.classList.add('selected');
+            eventoId.value = opcion.dataset.id;
+            
+            // Limpiar participante seleccionado
+            participanteId.value = '';
+            document.querySelectorAll('.participante-option').forEach(opt => {
+                opt.classList.remove('selected');
+            });
+            
+            // Habilitar siguiente paso
+            habilitarPaso(participanteStep);
+            
+            // Cargar participantes del evento seleccionado
+            cargarParticipantesEvento(opcion.dataset.id);
+            
+            actualizarEstadoBoton();
+        }
+    });
+
+    // Búsqueda de participantes
+    if (participanteSearch) {
+        participanteSearch.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            const opciones = document.querySelectorAll('.participante-option');
+            
+            opciones.forEach(opcion => {
+                const nombre = opcion.dataset.nombre.toLowerCase();
+                const email = opcion.dataset.email.toLowerCase();
+                if (nombre.includes(searchTerm) || email.includes(searchTerm)) {
+                    opcion.style.display = 'block';
+                } else {
+                    opcion.style.display = 'none';
+                }
+            });
+        });
+    }
+
+    // Selección de participante
+    document.addEventListener('click', function(e) {
+        if (e.target.closest('.participante-option')) {
+            const opcion = e.target.closest('.participante-option');
+            
+            // Limpiar selecciones anteriores
+            document.querySelectorAll('.participante-option').forEach(opt => {
+                opt.classList.remove('selected');
+            });
+            
+            // Seleccionar nueva opción
+            opcion.classList.add('selected');
+            participanteId.value = opcion.dataset.id;
+            
+            actualizarEstadoBoton();
+        }
+    });
+
+    // Generación masiva
+    if (generarTodosBtn) {
+        generarTodosBtn.addEventListener('click', function() {
+            if (eventoId.value) {
+                // Crear input para indicar generación masiva
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'generar_todos';
+                input.value = 'true';
+                generarForm.appendChild(input);
+                
+                // Enviar formulario
+                generarForm.submit();
+            } else {
+                alert('Debe seleccionar un evento para generar constancias masivas');
+            }
+        });
+    }
     
-    // Inicializar el indicador
-    updateStepIndicator();
+    // Event listener para botones de generación masiva creados dinámicamente
+    document.addEventListener('click', function(e) {
+        if (e.target && (e.target.id === 'generarTodosBtn' || e.target.classList.contains('mass-generate-btn'))) {
+            if (eventoId.value) {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'generar_todos';
+                input.value = 'true';
+                generarForm.appendChild(input);
+                generarForm.submit();
+            } else {
+                alert('Debe seleccionar un evento para generar constancias masivas');
+            }
+        }
+    });
+
+    // Función para cargar participantes de un evento
+    function cargarParticipantesEvento(eventoIdSeleccionado) {
+        // Habilitar campo de búsqueda
+        if (participanteSearch) {
+            participanteSearch.disabled = false;
+        }
+        
+        // Hacer petición AJAX para cargar participantes
+        fetch(`/api/eventos/${eventoIdSeleccionado}/participantes/`, {
+            method: 'GET',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            actualizarListaParticipantes(data.participantes);
+        })
+        .catch(error => {
+            console.error('Error cargando participantes:', error);
+            // Si falla AJAX, recargar la página con el evento seleccionado
+            window.location.href = `${window.location.pathname}?evento_id=${eventoIdSeleccionado}`;
+        });
+    }
+    
+    // Función para actualizar la lista de participantes dinámicamente
+    function actualizarListaParticipantes(participantes) {
+        const container = document.getElementById('participantesContainer');
+        
+        if (participantes.length === 0) {
+            container.innerHTML = `
+                <div class="text-center py-4">
+                    <i class="fas fa-user-slash fa-3x text-muted mb-3"></i>
+                    <h6 class="text-muted">No hay participantes en este evento</h6>
+                    <p class="text-muted small">Agrega participantes al evento para poder generar constancias</p>
+                </div>
+            `;
+            return;
+        }
+        
+        let html = '';
+        participantes.forEach(participante => {
+            html += `
+                <div class="option-card participante-option" 
+                     data-id="${participante.id_participante}"
+                     data-nombre="${participante.nombre_participante}"
+                     data-email="${participante.email_participante}">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="mb-1">${participante.nombre_participante}</h6>
+                            <small class="text-muted">${participante.email_participante}</small>
+                        </div>
+                        <span class="badge bg-secondary">${participante.rol_participante}</span>
+                    </div>
+                </div>
+            `;
+        });
+        
+        // Agregar opción de generar para todos
+        html += `
+            <hr class="my-4">
+            <div class="d-flex justify-content-center">
+                <button type="button" class="mass-generate-btn" id="generarTodosBtn">
+                    <i class="fas fa-users me-2"></i>
+                    Generar para todos los participantes (${participantes.length})
+                </button>
+            </div>
+        `;
+        
+        container.innerHTML = html;
+        
+        // Reactivar event listener para el botón de generar todos
+        const nuevoGenerarTodosBtn = document.getElementById('generarTodosBtn');
+        if (nuevoGenerarTodosBtn) {
+            nuevoGenerarTodosBtn.addEventListener('click', function() {
+                if (eventoId.value) {
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = 'generar_todos';
+                    input.value = 'true';
+                    generarForm.appendChild(input);
+                    generarForm.submit();
+                }
+            });
+        }
+    }
+
+    // Función para actualizar el estado del botón de generar
+    function actualizarEstadoBoton() {
+        const eventoSeleccionado = eventoId.value !== '';
+        const participanteSeleccionado = participanteId.value !== '';
+        
+        // Habilitar botón individual solo si hay evento y participante
+        generarBtn.disabled = !(eventoSeleccionado && participanteSeleccionado);
+        
+        if (eventoSeleccionado && participanteSeleccionado) {
+            generarBtn.classList.add('btn-success');
+            generarBtn.classList.remove('btn-primary');
+            generarBtn.innerHTML = '<i class="fas fa-check me-2"></i>Generar Constancia';
+        } else {
+            generarBtn.classList.remove('btn-success');
+            generarBtn.classList.add('btn-primary');
+            generarBtn.innerHTML = '<i class="fas fa-file-pdf me-2"></i>Generar Constancia';
+        }
+        
+        // Habilitar botón de generar todos si hay evento
+        const generarTodosBtn = document.getElementById('generarTodosBtn');
+        if (generarTodosBtn) {
+            generarTodosBtn.disabled = !eventoSeleccionado;
+        }
+    }
+
+    // Inicializar estado del botón
+    actualizarEstadoBoton();
 });
 </script>
 {% endblock %}

@@ -1,0 +1,905 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Carga Masiva CSV{% endblock %}
+
+{% block styles %}
+<style>
+    .upload-container {
+        background: #ffffff;
+        border: 1px solid #e9ecef;
+        border-radius: 15px;
+        padding: 2.5rem;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        margin-bottom: 2rem;
+        max-width: 900px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    
+    .page-header {
+        text-align: center;
+        margin-bottom: 2.5rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 2px solid #f8f9fa;
+    }
+    
+    .page-header h2 {
+        color: #212529;
+        font-weight: 700;
+        margin-bottom: 0.75rem;
+        font-size: 2rem;
+    }
+    
+    .page-header p {
+        color: #6c757d;
+        margin-bottom: 0;
+        font-size: 1.1rem;
+    }
+    
+    .upload-zone {
+        border: 3px dashed #ced4da;
+        border-radius: 15px;
+        padding: 3rem 2rem;
+        text-align: center;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        position: relative;
+        background: #fafbfc;
+        margin: 2rem 0;
+    }
+    
+    .upload-zone:hover {
+        border-color: #0d6efd;
+        background-color: rgba(13, 110, 253, 0.05);
+        transform: translateY(-2px);
+    }
+    
+    .upload-zone.dragover {
+        border-color: #0d6efd;
+        background-color: rgba(13, 110, 253, 0.1);
+        transform: scale(1.02);
+        box-shadow: 0 8px 25px rgba(13, 110, 253, 0.2);
+    }
+    
+    .upload-icon {
+        font-size: 3.5rem;
+        color: #6c757d;
+        margin-bottom: 1.5rem;
+        transition: all 0.3s ease;
+    }
+    
+    .upload-zone:hover .upload-icon {
+        color: #0d6efd;
+        transform: scale(1.1);
+    }
+    
+    .upload-zone h4 {
+        color: #495057;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+    
+    .file-input {
+        position: absolute;
+        opacity: 0;
+        width: 100%;
+        height: 100%;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+    }
+    
+    .file-info {
+        background: #e7f1ff;
+        border: 1px solid #b8daff;
+        border-radius: 10px;
+        padding: 1.25rem;
+        margin-top: 1.5rem;
+        display: none;
+    }
+    
+    .file-details {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+    
+    .file-name {
+        font-weight: 600;
+        color: #212529;
+        margin-bottom: 0.25rem;
+    }
+    
+    .file-size {
+        color: #6c757d;
+        font-size: 0.9rem;
+    }
+    
+    .preview-table {
+        background: #ffffff;
+        border: 1px solid #e9ecef;
+        border-radius: 10px;
+        max-height: 400px;
+        overflow: auto;
+        margin-top: 2rem;
+        display: none;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    .preview-table table {
+        width: 100%;
+        margin-bottom: 0;
+    }
+    
+    .preview-table th {
+        background: #f8f9fa;
+        border-bottom: 2px solid #dee2e6;
+        font-weight: 600;
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        padding: 1rem 0.75rem;
+    }
+    
+    .preview-table td {
+        padding: 0.75rem;
+        border-bottom: 1px solid #f1f3f4;
+    }
+    
+    .error-row {
+        background-color: rgba(220, 53, 69, 0.05);
+    }
+    
+    .success-row {
+        background-color: rgba(25, 135, 84, 0.05);
+    }
+    
+    .error-cell {
+        color: #dc3545;
+        font-weight: 500;
+    }
+    
+    .success-cell {
+        color: #198754;
+        font-weight: 500;
+    }
+    
+    .stats-summary {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        gap: 1rem;
+        margin: 2rem 0;
+        display: none;
+    }
+    
+    .stat-card {
+        background: #ffffff;
+        border: 1px solid #e9ecef;
+        border-radius: 10px;
+        padding: 1.25rem;
+        text-align: center;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        transition: transform 0.2s ease;
+    }
+    
+    .stat-card:hover {
+        transform: translateY(-2px);
+    }
+    
+    .stat-number {
+        font-size: 1.75rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        line-height: 1;
+    }
+    
+    .stat-label {
+        font-size: 0.85rem;
+        color: #6c757d;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-weight: 500;
+    }
+    
+    .stat-card.success .stat-number {
+        color: #198754;
+    }
+    
+    .stat-card.warning .stat-number {
+        color: #fd7e14;
+    }
+    
+    .stat-card.danger .stat-number {
+        color: #dc3545;
+    }
+    
+    .stat-card.info .stat-number {
+        color: #0d6efd;
+    }
+    
+    .error-list {
+        background: rgba(220, 53, 69, 0.05);
+        border: 1px solid rgba(220, 53, 69, 0.2);
+        border-radius: 10px;
+        padding: 1.5rem;
+        margin-top: 1.5rem;
+        display: none;
+    }
+    
+    .error-item {
+        padding: 0.75rem 0;
+        border-bottom: 1px solid rgba(220, 53, 69, 0.15);
+    }
+    
+    .error-item:last-child {
+        border-bottom: none;
+        padding-bottom: 0;
+    }
+    
+    .progress-container {
+        margin: 2rem 0;
+        display: none;
+    }
+    
+    .progress {
+        height: 10px;
+        border-radius: 10px;
+        overflow: hidden;
+        background-color: #e9ecef;
+    }
+    
+    .progress-bar {
+        background: linear-gradient(45deg, #0d6efd, #0b5ed7);
+        transition: width 0.3s ease;
+        border-radius: 10px;
+    }
+    
+    .action-buttons {
+        display: flex;
+        gap: 1rem;
+        margin-top: 2.5rem;
+        padding-top: 2rem;
+        border-top: 2px solid #f8f9fa;
+    }
+    
+    .btn-download-template {
+        background: #ffffff;
+        border: 2px solid #17a2b8;
+        color: #17a2b8;
+        font-weight: 600;
+        padding: 0.75rem 1.25rem;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        font-size: 0.9rem;
+    }
+    
+    .btn-download-template:hover {
+        background: #17a2b8;
+        color: white;
+        text-decoration: none;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(23, 162, 184, 0.3);
+    }
+    
+    .btn-process {
+        background: linear-gradient(135deg, #0d6efd 0%, #0b5ed7 100%);
+        border: none;
+        color: #ffffff;
+        font-weight: 600;
+        padding: 0.75rem 2rem;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+        flex: 1;
+        font-size: 0.95rem;
+    }
+    
+    .btn-process:hover {
+        background: linear-gradient(135deg, #0b5ed7 0%, #0a58ca 100%);
+        color: #ffffff;
+        transform: translateY(-1px);
+        box-shadow: 0 8px 25px rgba(13, 110, 253, 0.3);
+    }
+    
+    .btn-process:disabled {
+        background: #6c757d;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+    }
+    
+    .btn-secondary {
+        background-color: transparent;
+        border: 2px solid #6c757d;
+        color: #6c757d;
+        font-weight: 600;
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-secondary:hover {
+        background-color: #6c757d;
+        border-color: #6c757d;
+        color: #ffffff;
+        transform: translateY(-1px);
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+        .upload-container {
+            padding: 1.5rem;
+        }
+        
+        .upload-zone {
+            padding: 2rem 1rem;
+        }
+        
+        .action-buttons {
+            flex-direction: column;
+        }
+        
+        .stats-summary {
+            grid-template-columns: repeat(2, 1fr);
+        }
+        
+        .page-header h2 {
+            font-size: 1.5rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+{% include 'components/navbar.html' %}
+
+<div class="main-content">
+<div class="container-fluid px-4">
+    
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb breadcrumb-custom">
+            <li class="breadcrumb-item">
+                <a href="{% url 'dashboard' %}">Dashboard</a>
+            </li>
+            <li class="breadcrumb-item">
+                <a href="{% url 'gestionar_participantes' %}">Gestionar Participantes</a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">Carga Masiva CSV</li>
+        </ol>
+    </nav>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-10 col-xl-8">
+            <div class="upload-wizard">
+                
+                <!-- Header -->
+                <div class="text-center mb-4">
+                    <h2>
+                        <i class="fas fa-file-upload me-3 text-primary"></i>
+                        Carga Masiva por CSV
+                    </h2>
+                    <p class="text-muted">Importe múltiples participantes desde un archivo CSV</p>
+                </div>
+
+                <!-- Progress Steps -->
+                <div class="wizard-steps">
+                    <div class="step active" id="step1">
+                        1
+                        <div class="step-label">Seleccionar Archivo</div>
+                    </div>
+                    <div class="step" id="step2">
+                        2
+                        <div class="step-label">Preview y Validación</div>
+                    </div>
+                    <div class="step" id="step3">
+                        3
+                        <div class="step-label">Procesar y Guardar</div>
+                    </div>
+                </div>
+
+                <!-- Información del formato -->
+                <div class="alert alert-info mb-4">
+                    <h6>
+                        <i class="fas fa-info-circle me-2"></i>
+                        Formato Requerido del CSV
+                    </h6>
+                    <p class="mb-2">Su archivo debe tener exactamente 3 columnas en este orden:</p>
+                    <ul class="mb-3">
+                        <li><strong>nombre_participante</strong> - Nombre completo</li>
+                        <li><strong>email_participante</strong> - Correo electrónico único</li>
+                        <li><strong>rol_participante</strong> - Participante, Ponente, Organizador, o Facilitador</li>
+                    </ul>
+                    <div class="d-flex align-items-center gap-3">
+                        <a href="#" class="btn btn-download-template" onclick="descargarPlantilla()">
+                            <i class="fas fa-download me-2"></i>Descargar Plantilla
+                        </a>
+                        <small class="text-muted">
+                            <i class="fas fa-lightbulb me-1"></i>
+                            Tip: Use la plantilla para evitar errores de formato
+                        </small>
+                    </div>
+                </div>
+
+                <!-- Upload Zone -->
+                <form id="csvForm" method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    
+                    <div class="upload-zone" id="uploadZone">
+                        <input type="file" class="file-input" id="csvFile" name="archivo_csv" accept=".csv" required>
+                        <div class="upload-icon">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                        </div>
+                        <h4>Arrastra tu archivo CSV aquí</h4>
+                        <p class="text-muted">o haz clic para seleccionar desde tu computadora</p>
+                        <small class="text-muted">Máximo 5MB • Solo archivos .csv</small>
+                    </div>
+
+                    <!-- File Info -->
+                    <div class="file-info" id="fileInfo">
+                        <div class="file-details">
+                            <div>
+                                <div class="file-name" id="fileName"></div>
+                                <div class="file-size" id="fileSize"></div>
+                            </div>
+                            <button type="button" class="btn btn-outline-danger btn-sm" onclick="removeFile()">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    {% if evento %}
+                    <!-- Información del Evento -->
+                    <div class="alert alert-success mt-3">
+                        <h6>
+                            <i class="fas fa-calendar me-2"></i>
+                            Agregando participantes al evento: <strong>{{ evento.titulo_evento }}</strong>
+                        </h6>
+                        <p class="mb-0">Todos los participantes serán automáticamente asociados a este evento.</p>
+                        <input type="hidden" name="evento_id" value="{{ evento.id_evento }}">
+                    </div>
+                    {% endif %}
+
+                    <!-- Progress Bar -->
+                    <div class="progress-container" id="progressContainer">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="text-muted">Procesando archivo...</span>
+                            <span class="text-muted" id="progressText">0%</span>
+                        </div>
+                        <div class="progress">
+                            <div class="progress-bar" id="progressBar" style="width: 0%"></div>
+                        </div>
+                    </div>
+
+                    <!-- Preview Table -->
+                    <div class="preview-table" id="previewTable">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Fila</th>
+                                    <th>Nombre</th>
+                                    <th>Email</th>
+                                    <th>Rol</th>
+                                    <th>Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody id="previewBody">
+                                <!-- Contenido dinámico -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Statistics -->
+                    <div class="stats-summary" id="statsSummary">
+                        <div class="stat-card success">
+                            <div class="stat-number" id="validCount">0</div>
+                            <div class="stat-label">Válidos</div>
+                        </div>
+                        <div class="stat-card warning">
+                            <div class="stat-number" id="duplicateCount">0</div>
+                            <div class="stat-label">Duplicados</div>
+                        </div>
+                        <div class="stat-card danger">
+                            <div class="stat-number" id="errorCount">0</div>
+                            <div class="stat-label">Con Errores</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number" id="totalCount">0</div>
+                            <div class="stat-label">Total Filas</div>
+                        </div>
+                    </div>
+
+                    <!-- Error List -->
+                    <div class="error-list" id="errorList">
+                        <h6>
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            Errores Encontrados
+                        </h6>
+                        <div id="errorDetails"></div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="action-buttons">
+                        <a href="{% url 'gestionar_participantes' %}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Cancelar
+                        </a>
+                        <button type="button" class="btn btn-process" id="processBtn" disabled onclick="processCSV()">
+                            <i class="fas fa-cogs me-2"></i>Procesar Participantes
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+<!-- Modal de Confirmación -->
+<div class="modal fade" id="confirmModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-dark text-white">
+                <h5 class="modal-title">
+                    <i class="fas fa-check-circle me-2"></i>Confirmar Procesamiento
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>¿Está seguro de procesar los siguientes participantes?</p>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="stat-card success">
+                            <div class="stat-number" id="modalValidCount">0</div>
+                            <div class="stat-label">Se Procesarán</div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="stat-card warning">
+                            <div class="stat-number" id="modalSkipCount">0</div>
+                            <div class="stat-label">Se Omitirán</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="alert alert-warning mt-3">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    Esta acción no se puede deshacer. Los participantes válidos serán agregados al sistema.
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn text-white" id="confirmProcess" style="background-color: #007bff;">
+                    <i class="fas fa-check me-2"></i>Sí, Procesar Ahora
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+let csvData = [];
+let validData = [];
+let errorData = [];
+
+$(document).ready(function() {
+    // File input handling
+    $('#csvFile').on('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            handleFileSelect(file);
+        }
+    });
+    
+    // Drag and drop
+    $('#uploadZone').on('dragover', function(e) {
+        e.preventDefault();
+        $(this).addClass('dragover');
+    });
+    
+    $('#uploadZone').on('dragleave', function(e) {
+        e.preventDefault();
+        $(this).removeClass('dragover');
+    });
+    
+    $('#uploadZone').on('drop', function(e) {
+        e.preventDefault();
+        $(this).removeClass('dragover');
+        
+        const files = e.originalEvent.dataTransfer.files;
+        if (files.length > 0) {
+            const file = files[0];
+            $('#csvFile')[0].files = files;
+            handleFileSelect(file);
+        }
+    });
+});
+
+function handleFileSelect(file) {
+    // Validar tipo de archivo
+    if (!file.name.toLowerCase().endsWith('.csv')) {
+        alert('Por favor seleccione un archivo CSV válido.');
+        return;
+    }
+    
+    // Validar tamaño (5MB)
+    if (file.size > 5 * 1024 * 1024) {
+        alert('El archivo es demasiado grande. Máximo 5MB permitido.');
+        return;
+    }
+    
+    // Mostrar información del archivo
+    $('#fileName').text(file.name);
+    $('#fileSize').text(formatFileSize(file.size));
+    $('#fileInfo').show();
+    
+    // Leer y procesar el archivo
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const csv = e.target.result;
+        parseCSV(csv);
+    };
+    reader.readAsText(file);
+    
+    // Actualizar pasos
+    updateStep(2);
+}
+
+function parseCSV(csv) {
+    const lines = csv.split('\n').filter(line => line.trim());
+    csvData = [];
+    validData = [];
+    errorData = [];
+    
+    if (lines.length < 2) {
+        alert('El archivo debe contener al menos una fila de encabezados y una de datos.');
+        return;
+    }
+    
+    // Verificar encabezados
+    const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
+    const expectedHeaders = ['nombre_participante', 'email_participante', 'rol_participante'];
+    
+    const headersValid = expectedHeaders.every(header => 
+        headers.some(h => h === header)
+    );
+    
+    if (!headersValid) {
+        alert('Los encabezados del CSV no son correctos. Use: nombre_participante, email_participante, rol_participante');
+        return;
+    }
+    
+    // Procesar datos
+    for (let i = 1; i < lines.length; i++) {
+        const values = lines[i].split(',').map(v => v.trim());
+        
+        if (values.length >= 3) {
+            const row = {
+                index: i,
+                nombre: values[0],
+                email: values[1],
+                rol: values[2],
+                errors: []
+            };
+            
+            validateRow(row);
+            csvData.push(row);
+        }
+    }
+    
+    displayPreview();
+    updateStatistics();
+    $('#processBtn').prop('disabled', validData.length === 0);
+}
+
+function validateRow(row) {
+    // Validar nombre
+    if (!row.nombre || row.nombre.length < 3) {
+        row.errors.push('Nombre debe tener al menos 3 caracteres');
+    }
+    
+    // Validar email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(row.email)) {
+        row.errors.push('Email no válido');
+    }
+    
+    // Validar rol
+    const validRoles = ['Participante', 'Ponente', 'Organizador', 'Facilitador'];
+    if (!validRoles.includes(row.rol)) {
+        row.errors.push('Rol debe ser: Participante, Ponente, Organizador o Facilitador');
+    }
+    
+    // Verificar duplicados en el mismo CSV
+    const duplicate = csvData.find(existingRow => 
+        existingRow.email.toLowerCase() === row.email.toLowerCase()
+    );
+    if (duplicate) {
+        row.errors.push('Email duplicado en el archivo');
+    }
+    
+    if (row.errors.length === 0) {
+        validData.push(row);
+    } else {
+        errorData.push(row);
+    }
+}
+
+function displayPreview() {
+    const tbody = $('#previewBody');
+    tbody.empty();
+    
+    csvData.forEach(row => {
+        const rowClass = row.errors.length > 0 ? 'error-row' : 'success-row';
+        const statusClass = row.errors.length > 0 ? 'error-cell' : 'success-cell';
+        const statusText = row.errors.length > 0 ? 'Error' : 'Válido';
+        const statusIcon = row.errors.length > 0 ? 'fas fa-times-circle' : 'fas fa-check-circle';
+        
+        const tr = $(`
+            <tr class="${rowClass}">
+                <td>${row.index}</td>
+                <td>${escapeHtml(row.nombre)}</td>
+                <td>${escapeHtml(row.email)}</td>
+                <td>${escapeHtml(row.rol)}</td>
+                <td class="${statusClass}">
+                    <i class="${statusIcon} me-1"></i>${statusText}
+                    ${row.errors.length > 0 ? `<br><small>${row.errors.join(', ')}</small>` : ''}
+                </td>
+            </tr>
+        `);
+        tbody.append(tr);
+    });
+    
+    $('#previewTable').show();
+    $('#statsSummary').show();
+    
+    if (errorData.length > 0) {
+        displayErrors();
+    }
+}
+
+function updateStatistics() {
+    $('#validCount').text(validData.length);
+    $('#errorCount').text(errorData.length);
+    $('#duplicateCount').text(0); // Se puede implementar lógica específica
+    $('#totalCount').text(csvData.length);
+    
+    $('#modalValidCount').text(validData.length);
+    $('#modalSkipCount').text(errorData.length);
+}
+
+function displayErrors() {
+    const errorDetails = $('#errorDetails');
+    errorDetails.empty();
+    
+    errorData.slice(0, 10).forEach(row => {
+        const errorItem = $(`
+            <div class="error-item">
+                <strong>Fila ${row.index}:</strong> ${escapeHtml(row.email)} - 
+                ${row.errors.join(', ')}
+            </div>
+        `);
+        errorDetails.append(errorItem);
+    });
+    
+    if (errorData.length > 10) {
+        errorDetails.append(`
+            <div class="error-item text-muted">
+                <i class="fas fa-ellipsis-h"></i> Y ${errorData.length - 10} errores más...
+            </div>
+        `);
+    }
+    
+    $('#errorList').show();
+}
+
+function processCSV() {
+    if (validData.length === 0) {
+        alert('No hay datos válidos para procesar.');
+        return;
+    }
+    
+    $('#confirmModal').modal('show');
+}
+
+$('#confirmProcess').on('click', function() {
+    $('#confirmModal').modal('hide');
+    
+    // Mostrar progreso
+    $('#progressContainer').show();
+    updateStep(3);
+    
+    // Simular procesamiento (aquí iría la llamada real al servidor)
+    let progress = 0;
+    const totalItems = validData.length;
+    
+    const interval = setInterval(() => {
+        progress += 100 / totalItems;
+        if (progress >= 100) {
+            progress = 100;
+            clearInterval(interval);
+            
+            // Enviar formulario real
+            setTimeout(() => {
+                // Aquí se enviaría el formulario con los datos validados
+                alert(`¡Éxito! Se procesaron ${validData.length} participantes correctamente.`);
+                window.location.href = '{% url "lista_participantes" %}';
+            }, 500);
+        }
+        
+        updateProgress(progress);
+    }, 100);
+});
+
+function updateProgress(progress) {
+    $('#progressBar').css('width', progress + '%');
+    $('#progressText').text(Math.round(progress) + '%');
+}
+
+function updateStep(stepNumber) {
+    $('.step').removeClass('active completed');
+    
+    for (let i = 1; i <= stepNumber; i++) {
+        if (i < stepNumber) {
+            $('#step' + i).addClass('completed');
+        } else {
+            $('#step' + i).addClass('active');
+        }
+    }
+}
+
+function removeFile() {
+    $('#csvFile').val('');
+    $('#fileInfo').hide();
+    $('#previewTable').hide();
+    $('#statsSummary').hide();
+    $('#errorList').hide();
+    $('#progressContainer').hide();
+    $('#processBtn').prop('disabled', true);
+    csvData = [];
+    validData = [];
+    errorData = [];
+    updateStep(1);
+}
+
+function descargarPlantilla() {
+    const csvContent = "nombre_participante,email_participante,rol_participante\n" +
+                      "Juan Pérez,juan.perez@example.com,Participante\n" +
+                      "María García,maria.garcia@example.com,Ponente\n" +
+                      "Carlos López,carlos.lopez@example.com,Organizador\n" +
+                      "Ana Rodríguez,ana.rodriguez@example.com,Facilitador\n";
+    
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', 'plantilla_participantes.csv');
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
+
+function formatFileSize(bytes) {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+}
+
+function escapeHtml(text) {
+    const map = {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#039;'
+    };
+    return text.replace(/[&<>"']/g, function(m) { return map[m]; });
+}
+</script>
+{% endblock %}

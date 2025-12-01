@@ -79,7 +79,8 @@ document.addEventListener('DOMContentLoaded', function() {
         };
     }
 
-    // Add loading state to form submission buttons
+    // Add loading state to form submission buttons - TEMPORARILY DISABLED FOR DEBUGGING
+    /*
     const submitButtons = document.querySelectorAll('button[type="submit"]');
     submitButtons.forEach(function(button) {
         button.addEventListener('click', function() {
@@ -89,6 +90,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
+    */
 
     // File upload progress (if needed)
     const fileInputs = document.querySelectorAll('input[type="file"]');

@@ -1,0 +1,596 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Crear Participante{% endblock %}
+
+{% block styles %}
+<style>
+    .participant-form {
+        background: #ffffff;
+        border: 1px solid #e9ecef;
+        border-radius: 15px;
+        padding: 2.5rem;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        margin-bottom: 2rem;
+        max-width: 800px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    
+    .form-header {
+        text-align: center;
+        margin-bottom: 2.5rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 2px solid #f8f9fa;
+    }
+    
+    .form-header h2 {
+        color: #212529;
+        font-weight: 700;
+        margin-bottom: 0.75rem;
+        font-size: 2rem;
+    }
+    
+    .form-header p {
+        color: #6c757d;
+        margin-bottom: 0;
+        font-size: 1.1rem;
+    }
+    
+    .form-group {
+        margin-bottom: 2rem;
+    }
+    
+    .form-label {
+        font-weight: 600;
+        color: #495057;
+        margin-bottom: 0.75rem;
+        display: flex;
+        align-items: center;
+        font-size: 1rem;
+    }
+    
+    .form-label i {
+        color: #0d6efd;
+        margin-right: 0.5rem;
+        width: 16px;
+    }
+    
+    .form-control {
+        border: 2px solid #e9ecef;
+        border-radius: 10px;
+        padding: 1rem;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        background-color: #ffffff;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+    }
+    
+    .form-control:focus {
+        border-color: #0d6efd;
+        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15), 0 4px 12px rgba(0, 0, 0, 0.1);
+        outline: 0;
+        transform: translateY(-2px);
+    }
+    
+    .form-control.is-valid {
+        border-color: #198754;
+    }
+    
+    .form-control.is-invalid {
+        border-color: #dc3545;
+    }
+    
+    /* Estilos para autocompletado */
+    .autocomplete-wrapper {
+        position: relative;
+    }
+    
+    .autocomplete-results {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: #ffffff;
+        border: 2px solid #e9ecef;
+        border-top: none;
+        border-radius: 0 0 12px 12px;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        max-height: 240px;
+        overflow-y: auto;
+        z-index: 1000;
+        display: none;
+        margin-top: 2px;
+    }
+    
+    .autocomplete-item {
+        padding: 1rem 1.25rem;
+        cursor: pointer;
+        border-bottom: 1px solid #e9ecef;
+        transition: all 0.2s ease;
+        margin: 0.25rem 0.5rem;
+        border-radius: 8px;
+        background: #ffffff;
+        position: relative;
+    }
+    
+    .autocomplete-item:last-child {
+        border-bottom: none;
+        margin-bottom: 0.5rem;
+    }
+    
+    .autocomplete-item:first-child {
+        margin-top: 0.5rem;
+    }
+    
+    .autocomplete-item:hover,
+    .autocomplete-item.active {
+        background-color: #f8f9fa;
+        border-color: #0d6efd;
+        box-shadow: 0 2px 8px rgba(13, 110, 253, 0.15);
+        transform: translateY(-1px);
+    }
+    
+    .autocomplete-item.selected {
+        background: linear-gradient(135deg, #e7f1ff 0%, #cce7ff 100%);
+        color: #0d6efd;
+        border-color: #0d6efd;
+        box-shadow: 0 4px 15px rgba(13, 110, 253, 0.25);
+    }
+    
+    .evento-title {
+        font-weight: 700;
+        color: #212529;
+        margin-bottom: 0.5rem;
+        font-size: 1.05rem;
+        line-height: 1.3;
+    }
+    
+    .autocomplete-item:hover .evento-title,
+    .autocomplete-item.active .evento-title {
+        color: #0d6efd;
+    }
+    
+    .evento-info {
+        font-size: 0.85rem;
+        color: #6c757d;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+    }
+    
+    .evento-badge {
+        background: #f8f9fa;
+        color: #495057;
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        font-weight: 500;
+        border: 1px solid #e9ecef;
+    }
+    
+    .no-results {
+        padding: 2rem 1.5rem;
+        text-align: center;
+        color: #6c757d;
+        font-style: italic;
+        background: #f8f9fa;
+        margin: 0.5rem;
+        border-radius: 8px;
+        border: 1px dashed #dee2e6;
+    }
+    
+    .role-title {
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 0.25rem;
+    }
+    
+    .role-description {
+        font-size: 0.875rem;
+        color: var(--text-secondary);
+    }
+    
+    .breadcrumb {
+        background-color: transparent;
+        padding: 0;
+        margin-bottom: 2rem;
+    }
+    
+    .breadcrumb-item + .breadcrumb-item::before {
+        content: ">";
+        color: #6c757d;
+    }
+    
+    .breadcrumb-item a {
+        color: #0d6efd;
+        text-decoration: none;
+    }
+    
+    .breadcrumb-item a:hover {
+        color: #0b5ed7;
+    }
+    
+    .breadcrumb-item.active {
+        color: #6c757d;
+    }
+    
+    .alert {
+        border-radius: 12px;
+        border: none;
+        padding: 1.25rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+    
+    .alert-info {
+        background: linear-gradient(135deg, #d1ecf1 0%, #b8daff 100%);
+        color: #0c5460;
+        border-left: 4px solid #0dcaf0;
+    }
+    
+    .main-content {
+        min-height: calc(100vh - 200px);
+        padding-bottom: 3rem;
+        background-color: #f8f9fa;
+    }
+    
+    .container {
+        max-width: 900px;
+    }
+    
+    .button-group {
+        margin-top: 2.5rem;
+        padding-top: 2rem;
+        border-top: 2px solid #f8f9fa;
+    }
+    
+    .btn-primary {
+        background: linear-gradient(135deg, #0d6efd 0%, #0b5ed7 100%);
+        border: none;
+        color: #ffffff;
+        font-weight: 600;
+        padding: 1rem 2rem;
+        border-radius: 10px;
+        transition: all 0.3s ease;
+        width: 100%;
+        font-size: 1rem;
+        box-shadow: 0 4px 15px rgba(13, 110, 253, 0.3);
+    }
+    
+    .btn-primary:hover {
+        background: linear-gradient(135deg, #0b5ed7 0%, #0a58ca 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(13, 110, 253, 0.4);
+    }
+    
+    .btn-secondary {
+        background-color: transparent;
+        border: 2px solid #6c757d;
+        color: #6c757d;
+        font-weight: 600;
+        padding: 1rem 2rem;
+        border-radius: 10px;
+        transition: all 0.3s ease;
+        width: 100%;
+        font-size: 1rem;
+    }
+    
+    .btn-secondary:hover {
+        background-color: #6c757d;
+        border-color: #6c757d;
+        color: #ffffff;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(108, 117, 125, 0.3);
+    }
+    
+    /* Responsive */
+    @media (max-width: 767.98px) {
+        .autocomplete-results {
+            max-height: 150px;
+        }
+        
+        .autocomplete-item {
+            padding: 0.5rem 0.75rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+{% include 'components/navbar.html' %}
+
+<div class="main-content">
+<div class="container py-5">
+    
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+                <a href="{% url 'dashboard' %}">
+                    <i class="fas fa-home me-1"></i>Dashboard
+                </a>
+            </li>
+            <li class="breadcrumb-item">
+                <a href="{% url 'gestionar_participantes' %}">
+                    <i class="fas fa-users me-1"></i>Participantes
+                </a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">
+                <i class="fas fa-user-plus me-1"></i>Crear Individual
+            </li>
+        </ol>
+    </nav>
+
+    <div class="participant-form">
+        <!-- Header -->
+        <div class="form-header">
+            <h2>
+                <i class="fas fa-user-plus me-3" style="color: #0d6efd;"></i>
+                Crear Nuevo Participante
+            </h2>
+            <p>Complete la información del participante para agregarlo al sistema</p>
+        </div>
+
+        <!-- Formulario -->
+        <form id="participanteForm" method="post" novalidate>
+            {% csrf_token %}
+            
+            <div class="row">
+                <!-- Campo Nombre -->
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="nombre" class="form-label">
+                            <i class="fas fa-user"></i> Nombre Completo *
+                        </label>
+                        <input 
+                            type="text" 
+                            class="form-control" 
+                            id="nombre" 
+                            name="nombre_participante" 
+                            placeholder="Ingrese el nombre completo"
+                            value="{{ form.nombre_participante.value|default:'' }}"
+                            required
+                        >
+                    </div>
+                </div>
+
+                <!-- Campo Email -->
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="email" class="form-label">
+                            <i class="fas fa-envelope"></i> Correo Electrónico *
+                        </label>
+                        <input 
+                            type="email" 
+                            class="form-control" 
+                            id="email" 
+                            name="email_participante" 
+                            placeholder="correo@ejemplo.com"
+                            value="{{ form.email_participante.value|default:'' }}"
+                            required
+                        >
+                    </div>
+                </div>
+            </div>
+
+            <!-- Selector de Rol -->
+            <div class="form-group">
+                <label for="rol_participante" class="form-label">
+                    <i class="fas fa-user-tag"></i> Rol del Participante *
+                </label>
+                <select class="form-control" id="rol_participante" name="rol_participante" required>
+                    <option value="">Seleccione el rol del participante</option>
+                    <option value="Participante" {% if form.rol_participante.value == 'Participante' %}selected{% endif %}>
+                        <i class="fas fa-user"></i> Participante - Asistente regular del evento
+                    </option>
+                    <option value="Ponente" {% if form.rol_participante.value == 'Ponente' %}selected{% endif %}>
+                        <i class="fas fa-chalkboard-teacher"></i> Ponente - Presentador o conferenciante
+                    </option>
+                    <option value="Organizador" {% if form.rol_participante.value == 'Organizador' %}selected{% endif %}>
+                        <i class="fas fa-users-cog"></i> Organizador - Staff del evento
+                    </option>
+                    <option value="Facilitador" {% if form.rol_participante.value == 'Facilitador' %}selected{% endif %}>
+                        <i class="fas fa-hands-helping"></i> Facilitador - Moderador o coordinador
+                    </option>
+                </select>
+            </div>
+
+            {% if evento %}
+            <!-- Información del Evento -->
+            <div class="alert alert-info">
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-calendar-check fa-2x me-3" style="color: #0dcaf0;"></i>
+                    <div>
+                        <h6 class="mb-1">
+                            Asociando al evento: <strong>{{ evento.titulo_evento }}</strong>
+                        </h6>
+                        <p class="mb-0">El participante será automáticamente agregado a este evento.</p>
+                    </div>
+                </div>
+                <input type="hidden" name="evento_id" value="{{ evento.id_evento }}">
+            </div>
+            {% else %}
+            <!-- Selector de Evento con Autocompletado -->
+            <div class="form-group">
+                <label for="evento_search" class="form-label">
+                    <i class="fas fa-calendar"></i> Asociar a Evento
+                </label>
+                <div class="autocomplete-wrapper">
+                    <input 
+                        type="text" 
+                        class="form-control" 
+                        id="evento_search" 
+                        placeholder="Buscar evento por nombre..."
+                        autocomplete="off"
+                    >
+                    <input type="hidden" name="evento_id" id="evento_id" value="{{ form.evento_id.value|default:'' }}">
+                    <div class="autocomplete-results" id="autocomplete_results"></div>
+                </div>
+                <div class="form-text">Escriba el nombre del evento para ver las opciones disponibles</div>
+            </div>
+            {% endif %}
+
+
+
+            <!-- Errores del formulario -->
+            {% if form.errors %}
+            <div class="alert alert-danger mt-3">
+                <h6><i class="fas fa-exclamation-triangle me-2"></i>Errores en el formulario:</h6>
+                <ul class="mb-0">
+                {% for field, errors in form.errors.items %}
+                    {% for error in errors %}
+                    <li>{{ error }}</li>
+                    {% endfor %}
+                {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+
+            <!-- Botones -->
+            <div class="button-group">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <a href="{% url 'gestionar_participantes' %}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Cancelar
+                        </a>
+                    </div>
+                    <div class="col-md-6">
+                        <button type="submit" class="btn btn-primary" id="submitBtn">
+                            <i class="fas fa-save me-2"></i>Crear Participante
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+{% endblock %}{% block extra_js %}
+<script>
+$(document).ready(function() {
+    // Datos de eventos para autocompletado
+    const eventos = [
+        {% for evento_opt in eventos %}
+        {
+            id: {{ evento_opt.id_evento }},
+            titulo: "{{ evento_opt.titulo_evento|escapejs }}",
+            tipo: "{{ evento_opt.get_tipo_evento_display|escapejs }}",
+            modalidad: "{{ evento_opt.get_modalidad_evento_display|escapejs }}",
+            fecha: "{{ evento_opt.fecha_evento|date:'d/m/Y'|escapejs }}"
+        }{% if not forloop.last %},{% endif %}
+        {% endfor %}
+    ];
+
+    // Autocompletado para eventos
+    $('#evento_search').on('input', function() {
+        const query = $(this).val().toLowerCase().trim();
+        const results = $('#autocomplete_results');
+        
+        if (query.length === 0) {
+            results.hide().empty();
+            $('#evento_id').val('');
+            return;
+        }
+
+        const filteredEventos = eventos.filter(evento => 
+            evento.titulo.toLowerCase().includes(query) ||
+            evento.tipo.toLowerCase().includes(query)
+        );
+
+        results.empty();
+
+        if (filteredEventos.length > 0) {
+            filteredEventos.forEach(evento => {
+                const item = $(`
+                    <div class="autocomplete-item" data-evento-id="${evento.id}">
+                        <div class="evento-title">${evento.titulo}</div>
+                        <div class="evento-info">
+                            <span class="evento-badge">${evento.tipo}</span>
+                            <span class="evento-badge">${evento.modalidad}</span>
+                            <span class="evento-badge">${evento.fecha}</span>
+                        </div>
+                    </div>
+                `);
+                results.append(item);
+            });
+            results.show();
+        } else {
+            results.html('<div class="no-results">No se encontraron eventos que coincidan</div>').show();
+        }
+    });
+
+    // Seleccionar evento del autocompletado
+    $(document).on('click', '.autocomplete-item[data-evento-id]', function() {
+        const eventoId = $(this).data('evento-id');
+        const eventoTitulo = $(this).find('.evento-title').text();
+        
+        $('#evento_search').val(eventoTitulo);
+        $('#evento_id').val(eventoId);
+        $('#autocomplete_results').hide().empty();
+    });
+
+    // Ocultar resultados al hacer clic fuera
+    $(document).on('click', function(e) {
+        if (!$(e.target).closest('.autocomplete-wrapper').length) {
+            $('#autocomplete_results').hide();
+        }
+    });
+
+    // Navegación con teclado para autocompletado
+    $('#evento_search').on('keydown', function(e) {
+        const items = $('.autocomplete-item[data-evento-id]');
+        let current = $('.autocomplete-item.active');
+        
+        if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            if (current.length === 0) {
+                items.first().addClass('active');
+            } else {
+                current.removeClass('active');
+                const next = current.next('[data-evento-id]');
+                if (next.length > 0) {
+                    next.addClass('active');
+                } else {
+                    items.first().addClass('active');
+                }
+            }
+        } else if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            if (current.length === 0) {
+                items.last().addClass('active');
+            } else {
+                current.removeClass('active');
+                const prev = current.prev('[data-evento-id]');
+                if (prev.length > 0) {
+                    prev.addClass('active');
+                } else {
+                    items.last().addClass('active');
+                }
+            }
+        } else if (e.key === 'Enter') {
+            e.preventDefault();
+            if (current.length > 0) {
+                current.click();
+            }
+        } else if (e.key === 'Escape') {
+            $('#autocomplete_results').hide();
+        }
+    });
+
+    // Inicializar evento seleccionado si existe
+    const selectedEventoId = $('#evento_id').val();
+    if (selectedEventoId) {
+        const selectedEvento = eventos.find(e => e.id.toString() === selectedEventoId);
+        if (selectedEvento) {
+            $('#evento_search').val(selectedEvento.titulo);
+        }
+    }
+});
+</script>
+{% endblock %}

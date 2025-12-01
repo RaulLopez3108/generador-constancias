@@ -1,0 +1,273 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Confirmar Eliminación - {{ evento.titulo_evento }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    body {
+        background-color: #FFFFFF;
+        color: #040F0F;
+        padding-top: 80px;
+    }
+    
+    .main-content {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+        padding-bottom: 60px;
+    }
+    
+    .confirmation-header {
+        background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+        color: white;
+        border-radius: 15px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 8px 32px rgba(220, 53, 69, 0.3);
+    }
+    
+    .warning-card {
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        margin-bottom: 2rem;
+    }
+    
+    .warning-icon {
+        font-size: 4rem;
+        color: #dc3545;
+        margin-bottom: 1rem;
+    }
+    
+    .event-info-box {
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        border-radius: 10px;
+        padding: 1.5rem;
+        margin: 1.5rem 0;
+        border-left: 4px solid #dc3545;
+    }
+    
+    .info-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.5rem 0;
+        border-bottom: 1px solid #dee2e6;
+    }
+    
+    .info-item:last-child {
+        border-bottom: none;
+    }
+    
+    .info-label {
+        font-weight: 600;
+        color: #495057;
+    }
+    
+    .info-value {
+        color: #212529;
+    }
+    
+    .danger-list {
+        background-color: #fff5f5;
+        border: 1px solid #fed7d7;
+        border-radius: 8px;
+        padding: 1rem;
+        margin: 1rem 0;
+    }
+    
+    .danger-list li {
+        margin-bottom: 0.5rem;
+        color: #9b2c2c;
+    }
+    
+    .btn-danger-custom {
+        background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+        border: none;
+        color: white;
+        padding: 0.75rem 2rem;
+        border-radius: 10px;
+        font-weight: bold;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-danger-custom:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(220, 53, 69, 0.4);
+        color: white;
+    }
+    
+    .btn-secondary-custom {
+        background: transparent;
+        border: 2px solid #6c757d;
+        color: #6c757d;
+        padding: 0.75rem 2rem;
+        border-radius: 10px;
+        font-weight: bold;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-secondary-custom:hover {
+        background-color: #6c757d;
+        color: white;
+        transform: translateY(-2px);
+    }
+    
+    .consequences-alert {
+        background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+        border: 1px solid #ffeaa7;
+        border-radius: 10px;
+        padding: 1.5rem;
+        margin: 1.5rem 0;
+    }
+    
+    .consequences-alert h6 {
+        color: #856404;
+        margin-bottom: 1rem;
+    }
+    
+    .consequences-alert ul {
+        margin-bottom: 0;
+        color: #856404;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+{% include 'components/navbar.html' %}
+
+<div class="main-content">
+    <div class="container">
+        <!-- Header de confirmación -->
+        <div class="confirmation-header text-center">
+            <i class="fas fa-exclamation-triangle fa-3x mb-3"></i>
+            <h1>¿Confirmar Eliminación?</h1>
+            <p class="mb-0 opacity-75">Esta acción no se puede deshacer</p>
+        </div>
+
+        <!-- Botón de regreso -->
+        <div class="mb-4">
+            {% if origen == 'detalle_evento' %}
+                <a href="{% url 'detalle_evento' evento.id_evento %}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-2"></i>Regresar al Evento
+                </a>
+            {% else %}
+                <a href="{% url 'lista_eventos' %}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-2"></i>Regresar a Lista de Eventos
+                </a>
+            {% endif %}
+        </div>
+
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <!-- Información del evento -->
+                <div class="warning-card card">
+                    <div class="card-body text-center">
+                        <div class="warning-icon">
+                            <i class="fas fa-calendar-times"></i>
+                        </div>
+                        <h3 class="text-danger mb-3">Eliminar Evento</h3>
+                        <p class="mb-4">
+                            Está a punto de eliminar el evento <strong>"{{ evento.titulo_evento }}"</strong> 
+                            del sistema de manera permanente.
+                        </p>
+
+                        <!-- Información del evento -->
+                        <div class="event-info-box">
+                            <div class="info-item">
+                                <span class="info-label">Título del Evento:</span>
+                                <span class="info-value"><strong>{{ evento.titulo_evento }}</strong></span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">ID del Evento:</span>
+                                <span class="info-value">#{{ evento.id_evento }}</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Fecha de Inicio:</span>
+                                <span class="info-value">{{ evento.fecha_inicio|date:"d/m/Y" }}</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Fecha de Fin:</span>
+                                <span class="info-value">{{ evento.fecha_fin|date:"d/m/Y" }}</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Tipo de Evento:</span>
+                                <span class="info-value">{{ evento.get_tipo_evento_display }}</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Participantes Registrados:</span>
+                                <span class="info-value">
+                                    <strong class="text-warning">{{ participantes_count }}</strong>
+                                    participante{{ participantes_count|pluralize }}
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Consecuencias de la eliminación -->
+                        <div class="consequences-alert">
+                            <h6><i class="fas fa-exclamation-circle me-2"></i>Consecuencias de esta acción:</h6>
+                            <ul class="text-start">
+                                <li>El evento será eliminado permanentemente del sistema</li>
+                                <li>La plantilla asociada al evento será eliminada</li>
+                                {% if participantes_count > 0 %}
+                                <li>Los <strong>{{ participantes_count }} participantes</strong> serán desvinculados del evento</li>
+                                <li>Los participantes no serán eliminados del sistema, solo desvinculados</li>
+                                {% endif %}
+                                <li>Las constancias generadas previamente permanecerán disponibles</li>
+                                <li><strong>Esta acción no se puede deshacer</strong></li>
+                            </ul>
+                        </div>
+
+                        <!-- Formulario de confirmación -->
+                        <form method="post" class="mt-4">
+                            {% csrf_token %}
+                            <input type="hidden" name="redirect_to" value="{{ origen }}">
+                            
+                            <div class="d-flex gap-3 justify-content-center">
+                                {% if origen == 'detalle_evento' %}
+                                    <a href="{% url 'detalle_evento' evento.id_evento %}" class="btn btn-secondary-custom">
+                                        <i class="fas fa-times me-2"></i>Cancelar
+                                    </a>
+                                {% else %}
+                                    <a href="{% url 'lista_eventos' %}" class="btn btn-secondary-custom">
+                                        <i class="fas fa-times me-2"></i>Cancelar
+                                    </a>
+                                {% endif %}
+                                
+                                <button type="submit" class="btn btn-danger-custom" 
+                                        onclick="return confirm('¿Está completamente seguro? Esta acción no se puede deshacer.')">
+                                    <i class="fas fa-trash me-2"></i>Sí, Eliminar Evento
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Agregar confirmación adicional al botón de eliminar
+    const deleteBtn = document.querySelector('.btn-danger-custom');
+    if (deleteBtn) {
+        deleteBtn.addEventListener('click', function(e) {
+            const tituloEvento = "{{ evento.titulo_evento|escapejs }}";
+            const participantesCount = {{ participantes_count }};
+            const pluralSuffix = participantesCount === 1 ? '' : 's';
+            
+            const confirmMsg = `¿Está completamente seguro de eliminar el evento "${tituloEvento}"?\n\nEsta acción:\n- Eliminará el evento permanentemente\n- Desvinculará a ${participantesCount} participante${pluralSuffix}\n- Eliminará la plantilla asociada\n- NO SE PUEDE DESHACER\n\n¿Continuar?`;
+            
+            if (!confirm(confirmMsg)) {
+                e.preventDefault();
+                return false;
+            }
+        });
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test POST</title>
+</head>
+<body>
+    <h1>Test de POST Request</h1>
+    
+    <form method="post" action="{% url 'crear_evento' %}">
+        {% csrf_token %}
+        <input type="hidden" name="test_form" value="1">
+        <button type="submit">TEST POST SIN CSS NI JS</button>
+    </form>
+    
+    <hr>
+    
+    <p>Información de debug:</p>
+    <ul>
+        <li>Método: {{ request.method }}</li>
+        <li>URL: {{ request.get_full_path }}</li>
+        <li>User: {{ request.user }}</li>
+    </ul>
+</body>
+</html>

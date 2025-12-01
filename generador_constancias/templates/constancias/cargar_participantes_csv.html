@@ -1,0 +1,424 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Carga Masiva de Participantes{% endblock %}
+
+{% block extra_css %}
+<style>
+.upload-zone {
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.upload-zone:hover {
+    border-color: #0d6efd !important;
+    background-color: #f8f9fa;
+}
+
+.upload-zone.dragover {
+    border-color: #0d6efd !important;
+    background-color: #e3f2fd;
+}
+
+.dashboard-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.footer-gap {
+    margin-bottom: 4rem;
+}
+
+/* Estilos para el autocompletado */
+.evento-option:hover {
+    background-color: #f8f9fa !important;
+}
+
+.evento-option:active {
+    background-color: #e9ecef !important;
+}
+
+.dropdown-menu {
+    border: 1px solid #dee2e6;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    border-radius: 0.375rem;
+}
+
+#eventoSearch {
+    font-size: 0.95rem !important;
+}
+
+.evento-option .fw-semibold {
+    font-weight: 600;
+    font-size: 0.9rem;
+    line-height: 1.3;
+}
+
+.evento-option small {
+    font-size: 0.8rem;
+    line-height: 1.2;
+}
+
+.badge {
+    font-size: 0.75rem !important;
+    font-weight: 500;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <!-- Botón Dashboard -->
+    <div class="mb-4">
+        <a href="/dashboard" class="btn btn-outline-secondary dashboard-btn" style="transition: all 0.3s ease;">
+            <i class="fas fa-arrow-left me-2"></i>Dashboard
+        </a>
+    </div>
+
+    <!-- Header -->
+    <div class="text-center mb-5">
+        <h1 class="display-5 fw-bold">Carga Masiva de Participantes</h1>
+        <p class="lead text-muted">Importa múltiples participantes desde un archivo CSV</p>
+    </div>
+
+    <!-- Main Card -->
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow">
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data" id="csvForm">
+                        {% csrf_token %}
+                        
+                        <div class="upload-zone border border-2 border-dashed p-5 text-center mb-4" 
+                             id="uploadZone" style="border-color: #ced4da; border-radius: 15px;">
+                            <input type="file" name="csv_file" id="csvFile" accept=".csv" style="display: none;">
+                            <div class="upload-content" id="uploadContent">
+                                <i class="fas fa-cloud-upload-alt display-4 text-muted mb-3"></i>
+                                <h4>Arrastra tu archivo CSV aquí</h4>
+                                <p class="text-muted mb-3">o haz clic para seleccionar un archivo</p>
+                                <button type="button" class="btn btn-outline-primary" onclick="document.getElementById('csvFile').click()">
+                                    <i class="fas fa-folder-open me-2"></i>Seleccionar Archivo
+                                </button>
+                                <div class="mt-3">
+                                    <small class="text-muted">
+                                        <i class="fas fa-info-circle me-1"></i>
+                                        Formato requerido: nombre, email, rol
+                                    </small>
+                                </div>
+                            </div>
+                            
+                            <!-- Estado del archivo cargado -->
+                            <div class="alert alert-info" id="fileInfo" style="display: none;">
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <div class="d-flex align-items-center">
+                                        <i class="fas fa-file-csv text-success me-2"></i>
+                                        <span id="fileName"></span>
+                                        <small class="text-muted ms-2" id="fileSize"></small>
+                                    </div>
+                                    <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeFile()">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Selección de Evento -->
+                        <div class="mb-4" id="eventoSelection" style="display: none;">
+                            <div class="card border-warning">
+                                <div class="card-header bg-warning bg-opacity-10">
+                                    <h5 class="card-title mb-0">
+                                        <i class="fas fa-calendar-alt me-2"></i>
+                                        Seleccionar Evento
+                                    </h5>
+                                </div>
+                                <div class="card-body">
+                                    <p class="text-muted mb-3">Los participantes del archivo CSV serán registrados en el evento seleccionado:</p>
+                                    
+                                    <!-- Input de búsqueda -->
+                                    <div class="position-relative">
+                                        <input type="text" 
+                                               class="form-control" 
+                                               id="eventoSearch" 
+                                               placeholder="Buscar evento..."
+                                               autocomplete="off"
+                                               style="font-size: 0.95rem;">
+                                        <input type="hidden" name="evento_id" id="eventoId">
+                                        
+                                        <!-- Lista de opciones -->
+                                        <div class="dropdown-menu w-100" 
+                                             id="eventoOptions" 
+                                             style="max-height: 200px; overflow-y: auto; font-size: 0.9rem; display: none;">
+                                            {% for evento in eventos %}
+                                            <div class="dropdown-item evento-option" 
+                                                 data-id="{{ evento.id_evento }}"
+                                                 data-title="{{ evento.titulo_evento }}"
+                                                 data-date="{{ evento.fecha_inicio|date:"d/m/Y" }}"
+                                                 style="cursor: pointer; border-bottom: 1px solid #dee2e6; padding: 0.75rem 1rem;">
+                                                <div class="d-flex justify-content-between align-items-center">
+                                                    <div>
+                                                        <div class="fw-semibold text-dark" style="font-size: 0.9rem;">
+                                                            {{ evento.titulo_evento }}
+                                                        </div>
+                                                        <small class="text-muted">
+                                                            <i class="fas fa-calendar me-1"></i>
+                                                            {{ evento.fecha_inicio|date:"d/m/Y" }}
+                                                            {% if evento.descripcion %}
+                                                                <span class="ms-2">{{ evento.descripcion|truncatechars:50 }}</span>
+                                                            {% endif %}
+                                                        </small>
+                                                    </div>
+                                                    <span class="badge bg-primary" style="font-size: 0.75rem;">
+                                                        {{ evento.get_tipo_evento_display }}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mt-3">
+                                        <small class="text-info">
+                                            <i class="fas fa-info-circle me-1"></i>
+                                            Después del procesamiento serás redirigido a la página del evento seleccionado.
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Botones de acción -->
+                        <div class="d-flex justify-content-between align-items-center footer-gap">
+                            <a href="{% url 'descargar_plantilla_csv' %}" class="btn btn-outline-info">
+                                <i class="fas fa-download me-2"></i>
+                                Descargar Plantilla CSV
+                            </a>
+                            <button type="submit" class="btn btn-primary" id="processBtn" disabled>
+                                <i class="fas fa-cog me-2"></i>
+                                Procesar Archivo
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function formatFileSize(bytes) {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+}
+
+function handleFile(file) {
+    console.log('Handling file:', file.name);
+    
+    if (!file.name.toLowerCase().endsWith('.csv')) {
+        alert('Por favor selecciona un archivo CSV válido.');
+        return;
+    }
+    
+    // Elementos
+    const uploadContent = document.getElementById('uploadContent');
+    const fileInfo = document.getElementById('fileInfo');
+    const fileName = document.getElementById('fileName');
+    const fileSize = document.getElementById('fileSize');
+    const eventoSelection = document.getElementById('eventoSelection');
+    const eventoId = document.getElementById('eventoId');
+    const processBtn = document.getElementById('processBtn');
+    
+    // Ocultar zona de carga
+    uploadContent.style.display = 'none';
+    
+    // Mostrar info del archivo
+    fileInfo.style.display = 'block';
+    fileName.textContent = file.name;
+    fileSize.textContent = formatFileSize(file.size);
+    
+    // Mostrar selección de evento
+    eventoSelection.style.display = 'block';
+    
+    // Verificar si ya hay un evento seleccionado (preseleccionado)
+    const eventoYaSeleccionado = eventoId.value !== '';
+    
+    // Habilitar botón si ya hay evento seleccionado, sino mantenerlo deshabilitado
+    processBtn.disabled = !eventoYaSeleccionado;
+    
+    console.log('File processed successfully, evento preseleccionado:', eventoYaSeleccionado);
+}
+
+function removeFile() {
+    const uploadContent = document.getElementById('uploadContent');
+    const fileInfo = document.getElementById('fileInfo');
+    const eventoSelection = document.getElementById('eventoSelection');
+    const processBtn = document.getElementById('processBtn');
+    const eventoSearch = document.getElementById('eventoSearch');
+    const eventoId = document.getElementById('eventoId');
+    const eventoOptions = document.getElementById('eventoOptions');
+    const csvFile = document.getElementById('csvFile');
+    
+    uploadContent.style.display = 'block';
+    fileInfo.style.display = 'none';
+    eventoSelection.style.display = 'none';
+    eventoOptions.style.display = 'none';
+    processBtn.disabled = true;
+    eventoSearch.value = '';
+    eventoId.value = '';
+    csvFile.value = '';
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    const csvFile = document.getElementById('csvFile');
+    const uploadZone = document.getElementById('uploadZone');
+    const eventoSearch = document.getElementById('eventoSearch');
+    const eventoId = document.getElementById('eventoId');
+    const eventoOptions = document.getElementById('eventoOptions');
+    const processBtn = document.getElementById('processBtn');
+    const csvForm = document.getElementById('csvForm');
+    
+    console.log('DOM loaded, setting up events');
+    
+    // Evento de cambio de archivo
+    csvFile.addEventListener('change', function() {
+        console.log('File changed, files:', this.files.length);
+        if (this.files.length > 0) {
+            handleFile(this.files[0]);
+        }
+    });
+    
+    // Autocompletado de eventos
+    eventoSearch.addEventListener('input', function() {
+        const searchTerm = this.value.toLowerCase();
+        const options = eventoOptions.querySelectorAll('.evento-option');
+        let hasVisibleOptions = false;
+        
+        options.forEach(option => {
+            const title = option.dataset.title.toLowerCase();
+            const date = option.dataset.date;
+            
+            if (title.includes(searchTerm) || date.includes(searchTerm)) {
+                option.style.display = 'block';
+                hasVisibleOptions = true;
+            } else {
+                option.style.display = 'none';
+            }
+        });
+        
+        // Mostrar/ocultar dropdown
+        if (searchTerm.length > 0 && hasVisibleOptions) {
+            eventoOptions.style.display = 'block';
+        } else {
+            eventoOptions.style.display = 'none';
+        }
+        
+        // Resetear selección si no coincide
+        if (!this.value) {
+            eventoId.value = '';
+            updateProcessButton();
+        }
+    });
+    
+    // Seleccionar evento
+    eventoOptions.addEventListener('click', function(e) {
+        const option = e.target.closest('.evento-option');
+        if (option) {
+            const id = option.dataset.id;
+            const title = option.dataset.title;
+            const date = option.dataset.date;
+            
+            eventoSearch.value = `${title} - ${date}`;
+            eventoId.value = id;
+            eventoOptions.style.display = 'none';
+            
+            console.log('Evento seleccionado:', id, title);
+            updateProcessButton();
+        }
+    });
+    
+    // Cerrar dropdown al hacer clic fuera
+    document.addEventListener('click', function(e) {
+        if (!eventoSearch.contains(e.target) && !eventoOptions.contains(e.target)) {
+            eventoOptions.style.display = 'none';
+        }
+    });
+    
+    // Mostrar todas las opciones al hacer focus
+    eventoSearch.addEventListener('focus', function() {
+        if (this.value.length > 0) {
+            eventoOptions.style.display = 'block';
+        }
+    });
+    
+    // Función para actualizar el botón de procesar
+    function updateProcessButton() {
+        const fileInfo = document.getElementById('fileInfo');
+        const fileSelected = fileInfo.style.display !== 'none';
+        const eventoSelected = eventoId.value !== '';
+        
+        processBtn.disabled = !(fileSelected && eventoSelected);
+    }
+    
+    // Validación del formulario
+    csvForm.addEventListener('submit', function(e) {
+        const eventoSelected = eventoId.value;
+        const fileInfo = document.getElementById('fileInfo');
+        const fileSelected = fileInfo.style.display !== 'none';
+        
+        if (!fileSelected) {
+            e.preventDefault();
+            alert('Por favor selecciona un archivo CSV primero.');
+            return;
+        }
+        
+        if (!eventoSelected) {
+            e.preventDefault();
+            alert('Por favor selecciona un evento para asociar los participantes.');
+            return;
+        }
+        
+        // Mostrar mensaje de procesamiento
+        processBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Procesando...';
+        processBtn.disabled = true;
+    });
+    
+    // Drag and drop
+    uploadZone.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        this.classList.add('dragover');
+    });
+    
+    uploadZone.addEventListener('dragleave', function() {
+        this.classList.remove('dragover');
+    });
+    
+    uploadZone.addEventListener('drop', function(e) {
+        e.preventDefault();
+        this.classList.remove('dragover');
+        const files = e.dataTransfer.files;
+        if (files.length > 0) {
+            handleFile(files[0]);
+        }
+    });
+    
+    // Click en zona de carga
+    uploadZone.addEventListener('click', function(e) {
+        if (!e.target.closest('button') && !e.target.closest('#fileInfo')) {
+            csvFile.click();
+        }
+    });
+    
+    // Preseleccionar evento si viene de la URL
+    {% if evento %}
+    const eventoPreseleccionado = "{{ evento.titulo_evento }} - {{ evento.fecha_inicio|date:'d/m/Y' }}";
+    eventoSearch.value = eventoPreseleccionado;
+    eventoId.value = "{{ evento.id_evento }}";
+    
+    // Actualizar el estado del botón después de preseleccionar
+    updateProcessButton();
+    {% endif %}
+});
+</script>
+{% endblock %}

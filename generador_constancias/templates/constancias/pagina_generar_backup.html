@@ -1,0 +1,475 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Generador de Constancias{% endblock %}
+
+{% block extra_css %}
+<style>
+    body {
+        background-color: #FFFFFF;
+        color: #040F0F;
+        padding-top: 80px;
+    }
+    
+    .main-content {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+        padding-bottom: 60px;
+    }
+    
+    .generator-header {
+        background: linear-gradient(135deg, #040F0F 0%, #1a1a1a 100%);
+        color: white;
+        border-radius: 15px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    }
+    
+    .step-card {
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s ease;
+        margin-bottom: 2rem;
+    }
+    
+    .step-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+    }
+    
+    .step-header {
+        background: linear-gradient(135deg, #00D4AA 0%, #40E0D0 100%);
+        color: white;
+        padding: 1rem 1.5rem;
+        border-radius: 15px 15px 0 0;
+        border-bottom: none;
+    }
+    
+    .step-number {
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 0.9rem;
+    }
+    
+    .form-select, .form-control {
+        border: 2px solid #e9ecef;
+        border-radius: 10px;
+        padding: 0.75rem 1rem;
+        transition: all 0.3s ease;
+        font-size: 0.95rem;
+    }
+    
+    .form-select:focus, .form-control:focus {
+        border-color: #00D4AA;
+        box-shadow: 0 0 0 0.25rem rgba(0, 212, 170, 0.25);
+    }
+    
+    .generate-btn {
+        background: linear-gradient(135deg, #00D4AA 0%, #40E0D0 100%);
+        border: none;
+        border-radius: 25px;
+        padding: 1rem 2.5rem;
+        font-weight: 600;
+        font-size: 1.1rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(0, 212, 170, 0.3);
+        color: white;
+    }
+    
+    .generate-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 25px rgba(0, 212, 170, 0.4);
+        color: white;
+    }
+    
+    .generate-btn:disabled {
+        background: #dee2e6;
+        color: #6c757d;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+    }
+    
+    .preview-area {
+        background: #f8f9fa;
+        border: 2px dashed #dee2e6;
+        border-radius: 15px;
+        padding: 2rem;
+        text-align: center;
+        min-height: 200px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+    }
+    
+    .preview-area.has-content {
+        border-color: #00D4AA;
+        background: #f0fffe;
+    }
+    
+    .quick-filters {
+        background: #f8f9fa;
+        border-radius: 10px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+    }
+    
+    .filter-btn {
+        border: 1px solid #dee2e6;
+        border-radius: 20px;
+        padding: 0.5rem 1rem;
+        margin: 0.25rem;
+        background: white;
+        color: #6c757d;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        display: inline-block;
+        font-size: 0.8rem;
+    }
+    
+    .filter-btn:hover, .filter-btn.active {
+        background: #00D4AA;
+        color: white;
+        border-color: #00D4AA;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="main-content">
+    <div class="container-fluid px-4">
+        <!-- Header -->
+        <div class="generator-header">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h1 class="mb-2">
+                        <i class="fas fa-certificate me-3"></i>
+                        Generador de Constancias
+                    </h1>
+                    <p class="mb-0 opacity-75">Cree constancias profesionales en simples pasos</p>
+                </div>
+                <div class="col-md-4 text-end">
+                    <a href="{% url 'dashboard' %}" class="btn btn-outline-light">
+                        <i class="fas fa-arrow-left me-2"></i>Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <form method="post" id="generatorForm">
+            {% csrf_token %}
+            
+            <div class="row">
+                <!-- Paso 1: Seleccionar Evento -->
+                <div class="col-lg-4 mb-4">
+                    <div class="step-card">
+                        <div class="step-header">
+                            <div class="d-flex align-items-center">
+                                <span class="step-number me-3">1</span>
+                                <h5 class="mb-0">Seleccionar Evento</h5>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="quick-filters">
+                                <small class="text-muted d-block mb-2">Filtros rápidos:</small>
+                                <span class="filter-btn active" data-filter="all">Todos</span>
+                                <span class="filter-btn" data-filter="recent">Recientes</span>
+                                <span class="filter-btn" data-filter="active">Activos</span>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <input type="text" 
+                                       class="form-control mb-3" 
+                                       id="eventoSearch" 
+                                       placeholder="Buscar evento..."
+                                       autocomplete="off">
+                                
+                                <div style="display: none;">
+                                    {{ form.evento }}
+                                </div>
+                            </div>
+                            
+                            <div id="eventoSelected" style="display: none;" class="mt-3">
+                                <div class="alert alert-success">
+                                    <h6 class="mb-1"><i class="fas fa-check-circle me-2"></i>Evento seleccionado</h6>
+                                    <div id="eventoDetails"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Paso 2: Seleccionar Participante -->
+                <div class="col-lg-4 mb-4">
+                    <div class="step-card">
+                        <div class="step-header">
+                            <div class="d-flex align-items-center">
+                                <span class="step-number me-3">2</span>
+                                <h5 class="mb-0">Seleccionar Participante</h5>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label class="form-label">Buscar participante</label>
+                                <input type="text" 
+                                       class="form-control" 
+                                       id="participanteSearch" 
+                                       placeholder="Nombre o email del participante..."
+                                       disabled>
+                            </div>
+                            
+                            <div style="display: none;">
+                                {{ form.participante }}
+                            </div>
+                            
+                            <div id="participanteSelected" style="display: none;" class="mt-3">
+                                <div class="alert alert-info">
+                                    <h6 class="mb-1"><i class="fas fa-user-check me-2"></i>Participante seleccionado</h6>
+                                    <div id="participanteDetails"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Paso 3: Seleccionar Plantilla -->
+                <div class="col-lg-4 mb-4">
+                    <div class="step-card">
+                        <div class="step-header">
+                            <div class="d-flex align-items-center">
+                                <span class="step-number me-3">3</span>
+                                <h5 class="mb-0">Seleccionar Plantilla</h5>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div style="display: none;">
+                                {{ form.plantilla }}
+                            </div>
+                            
+                            <div id="plantillaSelected" style="display: none;" class="mt-3">
+                                <div class="alert alert-warning">
+                                    <h6 class="mb-1"><i class="fas fa-file-alt me-2"></i>Plantilla seleccionada</h6>
+                                    <div id="plantillaDetails"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Preview y Generación -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="step-card">
+                        <div class="step-header">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <div class="d-flex align-items-center">
+                                    <span class="step-number me-3">4</span>
+                                    <h5 class="mb-0">Vista Previa y Generación</h5>
+                                </div>
+                                <div class="badge bg-light text-dark">
+                                    <span id="progressText">0/3 pasos completados</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="preview-area" id="previewArea">
+                                        <i class="fas fa-file-pdf fa-3x text-muted mb-3"></i>
+                                        <h5 class="text-muted">Vista Previa de la Constancia</h5>
+                                        <p class="text-muted">Complete los pasos anteriores para ver la vista previa</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="h-100 d-flex flex-column justify-content-center">
+                                        <h6 class="mb-3">Resumen de la Constancia:</h6>
+                                        <div id="summaryDetails">
+                                            <div class="mb-2">
+                                                <strong>Evento:</strong> 
+                                                <span class="text-muted" id="summaryEvento">No seleccionado</span>
+                                            </div>
+                                            <div class="mb-2">
+                                                <strong>Participante:</strong> 
+                                                <span class="text-muted" id="summaryParticipante">No seleccionado</span>
+                                            </div>
+                                            <div class="mb-4">
+                                                <strong>Plantilla:</strong> 
+                                                <span class="text-muted" id="summaryPlantilla">No seleccionada</span>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="d-grid gap-2">
+                                            <button type="submit" class="generate-btn" id="generateBtn" disabled>
+                                                <i class="fas fa-magic me-2"></i>
+                                                Generar Constancia
+                                            </button>
+                                            <div class="text-center mt-2">
+                                                <small class="text-muted">La constancia se generará en formato PDF</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('generatorForm');
+    const generateBtn = document.getElementById('generateBtn');
+    const progressText = document.getElementById('progressText');
+    
+    let selectedEvento = null;
+    let selectedParticipante = null;
+    let selectedPlantilla = null;
+    
+    // Función para actualizar el progreso
+    function updateProgress() {
+        let completed = 0;
+        if (selectedEvento) completed++;
+        if (selectedParticipante) completed++;
+        if (selectedPlantilla) completed++;
+        
+        progressText.textContent = `${completed}/3 pasos completados`;
+        generateBtn.disabled = completed < 3;
+        
+        // Actualizar resumen
+        document.getElementById('summaryEvento').textContent = selectedEvento ? selectedEvento.nombre : 'No seleccionado';
+        document.getElementById('summaryParticipante').textContent = selectedParticipante ? selectedParticipante.nombre : 'No seleccionado';
+        document.getElementById('summaryPlantilla').textContent = selectedPlantilla ? selectedPlantilla.nombre : 'No seleccionada';
+    }
+    
+    // Event listeners para los selectores del formulario original
+    const eventoSelect = document.querySelector('select[name="evento"]');
+    const participanteSelect = document.querySelector('select[name="participante"]');
+    const plantillaSelect = document.querySelector('select[name="plantilla"]');
+    
+    if (eventoSelect) {
+        eventoSelect.addEventListener('change', function() {
+            if (this.value) {
+                selectedEvento = { id: this.value, nombre: this.options[this.selectedIndex].text };
+                document.getElementById('eventoSelected').style.display = 'block';
+                document.getElementById('eventoDetails').innerHTML = `<strong>${selectedEvento.nombre}</strong>`;
+                document.getElementById('participanteSearch').disabled = false;
+            } else {
+                selectedEvento = null;
+                document.getElementById('eventoSelected').style.display = 'none';
+                document.getElementById('participanteSearch').disabled = true;
+            }
+            updateProgress();
+        });
+    }
+    
+    if (participanteSelect) {
+        participanteSelect.addEventListener('change', function() {
+            if (this.value) {
+                selectedParticipante = { id: this.value, nombre: this.options[this.selectedIndex].text };
+                document.getElementById('participanteSelected').style.display = 'block';
+                document.getElementById('participanteDetails').innerHTML = `<strong>${selectedParticipante.nombre}</strong>`;
+            } else {
+                selectedParticipante = null;
+                document.getElementById('participanteSelected').style.display = 'none';
+            }
+            updateProgress();
+        });
+    }
+    
+    if (plantillaSelect) {
+        plantillaSelect.addEventListener('change', function() {
+            if (this.value) {
+                selectedPlantilla = { id: this.value, nombre: this.options[this.selectedIndex].text };
+                document.getElementById('plantillaSelected').style.display = 'block';
+                document.getElementById('plantillaDetails').innerHTML = `<strong>${selectedPlantilla.nombre}</strong>`;
+            } else {
+                selectedPlantilla = null;
+                document.getElementById('plantillaSelected').style.display = 'none';
+            }
+            updateProgress();
+        });
+    }
+    
+    // Búsqueda de eventos
+    const eventoSearch = document.getElementById('eventoSearch');
+    if (eventoSearch && eventoSelect) {
+        eventoSearch.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            
+            // Crear lista de opciones visibles
+            let optionsHTML = '';
+            for (let i = 1; i < eventoSelect.options.length; i++) {
+                const option = eventoSelect.options[i];
+                if (option.text.toLowerCase().includes(searchTerm)) {
+                    optionsHTML += `<div class="option-item p-2 border-bottom" data-value="${option.value}" style="cursor: pointer;">
+                        ${option.text}
+                    </div>`;
+                }
+            }
+            
+            if (optionsHTML && searchTerm.length > 0) {
+                // Mostrar opciones filtradas
+                const resultsDiv = document.createElement('div');
+                resultsDiv.className = 'search-results border rounded mt-2';
+                resultsDiv.style.maxHeight = '200px';
+                resultsDiv.style.overflowY = 'auto';
+                resultsDiv.innerHTML = optionsHTML;
+                
+                // Limpiar resultados anteriores
+                const existingResults = eventoSearch.parentNode.querySelector('.search-results');
+                if (existingResults) {
+                    existingResults.remove();
+                }
+                
+                eventoSearch.parentNode.appendChild(resultsDiv);
+                
+                // Agregar event listeners a las opciones
+                resultsDiv.querySelectorAll('.option-item').forEach(item => {
+                    item.addEventListener('click', function() {
+                        eventoSelect.value = this.dataset.value;
+                        eventoSelect.dispatchEvent(new Event('change'));
+                        eventoSearch.value = this.textContent.trim();
+                        resultsDiv.remove();
+                    });
+                });
+            } else {
+                // Ocultar resultados si no hay búsqueda
+                const existingResults = eventoSearch.parentNode.querySelector('.search-results');
+                if (existingResults) {
+                    existingResults.remove();
+                }
+            }
+        });
+    }
+    
+    // Filtros rápidos
+    const filterBtns = document.querySelectorAll('.filter-btn');
+    filterBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            filterBtns.forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            
+            const filter = this.dataset.filter;
+            console.log('Filtro aplicado:', filter);
+            // Aquí puedes implementar la lógica de filtrado específica
+        });
+    });
+    
+    updateProgress();
+});
+</script>
+{% endblock %}
